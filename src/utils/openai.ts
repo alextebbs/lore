@@ -7,9 +7,9 @@ const openai = new OpenAIApi(configuration);
 
 export async function getOpenAIResponse(
   prompt: string,
-  temperature = 1,
-  max_tokens = 2048,
-  model = "text-davinci-003"
+  temperature: number = 1,
+  max_tokens: number = 2048,
+  model: string = "text-davinci-003"
 ) {
   try {
     const response = await openai.createCompletion({
