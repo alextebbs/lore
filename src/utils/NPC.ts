@@ -26,7 +26,7 @@ export class NPC {
   }
 
   async generateBaseInfo() {
-    let prompt = outdent`
+    const prompt = outdent`
       You are going to help create a character for use in a fantasy roleplaying
       campaign setting. You should seek to create characters that are creative,
       distinct, and dynamic. 
@@ -49,7 +49,15 @@ export class NPC {
     `;
     const baseInfo = await getOpenAIResponse(prompt);
 
+    if (!baseInfo) {
+      throw new Error("Failed to generate base info");
+    }
+
     const [species, name, age] = baseInfo.split(", ");
+
+    if (!species || !name || !age) {
+      throw new Error("Failed to parse base info response from OpenAI");
+    }
 
     this.name = name;
     this.age = parseInt(age);
@@ -57,7 +65,7 @@ export class NPC {
   }
 
   async generatePhysicalDescription() {
-    let prompt = outdent`
+    const prompt = outdent`
       You are going to help create a character for use in a fantasy roleplaying
       campaign setting. You should seek to create characters that are creative,
       distinct, and dynamic. 
@@ -89,7 +97,7 @@ export class NPC {
   }
 
   async generateBackstory() {
-    let prompt = outdent`
+    const prompt = outdent`
       You are going to write a character backstory for use in a fantasy
       roleplaying campaign setting. You should seek to write backstories
       characters that are creative, distinct, and dynamic. 

@@ -3,27 +3,34 @@ import Head from "next/head";
 import { md2jsx } from "~/utils/md2jsx";
 
 import { useState } from "react";
-import { INPC } from "~/utils/NPC";
-
-import { api } from "~/utils/api";
+import { type INPC } from "~/utils/NPC";
 
 const Home: NextPage = () => {
   const [loadingState, setLoadingState] = useState("idle");
   const [npc, setNPC] = useState<INPC>({});
 
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     let url = "/api/generate/npc";
+    const form = e.target as HTMLFormElement;
+    const elements = form.elements as typeof form.elements & {
+      prompt: { value: string };
+    };
 
-    if (e.target.elements.prompt.value != "") {
-      const params = { prompt: e.target.elements.prompt.value };
+    if (elements.prompt.value != "") {
+      const params = { prompt: elements.prompt.value };
       url += "?" + new URLSearchParams(params).toString();
     }
 
     setLoadingState("loading");
+
+    // QUESTION:
+    // This throws some ESLint error @typescript-eslint/no-misused-promises and
+    // checksVoidReturn ... I disabled the ESLint rule for now.
     const response = await fetch(url);
     const data = (await response.json()) as INPC;
+
     setLoadingState("done");
 
     console.log(data);
@@ -62,8 +69,10 @@ const Home: NextPage = () => {
           {loadingState == "loading" && <div>Loading...</div>}
           {loadingState == "done" && (
             <>
-              <div>{md2jsx(npc.physicalDescription)}</div>
-              <div>{md2jsx(npc.backstory)}</div>
+              {npc.physicalDescription && (
+                <div>{md2jsx(npc.physicalDescription)}</div>
+              )}
+              {npc.backstory && <div>{md2jsx(npc.backstory)}</div>}
             </>
           )}
         </div>
