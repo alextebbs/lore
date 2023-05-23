@@ -1,5 +1,5 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { NPC } from "~/utils/NPC";
+import { Character } from "~/utils/Character";
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,9 +7,9 @@ export default async function handler(
 ) {
   const { prompt } = req.query;
 
-  const npc = new NPC({ originStatement: prompt as string });
+  const character = new Character({ originStatement: prompt as string });
 
-  await npc.generateAll();
+  await character.generateAll();
 
-  res.status(200).json(npc);
+  res.status(200).json(character);
 }

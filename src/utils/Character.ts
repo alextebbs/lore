@@ -1,16 +1,17 @@
 import { getOpenAIResponse } from "~/utils/openai";
 import { outdent } from "outdent";
 
-export interface INPC {
+export interface ICharacter {
   originStatement?: string;
   name?: string;
   age?: number;
+  species?: string;
   physicalDescription?: string;
   backstory?: string;
-  relationships?: INPC[];
+  relationships?: ICharacter[];
 }
 
-export class NPC {
+export class Character {
   originStatement?: string;
   underConstruction?: boolean;
   name?: string;
@@ -18,9 +19,9 @@ export class NPC {
   species?: string;
   physicalDescription?: string;
   backstory?: string;
-  relationships?: INPC[];
+  relationships?: ICharacter[];
 
-  constructor(npc: INPC) {
+  constructor(npc: ICharacter) {
     this.originStatement = npc.originStatement;
     this.underConstruction = true;
   }
