@@ -15,6 +15,7 @@ export class NPC {
   underConstruction?: boolean;
   name?: string;
   age?: number;
+  species?: string;
   physicalDescription?: string;
   backstory?: string;
   relationships?: INPC[];
@@ -24,32 +25,66 @@ export class NPC {
     this.underConstruction = true;
   }
 
+  async generateBaseInfo() {
+    let prompt = outdent`
+      You are going to help create a character for use in a fantasy roleplaying
+      campaign setting. You should seek to create characters that are creative,
+      distinct, and dynamic. 
+
+      First, determine the character's species. Choose from the following
+      options. If the species has a subspecies, select a subspecies as well.
+
+      Second, give the character a name.
+
+      Third, give the character an age.
+
+      ${
+        this.originStatement
+          ? `Use the following information when creating your response.
+             {{Character}} is ${this.originStatement}.`
+          : ``
+      }
+
+      Output your response in the following format: [Species/Subspecies], [Name], [Age]
+    `;
+    const baseInfo = await getOpenAIResponse(prompt);
+
+    const [species, name, age] = baseInfo.split(", ");
+
+    this.name = name;
+    this.age = parseInt(age);
+    this.species = species;
+  }
+
   async generatePhysicalDescription() {
     let prompt = outdent`
       You are going to help create a character for use in a fantasy roleplaying
       campaign setting. You should seek to create characters that are creative,
       distinct, and dynamic. 
 
-      Write a single paragraph description of the character's physical appearance,
-      noting something that is unique, distinct, and memorable about their physical
-      form. This description should be 1-2 sentences long.
+      Write a single paragraph description of the character's physical
+      appearance, noting something that is unique, distinct, and memorable about
+      their physical form. This description should be 1-2 sentences long.
 
       Follow the following style notes:
         - Your description should be evocative, but not overly poetic.
         - Describe only the physical appearance, not behavior or demeanor.
-        - Do not name the character. Use the placeholder name {{Character}} when
-          referring to the Character by name.
         - Use the present tense at all times.
         - Do not include newline characters in your response.
 
       ${
         this.originStatement
-          ? `Use the following information when creating your response. {{Character}} is ${this.originStatement}.`
+          ? `Use the following information when creating your response.
+             {{Character}} is ${this.originStatement}.`
           : ``
       }
 
+      The character is a ${this.species} named ${this.name} who is 
+      ${this.age} years old.
+
       Physical description of {{Character}}: 
     `;
+
     this.physicalDescription = await getOpenAIResponse(prompt);
   }
 
@@ -64,9 +99,6 @@ export class NPC {
 
       Follow the following style notes:
         - Your backstory should be evocative, but not overly poetic.
-        - Do not name the character. Use the placeholder name {{Character}} when
-          referring to the Character by name.
-        - Do not include newline characters in your response.
 
       ${
         this.originStatement
@@ -74,14 +106,19 @@ export class NPC {
           : ``
       }
 
+      The character is a ${this.species} named ${this.name} who is 
+      ${this.age} years old.
+
       Physical description of {{Character}}: ${this.physicalDescription}
 
       Character's backstory: 
     `;
+
     this.backstory = await getOpenAIResponse(prompt);
   }
 
   async generateAll() {
+    await this.generateBaseInfo();
     await this.generatePhysicalDescription();
     await this.generateBackstory();
     this.underConstruction = false;
