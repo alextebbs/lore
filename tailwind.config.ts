@@ -7,6 +7,7 @@ export default {
       fontFamily: {
         body: ['"Roboto Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
         display: ['"Sabbath Black"', "serif"],
+        logo: ['"Caesar Dressing"', "serif"],
       },
     },
   },
