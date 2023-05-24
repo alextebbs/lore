@@ -72,7 +72,7 @@ body {
   @apply bg-black font-mono text-white;
 }
 
-p {
+.rich-text-wrapper p {
   @apply mb-8;
 }
 

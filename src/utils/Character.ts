@@ -1,29 +1,29 @@
 import { getOpenAIResponse } from "~/utils/openai";
 import { outdent } from "outdent";
 
-export interface ICharacter {
-  originStatement?: string;
-  name?: string;
-  age?: number;
-  species?: string;
-  physicalDescription?: string;
-  backstory?: string;
-  relationships?: ICharacter[];
-}
+import { type Character } from "@prisma/client";
 
-export class Character {
-  originStatement?: string;
-  underConstruction?: boolean;
-  name?: string;
-  age?: number;
-  species?: string;
-  physicalDescription?: string;
-  backstory?: string;
-  relationships?: ICharacter[];
+export class CharacterClass {
+  originStatement: string;
+  name: string | null;
+  age: number | null;
+  species: string | null;
+  physicalDescription: string | null;
+  backstory: string | null;
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
 
-  constructor(npc: ICharacter) {
+  constructor(npc: Character) {
     this.originStatement = npc.originStatement;
-    this.underConstruction = true;
+    this.name = npc.name;
+    this.age = npc.age;
+    this.species = npc.species;
+    this.physicalDescription = npc.physicalDescription;
+    this.backstory = npc.backstory;
+    this.id = npc.id;
+    this.createdAt = npc.createdAt;
+    this.updatedAt = npc.updatedAt;
   }
 
   async generateBaseInfo() {
@@ -94,7 +94,13 @@ export class Character {
       Physical description of {{Character}}: 
     `;
 
-    this.physicalDescription = await getOpenAIResponse(prompt);
+    const physicalDescription = await getOpenAIResponse(prompt);
+
+    if (!physicalDescription) {
+      throw new Error("Failed to generate physical description");
+    }
+
+    this.physicalDescription = physicalDescription;
   }
 
   async generateBackstory() {
@@ -123,13 +129,18 @@ export class Character {
       Character's backstory: 
     `;
 
-    this.backstory = await getOpenAIResponse(prompt);
+    const backstory = await getOpenAIResponse(prompt);
+
+    if (!backstory) {
+      throw new Error("Failed to generate physical description");
+    }
+
+    this.backstory = backstory;
   }
 
   async generateAll() {
     await this.generateBaseInfo();
     await this.generatePhysicalDescription();
     await this.generateBackstory();
-    this.underConstruction = false;
   }
 }

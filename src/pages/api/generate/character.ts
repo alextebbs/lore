@@ -1,5 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
-import { Character } from "~/utils/Character";
+import { CharacterClass } from "~/utils/Character";
+
+import { prisma } from "~/server/db";
 
 export default async function handler(
   req: NextApiRequest,
@@ -7,9 +9,27 @@ export default async function handler(
 ) {
   const { prompt } = req.query;
 
-  const character = new Character({ originStatement: prompt as string });
+  // First create the character in the database
+  // This will give us an ID to use for the character
+  const character = await prisma.character.create({
+    data: {
+      originStatement: prompt as string,
+    },
+  });
 
-  await character.generateAll();
+  // Then create a CharacterClass instance
+  const characterClass = new CharacterClass(character);
 
-  res.status(200).json(character);
+  // Then generate the base info
+  await characterClass.generateAll();
+
+  // Then update the character in the database
+  await prisma.character.update({
+    where: {
+      id: characterClass.id,
+    },
+    data: characterClass,
+  });
+
+  res.status(200).json(characterClass);
 }
