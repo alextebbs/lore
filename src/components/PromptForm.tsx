@@ -21,6 +21,9 @@ export const PromptForm: React.FC<PromptFormProps> = (props) => {
 
   useEffect(() => {
     setExamples(arrayShuffle(examples).slice(2));
+    // Eslint wants me to add `examples` to the dependency array, but that
+    // makes this not work.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleExampleClick = (example: string) => {
