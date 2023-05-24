@@ -56,7 +56,7 @@ const Home: NextPage = () => {
 
           {loadingState == "loading" && <div>Loading...</div>}
 
-          {loadingState == "done" && <CharacterSheet character={character} />}
+          {character && <CharacterSheet character={character} />}
         </div>
       </main>
     </>

@@ -1,4 +1,4 @@
-import { FormEventHandler } from "react";
+import { type FormEventHandler } from "react";
 import { useRef, useState, useEffect } from "react";
 import arrayShuffle from "array-shuffle";
 
@@ -77,9 +77,9 @@ export const PromptForm: React.FC<PromptFormProps> = (props) => {
           <li
             key={example}
             className="mb-2 cursor-pointer hover:text-neutral-600"
-            onClick={(e) => handleExampleClick(example)}
+            onClick={() => handleExampleClick(example)}
           >
-            "<span>The character is {example}.</span>"
+            &ldquo;<span>The character is {example}.</span>&rdquo;
           </li>
         ))}
       </ul>
