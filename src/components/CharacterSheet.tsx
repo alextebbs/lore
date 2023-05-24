@@ -1,8 +1,8 @@
-import { type ICharacter } from "~/utils/Character";
+import { type Character } from "@prisma/client";
 import { md2jsx } from "~/utils/md2jsx";
 
 interface SheetMetaItemProps {
-  value: string | number | undefined;
+  value: string | number | null;
   label?: string;
   valueClassString?: string;
 }
@@ -23,7 +23,7 @@ const SheetMetaItem: React.FC<SheetMetaItemProps> = (props) => {
 };
 
 interface CharacterSheetProps {
-  character: ICharacter;
+  character: Character;
 }
 
 export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
