@@ -1,10 +1,11 @@
-import { type NextPage } from "next";
+import type { NextPage } from "next";
 import Head from "next/head";
 
 import { useState } from "react";
-import { type Character } from "@prisma/client";
+import type { Character } from "@prisma/client";
 import { CharacterSheet } from "~/components/CharacterSheet";
 import { PromptForm } from "~/components/PromptForm";
+import router from "next/router";
 
 const Home: NextPage = () => {
   const [loadingState, setLoadingState] = useState("idle");
@@ -19,7 +20,7 @@ const Home: NextPage = () => {
       prompt: { value: string };
     };
 
-    if (elements.prompt.value != "") {
+    if (elements.prompt.value) {
       const params = { prompt: elements.prompt.value };
       url += "?" + new URLSearchParams(params).toString();
     }
@@ -29,12 +30,15 @@ const Home: NextPage = () => {
     // QUESTION:
     // This throws some ESLint error @typescript-eslint/no-misused-promises and
     // checksVoidReturn ... I disabled the ESLint rule for now.
+
     const response = await fetch(url);
     const data = (await response.json()) as Character;
 
-    setLoadingState("done");
+    router.push("/character/" + data.id);
 
-    setCharacter(data);
+    // setLoadingState("done");
+
+    // setCharacter(data);
   };
 
   return (

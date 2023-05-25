@@ -3,30 +3,10 @@ import { outdent } from "outdent";
 
 import { type Character } from "@prisma/client";
 
-export class CharacterClass {
-  originStatement: string;
-  name: string | null;
-  age: number | null;
-  species: string | null;
-  physicalDescription: string | null;
-  backstory: string | null;
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
+export class CharacterGenerator {
+  async generateBaseInfo(character: Character) {
+    console.log("Begin generating base info for character");
 
-  constructor(npc: Character) {
-    this.originStatement = npc.originStatement;
-    this.name = npc.name;
-    this.age = npc.age;
-    this.species = npc.species;
-    this.physicalDescription = npc.physicalDescription;
-    this.backstory = npc.backstory;
-    this.id = npc.id;
-    this.createdAt = npc.createdAt;
-    this.updatedAt = npc.updatedAt;
-  }
-
-  async generateBaseInfo() {
     const prompt = outdent`
       You are going to help create a character for use in a fantasy roleplaying
       campaign setting. You should seek to create characters that are creative,
@@ -40,9 +20,9 @@ export class CharacterClass {
       Third, give the character an age.
 
       ${
-        this.originStatement
+        character.originStatement
           ? `Use the following information when creating your response.
-             {{Character}} is ${this.originStatement}.`
+             {{Character}} is ${character.originStatement}.`
           : ``
       }
 
@@ -60,12 +40,18 @@ export class CharacterClass {
       throw new Error("Failed to parse base info response from OpenAI");
     }
 
-    this.name = name;
-    this.age = parseInt(age);
-    this.species = species;
+    character.name = name;
+    character.age = parseInt(age);
+    character.species = species;
+
+    console.log("Generated base info for character");
+
+    return character;
   }
 
-  async generatePhysicalDescription() {
+  async generatePhysicalDescription(character: Character) {
+    console.log("Begin generating physical description for character");
+
     const prompt = outdent`
       You are going to help create a character for use in a fantasy roleplaying
       campaign setting. You should seek to create characters that are creative,
@@ -73,7 +59,7 @@ export class CharacterClass {
 
       Write a single paragraph description of the character's physical
       appearance, noting something that is unique, distinct, and memorable about
-      their physical form. This description should be 1-2 sentences long.
+      their physical form. character description should be 1-2 sentences long.
 
       Follow the following style notes:
         - Your description should be evocative, but not overly poetic.
@@ -82,14 +68,14 @@ export class CharacterClass {
         - Do not include newline characters in your response.
 
       ${
-        this.originStatement
+        character.originStatement
           ? `Use the following information when creating your response.
-             {{Character}} is ${this.originStatement}.`
+             {{Character}} is ${character.originStatement}.`
           : ``
       }
 
-      The character is a ${this.species} named ${this.name} who is 
-      ${this.age} years old.
+      The character is a ${character.species} named ${character.name} who is 
+      ${character.age} years old.
 
       Physical description of {{Character}}: 
     `;
@@ -100,10 +86,16 @@ export class CharacterClass {
       throw new Error("Failed to generate physical description");
     }
 
-    this.physicalDescription = physicalDescription;
+    character.physicalDescription = physicalDescription;
+
+    console.log("Generated physical description for character");
+
+    return character;
   }
 
-  async generateBackstory() {
+  async generateBackstory(character: Character) {
+    console.log("Begin generating backstory for character");
+
     const prompt = outdent`
       You are going to write a character backstory for use in a fantasy
       roleplaying campaign setting. You should seek to write backstories
@@ -116,15 +108,15 @@ export class CharacterClass {
         - Your backstory should be evocative, but not overly poetic.
 
       ${
-        this.originStatement
-          ? `Use the following information when creating your response. {{Character}} is ${this.originStatement}.`
+        character.originStatement
+          ? `Use the following information when creating your response. {{Character}} is ${character.originStatement}.`
           : ``
       }
 
-      The character is a ${this.species} named ${this.name} who is 
-      ${this.age} years old.
+      The character is a ${character.species} named ${character.name} who is 
+      ${character.age} years old.
 
-      Physical description of {{Character}}: ${this.physicalDescription}
+      Physical description of {{Character}}: ${character.physicalDescription}
 
       Character's backstory: 
     `;
@@ -135,12 +127,23 @@ export class CharacterClass {
       throw new Error("Failed to generate physical description");
     }
 
-    this.backstory = backstory;
+    character.backstory = backstory;
+
+    console.log("Generated backstory for character");
+
+    return character;
   }
 
-  async generateAll() {
-    await this.generateBaseInfo();
-    await this.generatePhysicalDescription();
-    await this.generateBackstory();
+  async complete(character: Character) {
+    character.finishedGeneration = true;
+    return character;
+  }
+
+  async generateAll(character: Character) {
+    character = await this.generateBaseInfo(character);
+    character = await this.generatePhysicalDescription(character);
+    character = await this.generateBackstory(character);
+
+    return character;
   }
 }
