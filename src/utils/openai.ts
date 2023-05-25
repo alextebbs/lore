@@ -5,6 +5,14 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+/**
+ * Helper function to call the OpenAI API.
+ *
+ * @param prompt The prompt to send to the API.
+ * @param temperature The temperature to send to the API.
+ * @param max_tokens The max_tokens to send to the API.
+ * @param model The model to send to the API.
+ */
 export async function getOpenAIResponse(
   prompt: string,
   temperature = 1,

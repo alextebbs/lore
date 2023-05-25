@@ -102,7 +102,7 @@ export class CharacterGenerator {
       characters that are creative, distinct, and dynamic. 
 
       Write a backstory describing the character's history. The backstory should
-      be at least three paragraphs in length.
+      be a single paragraph in length.
 
       Follow the following style notes:
         - Your backstory should be evocative, but not overly poetic.
