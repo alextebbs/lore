@@ -23,12 +23,12 @@ export default async function handler(
   // character = await generator.generateAll(character);
 
   // Then update the character in the database
-  await prisma.character.update({
-    where: {
-      id: character.id,
-    },
-    data: character,
-  });
+  // await prisma.character.update({
+  //   where: {
+  //     id: character.id,
+  //   },
+  //   data: character,
+  // });
 
   res.status(200).json(character);
 }

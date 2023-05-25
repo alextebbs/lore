@@ -1,7 +1,7 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "~/server/db";
 import { type Character } from "@prisma/client";
-import { CharacterGenerator } from "~/utils/CharacterGenerator";
+import { CharacterGenerator } from "~/server/CharacterGenerator";
 
 export default async function handler(
   req: NextApiRequest,
