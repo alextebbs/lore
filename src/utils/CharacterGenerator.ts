@@ -134,7 +134,7 @@ export class CharacterGenerator {
     return character;
   }
 
-  async complete(character: Character) {
+  complete(character: Character) {
     character.finishedGeneration = true;
     return character;
   }

@@ -1,7 +1,7 @@
 import { prisma } from "~/server/db";
 import { CharacterSheet } from "~/components/CharacterSheet";
 import { type Character } from "@prisma/client";
-import { GetServerSideProps, NextPage } from "next";
+import { type GetServerSideProps } from "next";
 
 interface PageProps {
   character: Character | null;
@@ -28,8 +28,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
       where: { id: id as string },
     });
 
-    return { props: { character: JSON.parse(JSON.stringify(character)) } };
-  } catch (error) {
+    return {
+      props: { character: JSON.parse(JSON.stringify(character)) as Character },
+    };
+  } catch (error: unknown) {
     console.error(error);
     return { props: { character: null } };
   }

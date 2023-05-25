@@ -10,7 +10,7 @@ export default async function handler(
 
   // First create the character in the database
   // This will give us an ID to use for the character
-  let character = await prisma.character.create({
+  const character = await prisma.character.create({
     data: {
       originStatement: prompt as string,
     },

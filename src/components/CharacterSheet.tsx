@@ -49,19 +49,24 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
       }
 
       if (!field) {
+        console.log("No missing fields, generation complete.");
         return;
       }
 
-      let url = `/api/generate/character/${field}`;
-      url += "?" + new URLSearchParams({ id: characterState.id }).toString();
+      const url = `/api/generate/character/${field}?id=${characterState.id}`;
 
-      const response = await fetch(url);
-      const data = (await response.json()) as Character;
-
-      setCharacterState(data);
+      try {
+        const response = await fetch(url);
+        const data = (await response.json()) as Character;
+        setCharacterState(data);
+      } catch (err) {
+        console.error(err);
+      }
     };
 
-    generateMissingFields();
+    generateMissingFields().catch((err) => {
+      console.error(err);
+    });
   }, [characterState]);
 
   return (

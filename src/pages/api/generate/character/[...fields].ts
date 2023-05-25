@@ -1,13 +1,13 @@
 import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "~/server/db";
-import { Character } from "@prisma/client";
+import { type Character } from "@prisma/client";
 import { CharacterGenerator } from "~/utils/CharacterGenerator";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { prompt, id, fields } = req.query;
+  const { _prompt, id, fields } = req.query;
 
   try {
     // queries the DB for a character with a certain ID
@@ -52,7 +52,9 @@ export default async function handler(
 
     // returns the character to the client
     res.status(200).json(character);
-  } catch (err: any) {
-    res.status(500).json({ error: err.message });
+  } catch (err: unknown) {
+    if (err instanceof Error) {
+      res.status(500).json({ error: err.message });
+    }
   }
 }

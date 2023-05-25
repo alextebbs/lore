@@ -1,16 +1,11 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 
-import { useState } from "react";
 import type { Character } from "@prisma/client";
-import { CharacterSheet } from "~/components/CharacterSheet";
 import { PromptForm } from "~/components/PromptForm";
 import router from "next/router";
 
 const Home: NextPage = () => {
-  const [loadingState, setLoadingState] = useState("idle");
-  const [character, setCharacter] = useState<Character | null>();
-
   const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
@@ -25,20 +20,13 @@ const Home: NextPage = () => {
       url += "?" + new URLSearchParams(params).toString();
     }
 
-    setLoadingState("loading");
-
-    // QUESTION:
-    // This throws some ESLint error @typescript-eslint/no-misused-promises and
-    // checksVoidReturn ... I disabled the ESLint rule for now.
-
-    const response = await fetch(url);
-    const data = (await response.json()) as Character;
-
-    router.push("/character/" + data.id);
-
-    // setLoadingState("done");
-
-    // setCharacter(data);
+    try {
+      const response = await fetch(url);
+      const data = (await response.json()) as Character;
+      await router.push(`/character/${data.id}`);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -53,13 +41,7 @@ const Home: NextPage = () => {
           Mythweaver
         </div>
         <div className="flex flex-grow flex-col items-center justify-center">
-          {loadingState == "idle" && (
-            <PromptForm handleFormSubmit={handleFormSubmit} />
-          )}
-
-          {loadingState == "loading" && <div>Loading...</div>}
-
-          {character && <CharacterSheet character={character} />}
+          <PromptForm handleFormSubmit={handleFormSubmit} />
         </div>
       </main>
     </>
