@@ -9,15 +9,15 @@ const Home: NextPage = () => {
   const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    let url = "/api/generate/character";
     const form = e.target as HTMLFormElement;
     const elements = form.elements as typeof form.elements & {
       prompt: { value: string };
     };
 
+    let url = "/api/generate/character";
+
     if (elements.prompt.value) {
-      const params = { prompt: elements.prompt.value };
-      url += "?" + new URLSearchParams(params).toString();
+      url += `?prompt=${elements.prompt.value}`;
     }
 
     try {

@@ -2,6 +2,10 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 
 import { prisma } from "~/server/db";
 
+// const generateFields = async (field:string, character:Character) => {
+
+// }
+
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
@@ -15,20 +19,6 @@ export default async function handler(
       originStatement: prompt as string,
     },
   });
-
-  // Then create a CharacterClass instance
-  // const generator = new CharacterGenerator();
-
-  // Then generate the base info
-  // character = await generator.generateAll(character);
-
-  // Then update the character in the database
-  // await prisma.character.update({
-  //   where: {
-  //     id: character.id,
-  //   },
-  //   data: character,
-  // });
 
   res.status(200).json(character);
 }
