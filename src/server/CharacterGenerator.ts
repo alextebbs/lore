@@ -22,7 +22,7 @@ export class CharacterGenerator {
       ${
         character.originStatement
           ? `Use the following information when creating your response.
-             {{Character}} is ${character.originStatement}.`
+             The character is ${character.originStatement}.`
           : ``
       }
 
@@ -70,14 +70,14 @@ export class CharacterGenerator {
       ${
         character.originStatement
           ? `Use the following information when creating your response.
-             {{Character}} is ${character.originStatement}.`
+             The character is ${character.originStatement}.`
           : ``
       }
 
       The character is a ${character.species} named ${character.name} who is 
       ${character.age} years old.
 
-      Physical description of {{Character}}: 
+      Physical description of ${character.name}:
     `;
 
     const physicalDescription = await getOpenAIResponse(prompt);
@@ -109,14 +109,14 @@ export class CharacterGenerator {
 
       ${
         character.originStatement
-          ? `Use the following information when creating your response. {{Character}} is ${character.originStatement}.`
+          ? `Use the following information when creating your response. The character is ${character.originStatement}.`
           : ``
       }
 
       The character is a ${character.species} named ${character.name} who is 
       ${character.age} years old.
 
-      Physical description of {{Character}}: ${character.physicalDescription}
+      Physical description of the character: ${character.physicalDescription}
 
       Character's backstory: 
     `;
@@ -139,10 +139,32 @@ export class CharacterGenerator {
     return character;
   }
 
+  // QUESTION
+  // I guess I need this to map the field string (which comes from the URL) to
+  // the correct method. Is there a better way to do this?
+  async generate(character: Character, field: string) {
+    switch (field) {
+      case "baseInfo":
+        character = await this.generateBaseInfo(character);
+        break;
+
+      case "physicalDescription":
+        character = await this.generatePhysicalDescription(character);
+        break;
+
+      case "backstory":
+        character = await this.generateBackstory(character);
+        break;
+    }
+
+    return character;
+  }
+
   async generateAll(character: Character) {
     character = await this.generateBaseInfo(character);
     character = await this.generatePhysicalDescription(character);
     character = await this.generateBackstory(character);
+    character = this.complete(character);
 
     return character;
   }

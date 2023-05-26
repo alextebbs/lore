@@ -68,14 +68,25 @@
       format("svg"); /* Legacy iOS */
 }
 
+@font-face {
+  font-family: "Viking";
+  src: url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.eot");
+  src: url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.woff2") format("woff2"),
+    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.woff") format("woff"),
+    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.ttf") format("truetype"),
+    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.svg#VIKING,-ELDER-Runes-Bold")
+      format("svg");
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   @apply bg-black font-mono text-white;
 }
 
 .rich-text-wrapper p {
   @apply mb-8;
-}
-
-.rich-text-wrapper {
-  @apply first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-7xl first-letter:font-bold first-letter:text-red-700 first-line:uppercase;
 }

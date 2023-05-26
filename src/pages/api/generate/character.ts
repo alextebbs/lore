@@ -1,10 +1,7 @@
+import { type Character } from "@prisma/client";
 import { type NextApiRequest, type NextApiResponse } from "next";
 
 import { prisma } from "~/server/db";
-
-// const generateFields = async (field:string, character:Character) => {
-
-// }
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,4 +18,22 @@ export default async function handler(
   });
 
   res.status(200).json(character);
+
+  const generateField = async (field: string, character: Character) => {
+    const url = `http://${req.headers.host}/api/generate/character/${field}?id=${character.id}`;
+
+    try {
+      await fetch(url);
+    } catch (err: unknown) {
+      console.error(err);
+    }
+  };
+
+  try {
+    await generateField("baseInfo", character);
+    await generateField("physicalDescription", character);
+    await generateField("backstory", character);
+  } catch (err: unknown) {
+    console.error(err);
+  }
 }

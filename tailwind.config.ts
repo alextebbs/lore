@@ -8,6 +8,7 @@ export default {
         body: ['"Roboto Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
         display: ['"Sabbath Black"', "serif"],
         heading: ['"pragmatapro-fraktur"', "serif"],
+        placeholder: ['"Viking"', "serif"],
       },
     },
   },

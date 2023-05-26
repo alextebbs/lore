@@ -27,12 +27,7 @@ export async function getOpenAIResponse(
       max_tokens,
     });
 
-    // QUESTION: This is stupid. What am I supposed to be doing here?
-    if (
-      response.data &&
-      response.data.choices[0] &&
-      response.data.choices[0].text
-    ) {
+    if (response?.data?.choices[0]?.text) {
       return response.data.choices[0].text.trim();
     } else {
       console.log("Unexpected response format");

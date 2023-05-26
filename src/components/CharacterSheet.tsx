@@ -1,24 +1,28 @@
 import { type Character } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { md2jsx } from "~/utils/md2jsx";
+import { pusherClient as pusher } from "~/utils/pusher";
+import { placeholder } from "~/utils/globals";
+import { TypeOutTransition } from "./TypeOutTransition";
 
 interface SheetMetaItemProps {
   value: string | number | null;
   label?: string;
   valueClassString?: string;
+  placeholder: string;
 }
 
 const SheetMetaItem: React.FC<SheetMetaItemProps> = (props) => {
-  const { value, label, valueClassString = "text-3xl" } = props;
+  const { value, placeholder, label, valueClassString = "text-3xl" } = props;
 
   return (
     <div className="mr-8 flex flex-col justify-end py-4">
-      <h2 className={`${valueClassString} font-display`}>{value}</h2>
-      {label && (
-        <div className="text-[0.6rem] uppercase tracking-[0.25em] text-red-600">
-          {label}
-        </div>
-      )}
+      <h2 className={`${valueClassString} font-heading`}>
+        <TypeOutTransition value={value} placeholder={placeholder} />
+      </h2>
+      <div className="text-[0.6rem] uppercase tracking-[0.25em] text-red-600">
+        {label}
+      </div>
     </div>
   );
 };
@@ -33,79 +37,58 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const [characterState, setCharacterState] = useState<Character>(character);
 
   useEffect(() => {
-    const generateMissingFields = async () => {
-      let field;
-
-      if (
-        !characterState.name ||
-        !characterState.age ||
-        !characterState.species
-      ) {
-        field = "baseInfo";
-      } else if (!characterState.physicalDescription) {
-        field = "physicalDescription";
-      } else if (!characterState.backstory) {
-        field = "backstory";
-      }
-
-      if (!field) {
-        console.log("No missing fields, generation complete.");
-        return;
-      }
-
-      const url = `/api/generate/character/${field}?id=${characterState.id}`;
-
-      try {
-        const response = await fetch(url);
-        const data = (await response.json()) as Character;
-        setCharacterState(data);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    generateMissingFields().catch((err) => {
-      console.error(err);
+    const channel = pusher.subscribe("my-channel");
+    channel.bind("my-event", function (data: { character: Character }) {
+      setCharacterState(data.character);
     });
-  }, [characterState]);
+  }, []);
 
   return (
     <div className="mt-8 flex justify-center">
-      <div className="max-w-4xl">
+      <div className="max-w-4xl flex-grow">
         <div className="flex border-y">
           <SheetMetaItem
             valueClassString="text-7xl tracking-[-0.05em]"
+            placeholder={placeholder.name}
             value={characterState.name}
           />
-          <SheetMetaItem value={characterState.age} label="Age" />
-          <SheetMetaItem value={characterState.species} label="Species" />
-          <SheetMetaItem value="5'2" label="Height" />
-          <SheetMetaItem value="120 lbs" label="Weight" />
+          <SheetMetaItem
+            placeholder={placeholder.age}
+            value={characterState.age}
+            label="Age"
+          />
+          <SheetMetaItem
+            placeholder={placeholder.age}
+            value={characterState.species}
+            label="Species"
+          />
         </div>
 
-        <div className="flex">
-          <div className="pt-12">
-            {characterState.physicalDescription && (
-              <div>
-                <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
-                  Physical Description
-                </div>
-                <div className="rich-text-wrapper first-letter:float-left first-letter:mr-3 first-letter:font-display first-letter:text-7xl first-letter:font-bold first-letter:text-red-700 first-line:uppercase">
-                  {md2jsx(characterState.physicalDescription)}
-                </div>
+        <div className="flex flex-grow">
+          <div className="flex-grow pt-12">
+            <div className="mb-8">
+              <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
+                Physical Description
               </div>
-            )}
+              <div className="rich-text-wrapper first-letter:float-left first-letter:mr-3 first-letter:font-heading first-letter:text-7xl first-letter:font-bold first-letter:text-red-700 first-line:uppercase">
+                <TypeOutTransition
+                  value={characterState.physicalDescription}
+                  placeholder={placeholder.physicalDescription}
+                />
+              </div>
+            </div>
 
-            {characterState.backstory && (
-              <div className="mb-10">
-                <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
-                  Backstory
-                </div>
-                <div className="rich-text-wrapper">
-                  {md2jsx(characterState.backstory)}
-                </div>
+            <div className="mb-10">
+              <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
+                Backstory
               </div>
-            )}
+              <div className="rich-text-wrapper">
+                <TypeOutTransition
+                  value={characterState.backstory}
+                  placeholder={placeholder.backstory}
+                />
+              </div>
+            </div>
           </div>
           <div className="ml-12 border-l pl-8 pt-8">
             <div className="mb-10">
@@ -113,7 +96,9 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
                 Goals
               </div>
               <div className="">
-                <p>Lipsum Dolor Sit Amet.</p>
+                <p className="font-placeholder uppercase">
+                  LIPSUM DOLOR SIT AMET
+                </p>
               </div>
             </div>
 
@@ -122,7 +107,9 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
                 Relationships
               </div>
               <div className="">
-                <p>Lipsum Dolor Sit Amet.</p>
+                <p className="font-placeholder uppercase">
+                  LIPSUM DOLOR SIT AMET
+                </p>
               </div>
             </div>
           </div>

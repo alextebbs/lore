@@ -2,6 +2,7 @@ import { type NextApiRequest, type NextApiResponse } from "next";
 import { prisma } from "~/server/db";
 import { type Character } from "@prisma/client";
 import { CharacterGenerator } from "~/server/CharacterGenerator";
+import { pusherServer as pusher } from "~/utils/pusher";
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,19 +25,7 @@ export default async function handler(
       const generator = new CharacterGenerator();
 
       for (const field of fields as string[]) {
-        switch (field) {
-          case "baseInfo":
-            character = await generator.generateBaseInfo(character);
-            break;
-
-          case "physicalDescription":
-            character = await generator.generatePhysicalDescription(character);
-            break;
-
-          case "backstory":
-            character = await generator.generateBackstory(character);
-            break;
-        }
+        character = await generator.generate(character, field);
       }
     } else {
       throw new Error("Regeneration not yet implemented.");
@@ -49,6 +38,8 @@ export default async function handler(
       },
       data: character,
     });
+
+    pusher.trigger("my-channel", "my-event", { character });
 
     // returns the character to the client
     res.status(200).json(character);
