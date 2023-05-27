@@ -1,41 +1,39 @@
 import { useEffect, useState } from "react";
 
 interface TypeOutTransitionProps {
-  value: string | number | null;
+  value: string | null;
   placeholder: string;
+  delay?: number;
 }
 
-export const TypeOutTransition: React.FC<TypeOutTransitionProps> = (props) => {
-  const [placeholderString, setPlaceholderString] = useState<string>(
-    props.placeholder
-  );
+export const TypeOutTransition: React.FC<TypeOutTransitionProps> = ({
+  placeholder,
+  value,
+  delay = 3,
+}) => {
+  const [placeholderString, setPlaceholderString] =
+    useState<string>(placeholder);
 
   const [valueString, setValueString] = useState<string>("");
 
   // Animate value
   useEffect(() => {
-    if (!props.value) return;
-
     const timeout = setTimeout(() => {
-      let { value } = props;
-
-      if (typeof value === "number") {
-        value = value.toString();
-      }
+      if (!value) return;
 
       if (value !== null) {
         setValueString(value.slice(0, valueString.length + 1));
       }
-    }, 10);
+    }, delay);
     return () => clearTimeout(timeout);
-  }, [props, valueString.length]);
+  }, [value, valueString.length, delay]);
 
   // Animate placeholder
   useEffect(() => {
-    if (!props.value) return;
-
     const timeout = setTimeout(() => {
-      const { placeholder } = props;
+      if (!value) return;
+
+      const placeholder = value;
 
       // I'm not totally sure I understand this. I think I need to generate two
       // consecutive states where the placeholder string doesnt change, so the useEffect
@@ -45,17 +43,19 @@ export const TypeOutTransition: React.FC<TypeOutTransitionProps> = (props) => {
       } else {
         setPlaceholderString(placeholder.slice(-placeholderString.length + 1));
       }
-    }, 10);
+    }, delay);
 
     return () => clearTimeout(timeout);
-  }, [props, placeholderString.length]);
+  }, [placeholder, placeholderString.length, delay, value]);
 
   return (
     <div>
       <span>{valueString}</span>
-      <span className="font-placeholder text-xl uppercase">
-        {placeholderString}
-      </span>
+      {placeholderString.length > 0 && (
+        <span className="font-placeholder text-[1.1em] uppercase">
+          {placeholderString}
+        </span>
+      )}
     </div>
   );
 };

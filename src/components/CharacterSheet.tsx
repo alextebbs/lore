@@ -1,6 +1,5 @@
 import { type Character } from "@prisma/client";
 import { useEffect, useState } from "react";
-import { md2jsx } from "~/utils/md2jsx";
 import { pusherClient as pusher } from "~/utils/pusher";
 import { placeholder } from "~/utils/globals";
 import { TypeOutTransition } from "./TypeOutTransition";
@@ -13,12 +12,16 @@ interface SheetMetaItemProps {
 }
 
 const SheetMetaItem: React.FC<SheetMetaItemProps> = (props) => {
-  const { value, placeholder, label, valueClassString = "text-3xl" } = props;
+  const { value, placeholder, label, valueClassString = "text-xl" } = props;
 
   return (
     <div className="mr-8 flex flex-col justify-end py-4">
       <h2 className={`${valueClassString} font-heading`}>
-        <TypeOutTransition value={value} placeholder={placeholder} />
+        <TypeOutTransition
+          delay={100}
+          value={typeof value === "number" ? value.toString() : value}
+          placeholder={placeholder}
+        />
       </h2>
       <div className="text-[0.6rem] uppercase tracking-[0.25em] text-red-600">
         {label}
@@ -41,16 +44,21 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     channel.bind(character.id, function (data: { character: Character }) {
       setCharacterState(data.character);
     });
-  }, []);
+  }, [character.id]);
 
   return (
     <div className="mt-8 flex justify-center">
       <div className="max-w-4xl flex-grow">
         <div className="flex border-y">
           <SheetMetaItem
-            valueClassString="text-7xl tracking-[-0.05em]"
+            valueClassString="text-5xl tracking-[-0.05em]"
             placeholder={placeholder.name}
             value={characterState.name}
+          />
+          <SheetMetaItem
+            placeholder={placeholder.age}
+            value={characterState.species}
+            label="Species"
           />
           <SheetMetaItem
             placeholder={placeholder.age}
@@ -58,9 +66,24 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             label="Age"
           />
           <SheetMetaItem
-            placeholder={placeholder.age}
-            value={characterState.species}
-            label="Species"
+            placeholder={placeholder.height}
+            value={characterState.height}
+            label="height"
+          />
+          <SheetMetaItem
+            placeholder={placeholder.height}
+            value={characterState.weight}
+            label="weight"
+          />
+          <SheetMetaItem
+            placeholder={placeholder.eyeColor}
+            value={characterState.eyeColor}
+            label="Eye Color"
+          />
+          <SheetMetaItem
+            placeholder={placeholder.hairColor}
+            value={characterState.hairColor}
+            label="Hair Color"
           />
         </div>
 
@@ -96,9 +119,17 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
                 Goals
               </div>
               <div className="">
-                <p className="font-placeholder uppercase">
-                  LIPSUM DOLOR SIT AMET
-                </p>
+                {placeholder.goals.map((goal, idx) => (
+                  <TypeOutTransition
+                    key={idx}
+                    value={
+                      characterState.goals
+                        ? characterState.goals[idx] || null
+                        : null
+                    }
+                    placeholder={goal}
+                  />
+                ))}
               </div>
             </div>
 

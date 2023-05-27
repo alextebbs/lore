@@ -41,7 +41,7 @@ export class CharacterGenerator {
     }
 
     character.name = name;
-    character.age = parseInt(age);
+    character.age = age;
     character.species = species;
 
     console.log("Generated base info for character");
@@ -93,6 +93,51 @@ export class CharacterGenerator {
     return character;
   }
 
+  async generatePhysicalSpecs(character: Character) {
+    console.log("Begin generating physical info for character");
+
+    const prompt = outdent`
+      Given the following description of a character's physical appearance, 
+      determine the character's height, weight, eye color, and hair color.
+
+      The character is a ${character.species} named ${character.name} who is 
+      ${character.age} years old.
+
+      The character is ${character.originStatement}.
+
+      Physical description of the character: ${character.physicalDescription}
+
+      Follow the following style notes:
+        - Generate height in feet and inches, and output like so: 5'10"
+        - Generate weight in pounds, and output like so: 150lbs
+        - Generate eye color as a single word, and output like so: Blue
+        - Generate hair color as a single word, and output like so: Brown
+
+      Output your response in the following format: 
+      [Height], [Weight], [Eye Color], [Hair Color]
+    `;
+    const physicalSpecs = await getOpenAIResponse(prompt);
+
+    if (!physicalSpecs) {
+      throw new Error("Failed to generate base info");
+    }
+
+    const [height, weight, eyeColor, hairColor] = physicalSpecs.split(", ");
+
+    if (!height || !weight || !eyeColor || !hairColor) {
+      throw new Error("Failed to parse base info response from OpenAI");
+    }
+
+    character.height = height;
+    character.weight = weight;
+    character.eyeColor = eyeColor;
+    character.hairColor = hairColor;
+
+    console.log("Generated physical info for character");
+
+    return character;
+  }
+
   async generateBackstory(character: Character) {
     console.log("Begin generating backstory for character");
 
@@ -134,6 +179,55 @@ export class CharacterGenerator {
     return character;
   }
 
+  async generateGoals(character: Character) {
+    console.log("Begin generating goals for character");
+
+    const prompt = outdent`
+      You are going to write a set of three goals that a character in a fantasy
+      roleplaying campaign setting has. You should seek to describe goals that
+      are creative, distinct, and dynamic, and that will lead to interesting
+      roleplaying opportunities.
+
+      ${
+        character.originStatement
+          ? `Use the following information when creating your response. The character is ${character.originStatement}.`
+          : ``
+      }
+
+      The character is a ${character.species} named ${character.name} who is 
+      ${character.age} years old.
+
+      Physical description of the character: ${character.physicalDescription}
+
+      Character's backstory: ${character.backstory}
+
+      Write a set of three goals for the character. Each goal should be a single
+      sentence in length.
+
+      Output your response as JSON, in the following format:
+      ["{GOAL 1}", "{GOAL 2}", "{GOAL 3}"]
+
+      Examples:
+      Uncover the ancient secrets of Xanthoria and understand its connection to the gods.
+      Unravel the cryptic prophecy foretelling a cataclysmic event that could bring about the end of an ancient civilization.
+      To find a true love that can break the cycle of misfortune that has plagued them for generations.
+
+      Goals for the character:
+    `;
+
+    const goals = await getOpenAIResponse(prompt);
+
+    if (!goals) {
+      throw new Error("Failed to generate goals");
+    }
+
+    character.goals = goals;
+
+    console.log("Generated goals for character");
+
+    return character;
+  }
+
   complete(character: Character) {
     character.finishedGeneration = true;
     return character;
@@ -152,8 +246,16 @@ export class CharacterGenerator {
         character = await this.generatePhysicalDescription(character);
         break;
 
+      case "physicalSpecs":
+        character = await this.generatePhysicalSpecs(character);
+        break;
+
       case "backstory":
         character = await this.generateBackstory(character);
+        break;
+
+      case "goals":
+        character = await this.generateGoals(character);
         break;
     }
 

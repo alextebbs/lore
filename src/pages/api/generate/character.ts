@@ -17,10 +17,14 @@ export default async function handler(
     },
   });
 
+  // Then, return a response
   res.status(200).json(character);
 
+  // Then, generate more fields behind the scenes
   const generateField = async (field: string, character: Character) => {
-    const url = `http://${req.headers.host}/api/generate/character/${field}?id=${character.id}`;
+    const url = `http://${
+      req.headers.host as string
+    }/api/generate/character/${field}?id=${character.id}`;
 
     try {
       await fetch(url);
@@ -32,7 +36,9 @@ export default async function handler(
   try {
     await generateField("baseInfo", character);
     await generateField("physicalDescription", character);
+    await generateField("physicalSpecs", character);
     await generateField("backstory", character);
+    await generateField("goals", character);
   } catch (err: unknown) {
     console.error(err);
   }

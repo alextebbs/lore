@@ -83,6 +83,20 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Elder Futhark";
+  src: url("/fonts/futhark/Elder-Futhark.eot");
+  src: url("/fonts/futhark/Elder-Futhark.eot?#iefix")
+      format("embedded-opentype"),
+    url("/fonts/futhark/Elder-Futhark.woff2") format("woff2"),
+    url("/fonts/futhark/Elder-Futhark.woff") format("woff"),
+    url("/fonts/futhark/Elder-Futhark.ttf") format("truetype"),
+    url("/fonts/futhark/Elder-Futhark.svggg#Elder-Futhark") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   @apply bg-black font-mono text-white;
 }

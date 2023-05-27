@@ -3,6 +3,9 @@ export const placeholder = {
   age: "Age",
   height: "A'B",
   weight: "Weight",
+  eyeColor: "Brown",
+  hairColor: "Brown",
+  goals: ["Goal 1", "Goal 2", "Goal 3"],
 
   physicalDescription: `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`,
 
