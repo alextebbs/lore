@@ -40,10 +40,7 @@ export const TypeOutTransition: React.FC<TypeOutTransitionProps> = (props) => {
       // I'm not totally sure I understand this. I think I need to generate two
       // consecutive states where the placeholder string doesnt change, so the useEffect
       // hook doesn't get triggered and the loop ends.
-      if (
-        -placeholderString.length + 1 === 0 ||
-        placeholderString.length === 0
-      ) {
+      if (placeholderString.length === 1 || placeholderString.length === 0) {
         setPlaceholderString("");
       } else {
         setPlaceholderString(placeholder.slice(-placeholderString.length + 1));

@@ -39,7 +39,7 @@ export default async function handler(
       data: character,
     });
 
-    pusher.trigger("my-channel", "my-event", { character });
+    await pusher.trigger("character", character.id, { character });
 
     // returns the character to the client
     res.status(200).json(character);

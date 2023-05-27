@@ -37,8 +37,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const [characterState, setCharacterState] = useState<Character>(character);
 
   useEffect(() => {
-    const channel = pusher.subscribe("my-channel");
-    channel.bind("my-event", function (data: { character: Character }) {
+    const channel = pusher.subscribe("character");
+    channel.bind(character.id, function (data: { character: Character }) {
       setCharacterState(data.character);
     });
   }, []);
