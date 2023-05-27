@@ -123,8 +123,11 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
                   <TypeOutTransition
                     key={idx}
                     value={
+                      // QUESTION: Not sure how to fix ESLint error here
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
                       characterState.goals
-                        ? characterState.goals[idx] || null
+                        ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                          JSON.parse(characterState.goals)[idx] || null
                         : null
                     }
                     placeholder={goal}

@@ -2,7 +2,7 @@ import { prisma } from "../src/server/db";
 
 async function main() {
   const id = "cl9ebqhxk00003b600tymydho";
-  await prisma.example.upsert({
+  await prisma.character.upsert({
     where: {
       id,
     },

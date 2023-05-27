@@ -18,7 +18,7 @@ Copyright flansburg_design 2012
     ascent="819"
     descent="-205"
     cap-height="800"
-    bbox="0 0 800 800"
+    bbox="0 0 840 800"
     underline-thickness="51"
     underline-position="26"
     unicode-range="U+0020-005A"
@@ -33,6 +33,14 @@ d="M400 113v127h-128v-127h128zM527 262v127h-255v-127h255zM400 410v127h-128v-127h
  />
     <glyph glyph-name="space" unicode=" " horiz-adv-x="336" 
  />
+    <glyph glyph-name="exclam" unicode="!" horiz-adv-x="224" 
+d="M80 0l-72 72l72 72l72 -72l-72 -72v0zM80 192l-48 48v512l48 48l48 -48v-512l-48 -48v0z" />
+    <glyph glyph-name="period" unicode="." horiz-adv-x="224" 
+d="M80 0l-72 72l72 72l72 -72l-72 -72v0z" />
+    <glyph glyph-name="question" unicode="?" horiz-adv-x="544" 
+d="M224 0l-72 72l72 72l72 -72l-72 -72v0zM224 176l-48 48v176l160 160l-96 96l-168 -168l-72 72l240 240l240 -240l-208 -208v-128l-48 -48v0z" />
+    <glyph glyph-name="at" unicode="@" horiz-adv-x="896" 
+d="M448 272v32l-16 -16l16 -16v0zM384 0l-384 384l408 408l432 -432l-312 -312l-240 240l144 144l-24 24l-120 -120v144l120 120l136 -136v-256l152 152l-288 288l-264 -264l384 -384h-144z" />
     <glyph glyph-name="A" unicode="A" horiz-adv-x="368" 
 d="M0 0v800h48l272 -272v-96h-48l-176 176v-80l224 -224v-96h-48l-176 176v-384h-96z" />
     <glyph glyph-name="B" unicode="B" horiz-adv-x="400" 
@@ -59,6 +67,8 @@ d="M320 80l-320 320l320 320h48v-96l-224 -224l224 -224v-96h-48z" />
 d="M0 0v800h48l272 -272v-96h-48l-176 176v-608h-96z" />
     <glyph glyph-name="M" unicode="M" horiz-adv-x="496" 
 d="M96 512l48 48l-48 48v-96v0zM336 512v96l-48 -48l48 -48v0zM0 0v800h48l168 -168l168 168h48v-800h-96v368l-120 120l-120 -120v-368h-96z" />
+    <glyph glyph-name="N" unicode="N" horiz-adv-x="464" 
+d="M160 0v368l-160 160v96h48l112 -112v288h96v-384l160 -160v-96h-48l-112 112v-272h-96z" />
     <glyph glyph-name="O" unicode="O" 
 d="M240 384l96 96l-96 96l-96 -96l96 -96v0zM80 80l-72 72l160 160l-168 168l240 240l240 -240l-168 -168l160 -160l-72 -72l-160 160l-160 -160v0z" />
     <glyph glyph-name="P" unicode="P" horiz-adv-x="448" 

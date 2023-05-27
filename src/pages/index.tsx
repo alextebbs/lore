@@ -37,9 +37,6 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-[100vh] flex-col items-center justify-center">
-        <div className="py-4 text-center font-heading text-2xl uppercase text-stone-700">
-          Mythweaver
-        </div>
         <div className="flex flex-grow flex-col items-center justify-center">
           <PromptForm handleFormSubmit={handleFormSubmit} />
         </div>

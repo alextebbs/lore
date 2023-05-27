@@ -26,73 +26,16 @@
 }
 
 @font-face {
-  font-family: "Sabbath Black";
-  src: local("Sabbath Black Regular"), local("Sabbath-Black-Regular"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Regular.woff2") format("woff2"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Regular.woff") format("woff"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Sabbath Black";
-  src: local("Sabbath Black Heavy"), local("Sabbath-Black-Heavy"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Heavy.woff2") format("woff2"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Heavy.woff") format("woff"),
-    url("/fonts/sabbath-black/SabbathBlackOT-Heavy.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-}
-
-/* caesar-dressing-regular - latin */
-@font-face {
-  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
-  font-family: "Caesar Dressing";
-  font-style: normal;
-  font-weight: 400;
-  src: url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.eot"); /* IE9 Compat Modes */
-  src: url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.eot?#iefix")
-      format("embedded-opentype"),
-    /* IE6-IE8 */
-      url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.woff2")
-      format("woff2"),
-    /* Super Modern Browsers */
-      url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.woff")
-      format("woff"),
-    /* Modern Browsers */
-      url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.ttf")
-      format("truetype"),
-    /* Safari, Android, iOS */
-      url("/fonts/caesar-dressing-v21-latin/caesar-dressing-v21-latin-regular.svg#CaesarDressing")
-      format("svg"); /* Legacy iOS */
-}
-
-@font-face {
   font-family: "Viking";
-  src: url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.eot");
-  src: url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.eot?#iefix")
+  src: url("/fonts/viking/VIKING-ELDER-Runes-Bold.eot");
+  src: url("/fonts/viking/VIKING-ELDER-Runes-Bold.eot?#iefix")
       format("embedded-opentype"),
-    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.woff2") format("woff2"),
-    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.woff") format("woff"),
-    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.ttf") format("truetype"),
-    url("/fonts/viking/subset-VIKING-ELDER-Runes-Bold.svg#VIKING,-ELDER-Runes-Bold")
+    url("/fonts/viking/VIKING-ELDER-Runes-Bold.woff2") format("woff2"),
+    url("/fonts/viking/VIKING-ELDER-Runes-Bold.woff") format("woff"),
+    url("/fonts/viking/VIKING-ELDER-Runes-Bold.ttf") format("truetype"),
+    url("/fonts/viking/VIKING-ELDER-Runes-Bold.svg#VIKING,-ELDER-Runes-Bold")
       format("svg");
   font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "Elder Futhark";
-  src: url("/fonts/futhark/Elder-Futhark.eot");
-  src: url("/fonts/futhark/Elder-Futhark.eot?#iefix")
-      format("embedded-opentype"),
-    url("/fonts/futhark/Elder-Futhark.woff2") format("woff2"),
-    url("/fonts/futhark/Elder-Futhark.woff") format("woff"),
-    url("/fonts/futhark/Elder-Futhark.ttf") format("truetype"),
-    url("/fonts/futhark/Elder-Futhark.svggg#Elder-Futhark") format("svg");
-  font-weight: normal;
   font-style: normal;
   font-display: swap;
 }
