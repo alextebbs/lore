@@ -28,23 +28,35 @@ export class CharacterGenerator {
 
       Output your response in the following format: [Species/Subspecies], [Name], [Age]
     `;
-    const baseInfo = await getOpenAIResponse(prompt);
 
-    if (!baseInfo) {
-      throw new Error("Failed to generate base info");
+    try {
+      const baseInfo = await getOpenAIResponse(prompt);
+
+      if (!baseInfo) {
+        throw new Error("Failed to generate base info");
+      }
+
+      const [species, name, age] = baseInfo.split(", ");
+
+      if (!species || !name || !age) {
+        throw new Error("Failed to parse base info response from OpenAI");
+      }
+
+      character.name = name;
+      character.age = age;
+      character.species = species;
+
+      console.log("Generated base info for character");
+    } catch (e: unknown) {
+      console.log("Error during base info generation");
+
+      if (e instanceof Error) {
+        console.log(e.message);
+        character.name = e.message;
+        character.age = e.message;
+        character.species = e.message;
+      }
     }
-
-    const [species, name, age] = baseInfo.split(", ");
-
-    if (!species || !name || !age) {
-      throw new Error("Failed to parse base info response from OpenAI");
-    }
-
-    character.name = name;
-    character.age = age;
-    character.species = species;
-
-    console.log("Generated base info for character");
 
     return character;
   }
@@ -80,15 +92,24 @@ export class CharacterGenerator {
       Physical description of ${character.name}:
     `;
 
-    const physicalDescription = await getOpenAIResponse(prompt);
+    try {
+      const physicalDescription = await getOpenAIResponse(prompt);
 
-    if (!physicalDescription) {
-      throw new Error("Failed to generate physical description");
+      if (!physicalDescription) {
+        throw new Error("Failed to generate physical description");
+      }
+
+      character.physicalDescription = physicalDescription;
+
+      console.log("Generated physical description for character");
+    } catch (e: unknown) {
+      console.log("Error during physical description generation");
+
+      if (e instanceof Error) {
+        console.log(e.message);
+        character.physicalDescription = e.message;
+      }
     }
-
-    character.physicalDescription = physicalDescription;
-
-    console.log("Generated physical description for character");
 
     return character;
   }
@@ -116,24 +137,37 @@ export class CharacterGenerator {
       Output your response in the following format: 
       [Height], [Weight], [Eye Color], [Hair Color]
     `;
-    const physicalSpecs = await getOpenAIResponse(prompt);
 
-    if (!physicalSpecs) {
-      throw new Error("Failed to generate base info");
+    try {
+      const physicalSpecs = await getOpenAIResponse(prompt);
+
+      if (!physicalSpecs) {
+        throw new Error("Failed to generate physical info");
+      }
+
+      const [height, weight, eyeColor, hairColor] = physicalSpecs.split(", ");
+
+      if (!height || !weight || !eyeColor || !hairColor) {
+        throw new Error("Failed to parse physical info response from OpenAI");
+      }
+
+      character.height = height;
+      character.weight = weight;
+      character.eyeColor = eyeColor;
+      character.hairColor = hairColor;
+
+      console.log("Generated physical info for character");
+    } catch (e: unknown) {
+      console.log("Error during physical info generation");
+
+      if (e instanceof Error) {
+        console.log(e.message);
+        character.height = e.message;
+        character.weight = e.message;
+        character.eyeColor = e.message;
+        character.hairColor = e.message;
+      }
     }
-
-    const [height, weight, eyeColor, hairColor] = physicalSpecs.split(", ");
-
-    if (!height || !weight || !eyeColor || !hairColor) {
-      throw new Error("Failed to parse base info response from OpenAI");
-    }
-
-    character.height = height;
-    character.weight = weight;
-    character.eyeColor = eyeColor;
-    character.hairColor = hairColor;
-
-    console.log("Generated physical info for character");
 
     return character;
   }
@@ -166,15 +200,24 @@ export class CharacterGenerator {
       Character's backstory: 
     `;
 
-    const backstory = await getOpenAIResponse(prompt);
+    try {
+      const backstory = await getOpenAIResponse(prompt);
 
-    if (!backstory) {
-      throw new Error("Failed to generate physical description");
+      if (!backstory) {
+        throw new Error("Failed to generate backstory");
+      }
+
+      character.backstory = backstory;
+
+      console.log("Generated backstory for character");
+    } catch (e: unknown) {
+      console.log("Error during backstory generation");
+
+      if (e instanceof Error) {
+        console.log(e.message);
+        character.backstory = e.message;
+      }
     }
-
-    character.backstory = backstory;
-
-    console.log("Generated backstory for character");
 
     return character;
   }
@@ -215,15 +258,24 @@ export class CharacterGenerator {
       Goals for the character:
     `;
 
-    const goals = await getOpenAIResponse(prompt);
+    try {
+      const goals = await getOpenAIResponse(prompt);
 
-    if (!goals) {
-      throw new Error("Failed to generate goals");
+      if (!goals) {
+        throw new Error("Failed to generate goals");
+      }
+
+      character.goals = goals;
+
+      console.log("Generated goals for character");
+    } catch (e: unknown) {
+      console.log("Error during goals generation");
+
+      if (e instanceof Error) {
+        console.log(e.message);
+        character.goals = e.message;
+      }
     }
-
-    character.goals = goals;
-
-    console.log("Generated goals for character");
 
     return character;
   }

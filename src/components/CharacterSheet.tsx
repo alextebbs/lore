@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { pusherClient as pusher } from "~/utils/pusher";
 import { placeholder } from "~/utils/globals";
 import { TypeOutTransition } from "./TypeOutTransition";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface SheetMetaItemProps {
   value: string | number | null;
@@ -23,8 +24,43 @@ const SheetMetaItem: React.FC<SheetMetaItemProps> = (props) => {
           placeholder={placeholder}
         />
       </h2>
-      <div className="text-[0.6rem] uppercase tracking-[0.25em] text-red-600">
+      <div className="flex text-[0.6rem] uppercase tracking-[0.25em] text-red-600">
         {label}
+
+        {!value && <LoadingSpinner />}
+      </div>
+    </div>
+  );
+};
+
+interface SheetStandardItemProps {
+  value: string | number | null;
+  label: string;
+  placeholder: string;
+  decorateFirstLetter?: boolean;
+}
+
+const SheetStandardItem: React.FC<SheetStandardItemProps> = (props) => {
+  const { value, placeholder, label, decorateFirstLetter = false } = props;
+
+  return (
+    <div className="mb-8">
+      <div className="mb-1 flex text-xs uppercase tracking-[0.25em] text-red-600">
+        {label}
+
+        {!value && <LoadingSpinner />}
+      </div>
+      <div
+        className={`rich-text-wrapper ${
+          decorateFirstLetter
+            ? `first-letter:float-left first-letter:mr-3 first-letter:font-heading first-letter:text-7xl first-letter:font-bold first-letter:text-red-700 first-line:uppercase`
+            : ``
+        }`}
+      >
+        <TypeOutTransition
+          value={typeof value === "number" ? value.toString() : value}
+          placeholder={placeholder}
+        />
       </div>
     </div>
   );
@@ -68,12 +104,12 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <SheetMetaItem
             placeholder={placeholder.height}
             value={characterState.height}
-            label="height"
+            label="Height"
           />
           <SheetMetaItem
             placeholder={placeholder.height}
-            value={characterState.weight}
-            label="weight"
+            value={characterState.height}
+            label="Weight"
           />
           <SheetMetaItem
             placeholder={placeholder.eyeColor}
@@ -89,29 +125,18 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
         <div className="flex flex-grow">
           <div className="flex-grow pt-12">
-            <div className="mb-8">
-              <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
-                Physical Description
-              </div>
-              <div className="rich-text-wrapper first-letter:float-left first-letter:mr-3 first-letter:font-heading first-letter:text-7xl first-letter:font-bold first-letter:text-red-700 first-line:uppercase">
-                <TypeOutTransition
-                  value={characterState.physicalDescription}
-                  placeholder={placeholder.physicalDescription}
-                />
-              </div>
-            </div>
+            <SheetStandardItem
+              label="Physical Description"
+              value={characterState.physicalDescription}
+              placeholder={placeholder.physicalDescription}
+              decorateFirstLetter={true}
+            />
 
-            <div className="mb-10">
-              <div className="mb-1 text-xs uppercase tracking-[0.25em] text-red-600">
-                Backstory
-              </div>
-              <div className="rich-text-wrapper">
-                <TypeOutTransition
-                  value={characterState.backstory}
-                  placeholder={placeholder.backstory}
-                />
-              </div>
-            </div>
+            <SheetStandardItem
+              label="Backstory"
+              value={characterState.backstory}
+              placeholder={placeholder.backstory}
+            />
           </div>
           <div className="ml-12 border-l pl-8 pt-8">
             <div className="mb-10">
