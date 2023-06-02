@@ -1,3 +1,5 @@
+"use client";
+
 import { type Character } from "@prisma/client";
 import { useEffect, useState } from "react";
 import { pusherClient as pusher } from "~/utils/pusher";
@@ -107,8 +109,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             label="Height"
           />
           <SheetMetaItem
-            placeholder={placeholder.height}
-            value={characterState.height}
+            placeholder={placeholder.weight}
+            value={characterState.weight}
             label="Weight"
           />
           <SheetMetaItem
