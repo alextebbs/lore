@@ -5,6 +5,8 @@ import { type Character } from "@prisma/client";
 export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
 
+  return <div>Character {params.id} not found.</div>;
+
   const prisma = new PrismaClient();
 
   const getCharacter = async (id: string) => {
