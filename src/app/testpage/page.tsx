@@ -1,3 +1,3 @@
-const Page = () => <div>Foo</div>;
-
-export default Page;
+export default function Page() {
+  return <div>Foo</div>;
+}
