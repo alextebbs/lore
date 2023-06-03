@@ -1,7 +1,9 @@
-import { prisma } from "~/server/db";
+import { PrismaClient } from "@prisma/client/edge";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+
+  const prisma = new PrismaClient();
 
   const prompt = searchParams.get("prompt");
 

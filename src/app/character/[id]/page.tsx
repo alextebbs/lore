@@ -1,9 +1,11 @@
-import { prisma } from "~/server/db";
+import { PrismaClient } from "@prisma/client/edge";
 import { CharacterSheet } from "~/components/CharacterSheet";
 import { type Character } from "@prisma/client";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const { id } = params;
+
+  const prisma = new PrismaClient();
 
   const getCharacter = async (id: string) => {
     try {
