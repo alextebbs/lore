@@ -1,9 +1,0 @@
-@font-face {
-    font-family: 'Sabbath Black';
-    src: local('Sabbath Black Heavy'), local('Sabbath-Black-Heavy'),
-        url('SabbathBlackOT-Heavy.woff2') format('woff2'),
-        url('SabbathBlackOT-Heavy.woff') format('woff'),
-        url('SabbathBlackOT-Heavy.ttf') format('truetype');
-    font-weight: 900;
-    font-style: normal;
-  }
