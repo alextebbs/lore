@@ -1,16 +1,12 @@
 "use client";
 
-import type { NextPage } from "next";
-// import Head from "next/head";
-
 import type { Character } from "@prisma/client";
 import { useRouter } from "next/navigation";
-// import { type FormEventHandler } from "react";
 
 import { useRef, useState, useEffect } from "react";
 import arrayShuffle from "array-shuffle";
 
-const Page: NextPage = () => {
+const Page = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const contentEditableRef = useRef<HTMLSpanElement>(null);
   const router = useRouter();
