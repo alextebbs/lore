@@ -2,18 +2,6 @@ import { outdent } from "outdent";
 
 import { type Character } from "@prisma/client";
 
-// I think this file needs to be changed around. Instead of taking a character
-// object and returning a filled in character object, I think it needs to just
-// take a character object and return a prompt string that will generate
-// whatever field you're looking for. Then, whatever consumes this can take
-// that prompt, generate the field, and then handle updating character in the
-// database.
-//
-// Basically, I dont think this class should directly talk to OpenAI. It should
-// just serve as a thing to store my prompts and generate them.
-//
-// ^ This is now done.
-
 export class PromptGenerator {
   generateKnownCharacterInfo(character: Character) {
     return outdent`
@@ -112,7 +100,7 @@ export class PromptGenerator {
 
       Now, pick the character's name. 
 
-      Return the name as 1-3 words.
+      Return the name as 1-3 words. Use no periods in your response.
     `;
   }
 
@@ -128,16 +116,6 @@ export class PromptGenerator {
         - Your description should be evocative, but not overly poetic.
         - Describe only the physical appearance, not behavior or demeanor.
         - Use the present tense at all times.
-
-      ${
-        character.originStatement
-          ? `Use the following information when creating your response.
-             The character is ${character.originStatement}.`
-          : ``
-      }
-
-      The character is a ${character.species} named ${character.name} who is 
-      ${character.age} years old.
 
       Physical description of ${character.name}:
     `;
@@ -198,13 +176,13 @@ export class PromptGenerator {
   // I guess I need this to map the field string (which comes from the URL) to
   // the correct method. Is there a better way to do this?
   // Could I do something like this?
-  //
+
   // generate(character: Character, field: keyof Character) {
   //   if (!field || field.length == 0) return;
 
   //   const methodToCall = `generate${field.charAt(0).toUpperCase() + field.slice(1)}Prompt`;
 
-  //   This line below makes typescript angry.
+  //   // This line below makes typescript angry.
   //   return this[methodToCall](character);
   // }
 

@@ -103,7 +103,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
   return (
     <div>
-      {label}: {responseText}
+      {label}: {responseText || <span>Loading... </span>}
     </div>
   );
 };
@@ -118,8 +118,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const [characterState, setCharacterState] = useState<Character>(character);
 
   return (
-    <div className="mt-8 justify-center">
-      <div>
+    <div className="mx-auto mt-8 max-w-2xl justify-center">
+      <div className="mb-2">
         <CharacterSheetItem
           field="species"
           label="Species"
@@ -131,11 +131,11 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         />
       </div>
 
-      <div>
+      <div className="mb-2">
         <CharacterSheetItem
           field="name"
           label="Name"
-          stream={false}
+          stream={true}
           requirements={["species"]}
           character={characterState}
           value={characterState.name}
@@ -143,7 +143,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         />
       </div>
 
-      <div>
+      <div className="mb-2">
         <CharacterSheetItem
           field="age"
           label="Age"
@@ -155,7 +155,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         />
       </div>
 
-      <div>
+      <div className="mb-2">
         <CharacterSheetItem
           field="physicalDescription"
           label="Physical Description"
@@ -167,7 +167,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         />
       </div>
 
-      <div>
+      <div className="mb-2">
         <CharacterSheetItem
           field="backstory"
           label="Backstory"
