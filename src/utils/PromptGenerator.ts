@@ -28,6 +28,9 @@ export class PromptGenerator {
           : ``
       }
       ${
+        character.demeanor ? `Character's demeanor: ${character.demeanor}.` : ``
+      }
+      ${
         character.backstory
           ? `Character's backstory: ${character.backstory}.`
           : ``

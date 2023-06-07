@@ -286,10 +286,25 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         setCharacterState={setCharacterState}
       />
       <CharacterSheetItem
+        field="demeanor"
+        label="Demeanor"
+        stream={true}
+        requirements={["name", "species", "age"]}
+        character={characterState}
+        value={characterState.demeanor}
+        setCharacterState={setCharacterState}
+      />
+      <CharacterSheetItem
         field="backstory"
         label="Backstory"
         stream={true}
-        requirements={["name", "species", "age", "physicalDescription"]}
+        requirements={[
+          "name",
+          "species",
+          "age",
+          "physicalDescription",
+          "demeanor",
+        ]}
         character={characterState}
         value={characterState.backstory}
         setCharacterState={setCharacterState}
