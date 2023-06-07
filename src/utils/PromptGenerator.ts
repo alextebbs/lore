@@ -157,6 +157,33 @@ export class PromptGenerator {
     `;
   }
 
+  generateDemeanorPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write a single paragraph description of the character's behavior and
+      demeanor, noting something that is unique, distinct, and memorable about
+      their presence, speaking style, or mannerisms. This description should be
+      1-2 sentences long.
+
+      Follow the following style notes:
+        - Your description should be evocative, but not overly poetic.
+        - Describe only the behavior and demeanor of the character, not their physical appearance.
+        - Use the present tense at all times.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Demeanor of ${character.name}:
+    `;
+  }
+
   generateBackstoryPrompt(
     character: Character,
     regenPrompt: string | null = null
@@ -208,6 +235,9 @@ export class PromptGenerator {
     switch (field) {
       case "physicalDescription":
         return this.generatePhysicalDescriptionPrompt(character, regenPrompt);
+
+      case "demeanor":
+        return this.generateDemeanorPrompt(character, regenPrompt);
 
       case "backstory":
         return this.generateBackstoryPrompt(character, regenPrompt);

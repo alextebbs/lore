@@ -16,6 +16,7 @@ model Character {
   hairColor           String?
   backstory           String?  @db.Text
   physicalDescription String?  @db.Text
+  demeanor            String?  @db.Text
   goals               String?  @db.Text
 }
 
@@ -27,5 +28,6 @@ generator client {
 datasource db {
   provider     = "mysql"
   url          = env("DATABASE_URL")
+  directUrl    = env("MIGRATE_DATABASE_URL")
   relationMode = "prisma"
 }

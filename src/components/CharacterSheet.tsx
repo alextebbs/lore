@@ -36,6 +36,8 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   );
   const [editing, setEditing] = useState<boolean>(false);
 
+  const responseTextRef = useRef<HTMLDivElement>(null);
+
   // Generic function to ger a response from the API.
   const getResponse = async (url: string) => {
     setDoneGenerating(false);
@@ -114,6 +116,28 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     saveResponse().catch(console.error);
   }, [responseText, field, setCharacterState, character.id, doneGenerating]);
 
+  const handleSaveButtonClick = () => {
+    const newResponseText = responseTextRef.current?.textContent ?? null;
+
+    if (!newResponseText) return;
+
+    const saveResponse = async () => {
+      await fetch(`/api/save/character/${field}`, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify({ [field]: newResponseText, id: character.id }),
+      });
+
+      setCharacterState((prev) => ({ ...prev, [field]: newResponseText }));
+    };
+
+    saveResponse().catch(console.error);
+
+    setEditing(false);
+  };
+
   const handleRegenerateFormSubmit = async (
     e: React.SyntheticEvent<HTMLFormElement>
   ) => {
@@ -143,7 +167,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       <div
         className={`group mb-4 ${
           editing
-            ? `relative z-20 shadow-[0_0_0_9999px_rgba(0,0,0,0.95)] transition-all`
+            ? `relative z-20 shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
             : ``
         }`}
       >
@@ -152,7 +176,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
           {doneGenerating &&
             (!editing ? (
-              <div
+              <button
                 onClick={(e) => setEditing(true)}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
@@ -160,10 +184,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 <span className="inline-block pl-2 opacity-0 transition-all group-hover:opacity-100">
                   Edit
                 </span>
-              </div>
+              </button>
             ) : (
               <div
-                onClick={(e) => setEditing(false)}
+                onClick={handleSaveButtonClick}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
                 <MdModeEditOutline />{" "}
@@ -175,23 +199,33 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
         </div>
 
         <>
-          <div contentEditable={editing && doneGenerating}>
-            {responseText ? <>{responseText}</> : "Loading..."}
+          <div>
+            {responseText ? (
+              <div
+                ref={responseTextRef}
+                contentEditable={editing && doneGenerating}
+              >
+                {responseText}
+              </div>
+            ) : (
+              "Loading..."
+            )}
           </div>
 
           {editing && (
             <div className="absolute top-[100%] pt-4 text-xs text-stone-400">
               <div>
-                Edit the text above OR click the button below to generate a new
-                one.
+                Edit the text above OR click the button below to regenerate this
+                field with new instructions.
               </div>
 
               <form onSubmit={handleRegenerateFormSubmit} className="flex pt-4">
                 <input
                   name="prompt"
+                  placeholder="Instructions to regenerate"
                   className="mr-2 w-auto border bg-transparent px-4 py-2"
                 />
-                <button type="submit">Generate</button>
+                <button type="submit">Regenerate</button>
               </form>
             </div>
           )}
