@@ -21,7 +21,14 @@ export async function GET(
     return new Response("Character not found.", { status: 404 });
   }
 
-  const prompt = new PromptGenerator().generate(character, params.field);
+  console.log(searchParams.has("prompt"));
+
+  const prompt = new PromptGenerator().generate(
+    character,
+    params.field,
+    searchParams.has("regenerate"),
+    searchParams.has("prompt") ? searchParams.get("prompt") : null
+  );
 
   const response = await getOpenAIResponse({
     prompt,

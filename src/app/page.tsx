@@ -3,13 +3,14 @@
 import type { Character } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect, use } from "react";
 import arrayShuffle from "array-shuffle";
 
 const Page = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const contentEditableRef = useRef<HTMLSpanElement>(null);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [examples, setExamples] = useState<string[]>([
     "the wayward heir of a tyrant queen",
@@ -36,6 +37,8 @@ const Page = () => {
 
   const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    setIsLoading(true);
 
     const form = e.target as HTMLFormElement;
     const elements = form.elements as typeof form.elements & {
@@ -70,47 +73,53 @@ const Page = () => {
           className="mx-auto max-w-[50rem] text-center"
           onSubmit={handleFormSubmit}
         >
-          <p className="mb-2 text-sm">
-            Complete the sentence below to generate a character.
-          </p>
+          {!isLoading ? (
+            <>
+              <p className="mb-2 text-sm">
+                Complete the sentence below to generate a character.
+              </p>
 
-          <p className="text-xs text-neutral-400">
-            Or, leave it empty to generate a random character.
-          </p>
+              <p className="text-xs text-neutral-400">
+                Or, leave it empty to generate a random character.
+              </p>
 
-          <div className="my-8 font-heading text-3xl">
-            The character is{" "}
-            <span
-              contentEditable
-              ref={contentEditableRef}
-              onInput={handlePromptInput}
-              className="inline-block min-w-[200px] border-b text-left focus:outline-none"
-            ></span>
-            .
-          </div>
-          <div>
-            <button
-              className="border border-red-600 p-4 px-8 font-heading text-lg text-red-600 transition-colors hover:bg-red-600 hover:text-white"
-              type="submit"
-            >
-              Generate
-            </button>
-          </div>
-          <input ref={inputRef} type="hidden" name="prompt" />
+              <div className="my-8 font-heading text-3xl">
+                The character is{" "}
+                <span
+                  contentEditable
+                  ref={contentEditableRef}
+                  onInput={handlePromptInput}
+                  className="inline-block min-w-[200px] border-b text-left focus:outline-none"
+                ></span>
+                .
+              </div>
+              <div>
+                <button
+                  className="border border-red-600 p-4 px-8 font-heading text-lg text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                  type="submit"
+                >
+                  Generate
+                </button>
+              </div>
+              <input ref={inputRef} type="hidden" name="prompt" />
 
-          <p className="mt-12 text-xs text-neutral-400">For example...</p>
+              <p className="mt-12 text-xs text-neutral-400">For example...</p>
 
-          <ul className="mt-2 text-xs text-neutral-400">
-            {examples.map((example) => (
-              <li
-                key={example}
-                className="mb-2 cursor-pointer hover:text-neutral-600"
-                onClick={() => handleExampleClick(example)}
-              >
-                &ldquo;<span>The character is {example}.</span>&rdquo;
-              </li>
-            ))}
-          </ul>
+              <ul className="mt-2 text-xs text-neutral-400">
+                {examples.map((example) => (
+                  <li
+                    key={example}
+                    className="mb-2 cursor-pointer hover:text-neutral-600"
+                    onClick={() => handleExampleClick(example)}
+                  >
+                    &ldquo;<span>The character is {example}.</span>&rdquo;
+                  </li>
+                ))}
+              </ul>
+            </>
+          ) : (
+            <div>Loading...</div>
+          )}
         </form>
       </div>
     </main>

@@ -35,11 +35,14 @@ export class PromptGenerator {
     `;
   }
 
-  generateSpeciesPrompt(character: Character) {
+  generateSpeciesPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, pick the character's species. Choose from the following
+      Now, generate a new species for the character. Choose from the following
       options. If the species has a subspecies, select a subspecies as well.
 
       - Human
@@ -79,32 +82,59 @@ export class PromptGenerator {
       - Locathah
 
       Return the species as a single word. Use no punctuation in your response.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's species:
     `;
   }
 
-  generateAgePrompt(character: Character) {
+  generateAgePrompt(character: Character, regenPrompt: string | null = null) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, pick an age for the character. 
+      Now, generate a new age for the character. 
 
       Return the age as a single number. Use no punctuation in your response.
 
       Examples: 25, 50, 100
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's age:
     `;
   }
 
-  generateNamePrompt(character: Character) {
+  generateNamePrompt(character: Character, regenPrompt: string | null = null) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, pick the character's name. 
+      Now, generate a new name for the character. 
 
       Return the name as 1-3 words. Use no periods in your response.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's name:
     `;
   }
 
-  generatePhysicalDescriptionPrompt(character: Character) {
+  generatePhysicalDescriptionPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
@@ -117,11 +147,20 @@ export class PromptGenerator {
         - Describe only the physical appearance, not behavior or demeanor.
         - Use the present tense at all times.
 
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
       Physical description of ${character.name}:
     `;
   }
 
-  generateBackstoryPrompt(character: Character) {
+  generateBackstoryPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
@@ -131,45 +170,14 @@ export class PromptGenerator {
       Follow the following style notes:
         - Your backstory should be evocative, but not overly poetic.
 
-      Character's backstory: 
-    `;
-  }
-
-  generateGoalsPrompt(character: Character) {
-    const prompt = outdent`
-      You are going to write a set of three goals that a character in a fantasy
-      roleplaying campaign setting has. You should seek to describe goals that
-      are creative, distinct, and dynamic, and that will lead to interesting
-      roleplaying opportunities.
-
       ${
-        character.originStatement
-          ? `Use the following information when creating your response. The character is ${character.originStatement}.`
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
           : ``
       }
 
-      The character is a ${character.species} named ${character.name} who is 
-      ${character.age} years old.
-
-      Physical description of the character: ${character.physicalDescription}
-
-      Character's backstory: ${character.backstory}
-
-      Write a set of three goals for the character. Each goal should be a single
-      sentence in length.
-
-      Output your response as JSON, in the following format:
-      ["{GOAL 1}", "{GOAL 2}", "{GOAL 3}"]
-
-      Examples:
-      Uncover the ancient secrets of Xanthoria and understand its connection to the gods.
-      Unravel the cryptic prophecy foretelling a cataclysmic event that could bring about the end of an ancient civilization.
-      To find a true love that can break the cycle of misfortune that has plagued them for generations.
-
-      Goals for the character:
+      Character's backstory: 
     `;
-
-    return prompt;
   }
 
   // QUESTION
@@ -186,22 +194,32 @@ export class PromptGenerator {
   //   return this[methodToCall](character);
   // }
 
-  generate(character: Character, field: keyof Character) {
+  generate(
+    character: Character,
+    field: keyof Character,
+    regenerate = false,
+    regenPrompt: string | null = null
+  ) {
+    if (regenerate) {
+      console.log("REGENERATING WITH PROMPT: ", regenPrompt);
+      // character[field] = null;
+    }
+
     switch (field) {
       case "physicalDescription":
-        return this.generatePhysicalDescriptionPrompt(character);
+        return this.generatePhysicalDescriptionPrompt(character, regenPrompt);
 
       case "backstory":
-        return this.generateBackstoryPrompt(character);
+        return this.generateBackstoryPrompt(character, regenPrompt);
 
       case "age":
-        return this.generateAgePrompt(character);
+        return this.generateAgePrompt(character, regenPrompt);
 
       case "name":
-        return this.generateNamePrompt(character);
+        return this.generateNamePrompt(character, regenPrompt);
 
       case "species":
-        return this.generateSpeciesPrompt(character);
+        return this.generateSpeciesPrompt(character, regenPrompt);
     }
 
     throw new Error("Invalid field");
