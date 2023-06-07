@@ -200,10 +200,10 @@ export class PromptGenerator {
     regenerate = false,
     regenPrompt: string | null = null
   ) {
-    if (regenerate) {
-      console.log("REGENERATING WITH PROMPT: ", regenPrompt);
-      // character[field] = null;
-    }
+    // if (regenerate) {
+    //   console.log("REGENERATING WITH PROMPT: ", regenPrompt);
+    //   character[field] = null;
+    // }
 
     switch (field) {
       case "physicalDescription":
