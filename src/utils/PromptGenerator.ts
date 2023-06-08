@@ -45,8 +45,9 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, generate a new species for the character. Choose from the following
-      options. If the species has a subspecies, select a subspecies as well.
+      Now, generate a ${regenPrompt ? "new" : ""} species or the character.
+      Choose from the following options. If the species has a subspecies, select
+      a subspecies as well.
 
       - Human
       - Elf
@@ -99,7 +100,7 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, generate a new age for the character. 
+      Now, generate a ${regenPrompt ? "new" : ""} age for the character. 
 
       Return the age as a single number. Use no punctuation in your response.
 
@@ -119,7 +120,7 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, generate a new name for the character. 
+      Now, generate a ${regenPrompt ? "new" : ""} name for the character. 
 
       Return the name as 1-3 words. Use no periods in your response.
 
@@ -140,9 +141,10 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a single paragraph description of the character's physical
-      appearance, noting something that is unique, distinct, and memorable about
-      their physical form. This description should be 1-2 sentences long.
+      Now, write a ${regenPrompt ? "new" : ""} single paragraph description of
+      the character's physical appearance, noting something that is unique,
+      distinct, and memorable about their physical form. This description should
+      be 1-2 sentences long.
 
       Follow the following style notes:
         - Your description should be evocative, but not overly poetic.
@@ -166,10 +168,10 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a single paragraph description of the character's behavior and
-      demeanor, noting something that is unique, distinct, and memorable about
-      their presence, speaking style, or mannerisms. This description should be
-      1-2 sentences long.
+      Now, write a ${regenPrompt ? "new" : ""} single paragraph description of
+      the character's behavior and demeanor, noting something that is unique,
+      distinct, and memorable about their presence, speaking style, or
+      mannerisms. This description should be 1-2 sentences long.
 
       Follow the following style notes:
         - Your description should be evocative, but not overly poetic.
@@ -193,8 +195,8 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a backstory describing the character's history. The backstory
-      should be a single paragraph in length.
+      Now, write a ${regenPrompt ? "new" : ""} backstory describing the
+      character's history. The backstory should be a single paragraph in length.
 
       Follow the following style notes:
         - Your backstory should be evocative, but not overly poetic.
@@ -229,10 +231,9 @@ export class PromptGenerator {
     regenerate = false,
     regenPrompt: string | null = null
   ) {
-    // if (regenerate) {
-    //   console.log("REGENERATING WITH PROMPT: ", regenPrompt);
-    //   character[field] = null;
-    // }
+    if (regenerate) {
+      character = { ...character, [field]: null };
+    }
 
     switch (field) {
       case "physicalDescription":

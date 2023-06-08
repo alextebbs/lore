@@ -21,8 +21,6 @@ export async function GET(
     return new Response("Character not found.", { status: 404 });
   }
 
-  console.log(searchParams.has("prompt"));
-
   const prompt = new PromptGenerator().generate(
     character,
     params.field,
