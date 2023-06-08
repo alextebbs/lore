@@ -3,8 +3,6 @@ import { type Character } from "@prisma/client";
 import { type GetServerSideProps } from "next";
 import { CharacterSheet } from "~/components/CharacterSheet";
 
-import "~/styles/globals.css";
-
 interface PageProps {
   character: Character | null;
 }

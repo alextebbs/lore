@@ -101,6 +101,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   useEffect(() => {
     if (!doneGenerating) return;
 
+    // This should be factored out into a stanalone function
     const saveResponse = async () => {
       await fetch(`/api/save/character/${field}`, {
         headers: {
@@ -121,6 +122,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
     if (!newResponseText) return;
 
+    // This should be factored out into a stanalone function
     const saveResponse = async () => {
       await fetch(`/api/save/character/${field}`, {
         headers: {

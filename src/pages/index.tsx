@@ -1,5 +1,3 @@
-"use client";
-
 import type { Character } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
@@ -67,7 +65,7 @@ const Page = () => {
   };
 
   return (
-    <main className="flex min-h-[100vh] flex-col items-center justify-center">
+    <main className="flex flex-col items-center justify-center">
       <div className="flex flex-grow flex-col items-center justify-center">
         <form
           className="mx-auto max-w-[50rem] p-4 text-center"
@@ -79,7 +77,7 @@ const Page = () => {
                 Complete the sentence below to generate a character.
               </p>
 
-              <p className="text-xs text-neutral-400">
+              <p className="text-xs text-stone-400">
                 Or, leave it empty to generate a random character.
               </p>
 
@@ -103,13 +101,13 @@ const Page = () => {
               </div>
               <input ref={inputRef} type="hidden" name="prompt" />
 
-              <p className="mt-12 text-xs text-neutral-400">For example...</p>
+              <p className="mt-12 text-xs text-stone-400">For example...</p>
 
-              <ul className="mt-2 text-xs text-neutral-400">
+              <ul className="mt-2 text-xs text-stone-400">
                 {examples.map((example) => (
                   <li
                     key={example}
-                    className="mb-2 cursor-pointer hover:text-neutral-600"
+                    className="mb-2 cursor-pointer hover:text-stone-600"
                     onClick={() => handleExampleClick(example)}
                   >
                     &ldquo;<span>The character is {example}.</span>&rdquo;
