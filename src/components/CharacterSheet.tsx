@@ -232,7 +232,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 >
                   <input
                     name="prompt"
-                    placeholder="Instructions to regenerate"
+                    placeholder="Instructions for regeneration"
                     className="mr-2 flex-1 border bg-transparent px-4 py-2"
                   />
                   <button

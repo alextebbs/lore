@@ -80,7 +80,6 @@ export class PromptGenerator {
       - Satyr
       - Vedalken
       - Loxodon
-      - Simic Hybrid
       - Grung
       - Locathah
 
