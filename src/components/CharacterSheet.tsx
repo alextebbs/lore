@@ -4,7 +4,7 @@ import { type Character } from "@prisma/client";
 import { useEffect, useState, useRef, use } from "react";
 // import { LoadingSpinner } from "./LoadingSpinner";
 
-import { MdModeEditOutline } from "react-icons/md";
+import { MdModeEditOutline, MdClose, MdRefresh } from "react-icons/md";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -143,6 +143,8 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   ) => {
     e.preventDefault();
 
+    setEditing(false);
+
     const form = e.target as HTMLFormElement;
     const elements = form.elements as typeof form.elements & {
       prompt: { value: string };
@@ -171,7 +173,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
             : ``
         }`}
       >
-        <div className="mb-2 flex h-9 items-center text-xs text-red-600">
+        <div className="mb-1 flex h-9 items-center text-xs text-red-600">
           <span className="uppercase tracking-[0.25em]">{label}</span>
 
           {doneGenerating &&
@@ -190,16 +192,20 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 onClick={handleSaveButtonClick}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
-                <MdModeEditOutline />{" "}
-                <span className="inline-block pl-2 opacity-0 transition-all group-hover:opacity-100">
-                  Save
+                <MdClose />
+                <span
+                  className={`inline-block pl-2 transition-all ${
+                    !editing ? `opacity-0 group-hover:opacity-100` : ``
+                  }`}
+                >
+                  Close
                 </span>
               </div>
             ))}
         </div>
 
         <>
-          <div>
+          <div className="text-sm">
             {responseText ? (
               <div
                 ref={responseTextRef}
@@ -213,20 +219,33 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
           </div>
 
           {editing && (
-            <div className="absolute top-[100%] pt-4 text-xs text-stone-400">
+            <div className="absolute top-[100%] w-[100%] pt-4 text-xs text-stone-400">
               <div>
-                Edit the text above OR click the button below to regenerate this
-                field with new instructions.
+                Edit the text above OR try regenerating this field with new
+                instructions.
               </div>
 
-              <form onSubmit={handleRegenerateFormSubmit} className="flex pt-4">
-                <input
-                  name="prompt"
-                  placeholder="Instructions to regenerate"
-                  className="mr-2 w-auto border bg-transparent px-4 py-2"
-                />
-                <button type="submit">Regenerate</button>
-              </form>
+              {doneGenerating && (
+                <form
+                  onSubmit={handleRegenerateFormSubmit}
+                  className="flex pt-4"
+                >
+                  <input
+                    name="prompt"
+                    placeholder="Instructions to regenerate"
+                    className="mr-2 flex-1 border bg-transparent px-4 py-2"
+                  />
+                  <button
+                    className="flex items-center border border-red-600 pl-3 pr-4 text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                    type="submit"
+                  >
+                    <span className="mr-2 text-xl">
+                      <MdRefresh />
+                    </span>
+                    Regenerate
+                  </button>
+                </form>
+              )}
             </div>
           )}
         </>
@@ -245,7 +264,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const [characterState, setCharacterState] = useState<Character>(character);
 
   return (
-    <div className="mx-auto mt-8 max-w-2xl justify-center">
+    <div className="mx-auto mb-[120px] mt-8 max-w-2xl justify-center p-6">
       <CharacterSheetItem
         field="name"
         label="Name"
@@ -278,7 +297,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
       <CharacterSheetItem
         field="physicalDescription"
-        label="Physical Description"
+        label="Physical Appearance"
         stream={true}
         requirements={["name", "species", "age"]}
         character={characterState}
@@ -287,7 +306,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
       />
       <CharacterSheetItem
         field="demeanor"
-        label="Demeanor"
+        label="Behavior & Demeanor"
         stream={true}
         requirements={["name", "species", "age"]}
         character={characterState}

@@ -70,7 +70,7 @@ const Page = () => {
     <main className="flex min-h-[100vh] flex-col items-center justify-center">
       <div className="flex flex-grow flex-col items-center justify-center">
         <form
-          className="mx-auto max-w-[50rem] text-center"
+          className="mx-auto max-w-[50rem] p-4 text-center"
           onSubmit={handleFormSubmit}
         >
           {!isLoading ? (
