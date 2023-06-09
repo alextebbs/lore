@@ -4,13 +4,17 @@ import { type ReactNode } from "react";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { useState } from "react";
+import type { Character } from "@prisma/client";
 
 interface AppWrapperProps {
   children: ReactNode;
+  userCharacters?: Character[] | null;
 }
 
-const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
+const AppWrapper: React.FC<AppWrapperProps> = (props) => {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const { children } = props;
 
   return (
     <div className="flex h-screen flex-col">
@@ -19,7 +23,7 @@ const AppWrapper: React.FC<AppWrapperProps> = ({ children }) => {
         <div className="flex flex-grow items-center justify-center">
           {children}
         </div>
-        <Sidebar menuOpen={menuOpen} />
+        <Sidebar menuOpen={menuOpen} characters={props.userCharacters} />
       </div>
     </div>
   );

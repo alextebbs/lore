@@ -160,8 +160,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       url += `&prompt=${elements.prompt.value}`;
     }
 
-    console.log(url);
-
     await getResponse(url);
   };
 

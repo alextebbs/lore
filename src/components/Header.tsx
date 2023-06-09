@@ -11,8 +11,6 @@ export const Header: React.FC<HeaderProps> = (props) => {
 
   const { data: session } = useSession();
 
-  console.log(session?.user?.id);
-
   return (
     <div className="flex items-center justify-center border-b border-b-stone-900 px-8 py-4 text-center uppercase text-stone-400">
       <div className="font-heading text-3xl">Mythweaver</div>

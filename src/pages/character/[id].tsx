@@ -1,9 +1,15 @@
-import { PrismaClient } from "@prisma/client/edge";
 import { type Character } from "@prisma/client";
 import { type GetServerSideProps } from "next";
 import { CharacterSheet } from "~/components/CharacterSheet";
+import type { GlobalPageProps } from "..";
+import { getServerSession } from "next-auth";
+import { OPTIONS } from "~/app/api/auth/[...nextauth]/route";
+import {
+  getSingleCharacter,
+  getUserCharacters,
+} from "~/utils/ServerSidePropsHelpers";
 
-interface PageProps {
+interface PageProps extends GlobalPageProps {
   character: Character | null;
 }
 
@@ -20,22 +26,18 @@ export default function Page(props: PageProps) {
 
 export const getServerSideProps: GetServerSideProps<PageProps> = async (
   context
-  // eslint-disable-next-line @typescript-eslint/require-await
 ) => {
   const { id } = context.query;
+  const session = await getServerSession(context.req, context.res, OPTIONS);
 
-  const prisma = new PrismaClient();
+  const character = await getSingleCharacter(id as string);
 
-  try {
-    const character = await prisma.character.findUnique({
-      where: { id: id as string },
-    });
+  console.log(character);
 
-    return {
-      props: { character: JSON.parse(JSON.stringify(character)) as Character },
-    };
-  } catch (error: unknown) {
-    console.error(error);
-    return { props: { character: null } };
-  }
+  return {
+    props: {
+      character: await getSingleCharacter(id as string),
+      userCharacters: session ? await getUserCharacters(session.user.id) : null,
+    },
+  };
 };

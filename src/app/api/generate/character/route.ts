@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client/edge";
 
 import { getServerSession } from "next-auth/next";
+
 import { OPTIONS } from "~/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: Request) {
@@ -8,7 +9,7 @@ export async function GET(request: Request) {
 
   const session = await getServerSession(OPTIONS);
 
-  console.log(session);
+  console.log("SESSION", session);
 
   const prisma = new PrismaClient();
 
@@ -17,8 +18,8 @@ export async function GET(request: Request) {
   // Create character in DB as an empty shell character
   const character = await prisma.character.create({
     data: {
-      originStatement: prompt as string,
-      userId: session?.user?.id as string,
+      originStatement: prompt,
+      userId: session?.user.id,
     },
   });
 
