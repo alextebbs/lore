@@ -7,7 +7,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
-  const { menuOpen, characters } = props;
+  const { characters } = props;
 
   return (
     <div className="w-80 border-l border-l-stone-900">

@@ -1,7 +1,7 @@
 "use client";
 
 import { type Character } from "@prisma/client";
-import { useEffect, useState, useRef, use } from "react";
+import { useEffect, useState, useRef } from "react";
 // import { LoadingSpinner } from "./LoadingSpinner";
 
 import { MdModeEditOutline, MdClose, MdRefresh } from "react-icons/md";
@@ -179,7 +179,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
           {doneGenerating &&
             (!editing ? (
               <button
-                onClick={(e) => setEditing(true)}
+                onClick={() => setEditing(true)}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
                 <MdModeEditOutline />{" "}
