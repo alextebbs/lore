@@ -1,13 +1,14 @@
 import { PrismaClient } from "@prisma/client/edge";
 
-import { auth } from "@clerk/nextjs";
+import { getServerSession } from "next-auth/next";
+import { OPTIONS } from "~/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
-  const { userId } = auth();
+  const session = await getServerSession(OPTIONS);
 
-  console.log(userId);
+  console.log(session);
 
   const prisma = new PrismaClient();
 
