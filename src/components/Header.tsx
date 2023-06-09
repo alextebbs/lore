@@ -17,7 +17,7 @@ export const Header: React.FC<HeaderProps> = (props) => {
       <div className="ml-auto text-sm text-stone-400">
         {session ? (
           <>
-            <div onClick={(_) => setMenuOpen((prev) => !prev)}>Show Menu</div>
+            {/* <div onClick={(_) => setMenuOpen((prev) => !prev)}>Show Menu</div> */}
           </>
         ) : (
           <>

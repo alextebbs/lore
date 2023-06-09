@@ -9,6 +9,7 @@ import type { Character } from "@prisma/client";
 interface AppWrapperProps {
   children: ReactNode;
   userCharacters?: Character[] | null;
+  character?: Character | null;
 }
 
 const AppWrapper: React.FC<AppWrapperProps> = (props) => {
@@ -23,7 +24,11 @@ const AppWrapper: React.FC<AppWrapperProps> = (props) => {
         <div className="flex flex-grow items-center justify-center">
           {children}
         </div>
-        <Sidebar menuOpen={menuOpen} characters={props.userCharacters} />
+        <Sidebar
+          menuOpen={menuOpen}
+          characters={props.userCharacters}
+          currentCharacter={props.character}
+        />
       </div>
     </div>
   );

@@ -30,14 +30,10 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   const { id } = context.query;
   const session = await getServerSession(context.req, context.res, OPTIONS);
 
-  const character = await getSingleCharacter(id as string);
-
-  console.log(character);
-
   return {
     props: {
-      character: await getSingleCharacter(id as string),
       userCharacters: session ? await getUserCharacters(session.user.id) : null,
+      character: await getSingleCharacter(id as string),
     },
   };
 };
