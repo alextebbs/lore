@@ -18,6 +18,10 @@ model Character {
   physicalDescription String?  @db.Text
   demeanor            String?  @db.Text
   goals               String?  @db.Text
+  userId              String?
+  user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {
@@ -51,13 +55,14 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String?     @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  characters    Character[]
 }
 
 model VerificationToken {

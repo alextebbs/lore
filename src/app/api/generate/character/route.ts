@@ -18,6 +18,7 @@ export async function GET(request: Request) {
   const character = await prisma.character.create({
     data: {
       originStatement: prompt as string,
+      userId: session?.user?.id as string,
     },
   });
 
