@@ -18,6 +18,10 @@ model Character {
   physicalDescription String?  @db.Text
   demeanor            String?  @db.Text
   goals               String?  @db.Text
+  enemies             String?  @db.Text
+  friends             String?  @db.Text
+  secret              String?  @db.Text
+  roleplayTips        String?  @db.Text
   userId              String?
   user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
 

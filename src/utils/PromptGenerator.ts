@@ -211,6 +211,122 @@ export class PromptGenerator {
     `;
   }
 
+  generateGoalsPrompt(character: Character, regenPrompt: string | null = null) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write a list of three primary goals that the character has. These goals should
+      relate to the character's backstory and history.
+
+      Output each goal as a single sentence of text, prepended with a dash and separated
+      by a newline. Goals should be written in the third person.
+
+      Examples:
+      - To become the greatest warrior in the land.
+      - To find the lost treasure of the ancient kingdom.
+      - To avenge the death of their father.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's goals:
+    `;
+  }
+
+  generateFriendsPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write a list of three friendly relationships this character has with
+      other characters or factions. Use one paragraph for these descriptions.
+      Describe how the character made this relationship, why they are friendly,
+      and one recent event or interaction that might threaten this relationship.
+
+      Output each relationship as a single paragraph of text, prepended with a
+      dash and separated by a newline.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's friends: 
+    `;
+  }
+
+  generateEnemiesPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write a list of three enemy relationships this character has with
+      other characters or factions. Use one paragraph for these descriptions.
+      Describe how the character made this relationship, why they are friendly,
+      and one recent event or interaction that might lead to a resolution of
+      their grudges.
+
+      Output each relationship as a single paragraph of text, prepended with a
+      dash and separated by a newline.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's enemies: 
+    `;
+  }
+
+  generateSecretPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write one secret about the character. This could represent something
+      they are ashamed about, a flaw, or hidden knowledge they have access to.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's secret: 
+    `;
+  }
+
+  generateRoleplayTipsPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, write a short guide with tips for an actor that might roleplay as this
+      character. This should be a single paragraph in length.
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's roleplaying tips: 
+    `;
+  }
+
   // QUESTION
   // I guess I need this to map the field string (which comes from the URL) to
   // the correct method. Is there a better way to do this?
@@ -253,6 +369,21 @@ export class PromptGenerator {
 
       case "species":
         return this.generateSpeciesPrompt(character, regenPrompt);
+
+      case "goals":
+        return this.generateGoalsPrompt(character, regenPrompt);
+
+      case "friends":
+        return this.generateFriendsPrompt(character, regenPrompt);
+
+      case "enemies":
+        return this.generateEnemiesPrompt(character, regenPrompt);
+
+      case "secret":
+        return this.generateSecretPrompt(character, regenPrompt);
+
+      case "roleplayTips":
+        return this.generateRoleplayTipsPrompt(character, regenPrompt);
     }
 
     throw new Error("Invalid field");
