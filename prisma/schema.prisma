@@ -68,13 +68,13 @@ datasource db {
 // rivals              SimpleCharacter[]
 
 model Character {
-  id                  String            @id @default(cuid())
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  id                  String                  @id @default(cuid())
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
   userId              String?
-  user                User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  finishedGeneration  Boolean           @default(false)
-  originStatement     String?           @db.Text
+  user                User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  finishedGeneration  Boolean                 @default(false)
+  originStatement     String?                 @db.Text
   name                String?
   age                 String?
   species             String?
@@ -82,28 +82,27 @@ model Character {
   weight              String?
   eyeColor            String?
   hairColor           String?
-  backstory           String?           @db.Text
-  physicalDescription String?           @db.Text
-  demeanor            String?           @db.Text
-  secret              String?           @db.Text
-  roleplayTips        String?           @db.Text
+  backstory           String?                 @db.Text
+  physicalDescription String?                 @db.Text
+  demeanor            String?                 @db.Text
+  secret              String?                 @db.Text
+  roleplayTips        String?                 @db.Text
   goals               Goal[]
-  friends             SimpleCharacter[] @relation(name: "Friend", map: "character_friends_fk")
-  enemies             SimpleCharacter[] @relation(name: "Enemy", map: "character_enemies_fk")
+  friends             CharacterRelationship[] @relation(name: "Friend", map: "character_friends_fk")
+  enemies             CharacterRelationship[] @relation(name: "Enemy", map: "character_enemies_fk")
 
   @@index([userId])
 }
 
-model SimpleCharacter {
-  id          String   @id @default(cuid())
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model CharacterRelationship {
+  id          String     @id @default(cuid())
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   characterId String
-
-  // QUESTION:
-  // Why do I need two different things here?
-  friend Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend")
-  enemy  Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy")
+  friend      Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend")
+  enemy       Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy")
+  name        String?
+  description String?    @db.Text
 
   @@index([characterId])
 }
