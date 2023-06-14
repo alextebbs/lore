@@ -4,7 +4,7 @@ import { type ReactNode } from "react";
 import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { useState } from "react";
-import type { Character } from "@prisma/client";
+import type { Character } from "~/utils/types";
 
 interface AppWrapperProps {
   children: ReactNode;

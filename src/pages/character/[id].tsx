@@ -1,4 +1,4 @@
-import { type Character } from "@prisma/client";
+import { type Character } from "~/utils/types";
 import { type GetServerSideProps } from "next";
 import { CharacterSheet } from "~/components/CharacterSheet";
 import type { GlobalPageProps } from "..";

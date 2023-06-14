@@ -1,6 +1,6 @@
 "use client";
 
-import { type Character } from "@prisma/client";
+import type { Character } from "~/utils/types";
 import { useEffect, useState, useRef } from "react";
 // import { LoadingSpinner } from "./LoadingSpinner";
 
@@ -367,26 +367,26 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.secret}
             setCharacterState={setCharacterState}
           />
-          <CharacterSheetItem
-            field="friends"
-            label="Friends"
-            stream={true}
-            style="text-xs"
-            requirements={["name", "species", "age", "backstory"]}
-            character={characterState}
-            value={characterState.friends}
-            setCharacterState={setCharacterState}
-          />
-          <CharacterSheetItem
-            field="enemies"
-            label="Enemies"
-            stream={true}
-            style="text-xs"
-            requirements={["name", "species", "age", "backstory"]}
-            character={characterState}
-            value={characterState.enemies}
-            setCharacterState={setCharacterState}
-          />
+
+          {characterState.goals.map((goal, index) => (
+            <CharacterSheetItem
+              key={index}
+              field="goals"
+              label={`Goal ${index + 1}`}
+              stream={true}
+              requirements={[
+                "name",
+                "species",
+                "age",
+                "physicalDescription",
+                "demeanor",
+                "backstory",
+              ]}
+              character={characterState}
+              value={goal.description}
+              setCharacterState={setCharacterState}
+            />
+          ))}
         </div>
         <div className="w-[25%] border-r border-stone-800">
           <CharacterSheetItem

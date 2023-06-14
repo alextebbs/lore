@@ -1,5 +1,6 @@
 import { getOpenAIResponse } from "~/utils/OpenAIWrapper";
-import { type Character, PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client/edge";
+import { type Character } from "~/utils/types";
 
 import { PromptGenerator } from "~/utils/PromptGenerator";
 
@@ -15,6 +16,11 @@ export async function GET(
 
   const character = await prisma.character.findUnique({
     where: { id: searchParams.get("id") as string },
+    include: {
+      friends: true,
+      enemies: true,
+      goals: true,
+    },
   });
 
   if (!character) {

@@ -1,4 +1,4 @@
-import type { Character } from "@prisma/client";
+import type { Character } from "~/utils/types";
 import arrayShuffle from "array-shuffle";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

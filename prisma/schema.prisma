@@ -113,6 +113,7 @@ model Goal {
   updatedAt   DateTime  @updatedAt
   characterId String
   character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+  description String?   @db.Text
 
   @@index([characterId])
 }

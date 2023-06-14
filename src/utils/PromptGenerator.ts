@@ -1,6 +1,6 @@
 import { outdent } from "outdent";
 
-import { type Character } from "@prisma/client";
+import { type Character } from "~/utils/types";
 
 export class PromptGenerator {
   generateKnownCharacterInfo(character: Character) {
