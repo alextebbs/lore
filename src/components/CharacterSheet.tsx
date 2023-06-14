@@ -147,10 +147,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const handleEditButtonClick = () => {
     setEditing(true);
 
-    setTimeout(() => {
-      // Focus the response text with the caret at the end:
-      // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
+    // Focus the response text with the caret at the end:
+    // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
 
+    setTimeout(() => {
       if (!responseTextRef.current || !responseTextRef.current.childNodes[0])
         return;
 

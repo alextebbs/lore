@@ -21,14 +21,14 @@ const AppWrapper: React.FC<AppWrapperProps> = (props) => {
     <div className="flex h-screen flex-col">
       <Header setMenuOpen={setMenuOpen} />
       <div className="flex flex-grow">
-        <div className="flex flex-grow items-center justify-center">
-          {children}
-        </div>
         <Sidebar
           menuOpen={menuOpen}
           characters={props.userCharacters}
           currentCharacter={props.character}
         />
+        <div className="flex flex-grow items-center justify-center bg-stone-950">
+          {children}
+        </div>
       </div>
     </div>
   );

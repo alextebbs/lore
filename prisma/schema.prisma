@@ -1,33 +1,5 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-model Character {
-  id                  String   @id @default(cuid())
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-  finishedGeneration  Boolean  @default(false)
-  originStatement     String?  @db.Text
-  name                String?
-  age                 String?
-  species             String?
-  height              String?
-  weight              String?
-  eyeColor            String?
-  hairColor           String?
-  backstory           String?  @db.Text
-  physicalDescription String?  @db.Text
-  demeanor            String?  @db.Text
-  goals               String?  @db.Text
-  enemies             String?  @db.Text
-  friends             String?  @db.Text
-  secret              String?  @db.Text
-  roleplayTips        String?  @db.Text
-  userId              String?
-  user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
 model Account {
   id                String  @id @default(cuid())
   userId            String
@@ -87,4 +59,61 @@ datasource db {
   url          = env("DATABASE_URL")
   directUrl    = env("MIGRATE_DATABASE_URL")
   relationMode = "prisma"
+}
+
+// goals               String?  @db.Text
+// enemies             String?  @db.Text
+// friends             String?  @db.Text
+// goals               Goal[]
+// rivals              SimpleCharacter[]
+
+model Character {
+  id                  String            @id @default(cuid())
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  userId              String?
+  user                User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  finishedGeneration  Boolean           @default(false)
+  originStatement     String?           @db.Text
+  name                String?
+  age                 String?
+  species             String?
+  height              String?
+  weight              String?
+  eyeColor            String?
+  hairColor           String?
+  backstory           String?           @db.Text
+  physicalDescription String?           @db.Text
+  demeanor            String?           @db.Text
+  secret              String?           @db.Text
+  roleplayTips        String?           @db.Text
+  goals               Goal[]
+  friends             SimpleCharacter[] @relation(name: "Friend", map: "character_friends_fk")
+  enemies             SimpleCharacter[] @relation(name: "Enemy", map: "character_enemies_fk")
+
+  @@index([userId])
+}
+
+model SimpleCharacter {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  characterId String
+
+  // QUESTION:
+  // Why do I need two different things here?
+  friend Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend")
+  enemy  Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy")
+
+  @@index([characterId])
+}
+
+model Goal {
+  id          String    @id @default(cuid())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  characterId String
+  character   Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+
+  @@index([characterId])
 }

@@ -15,6 +15,13 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
       <div className="p-4 text-xs uppercase tracking-[0.25em] text-stone-600">
         Your characters
       </div>
+      <Link href={`/`}>
+        <div
+          className={`border-b border-b-stone-900 p-4 font-heading text-2xl`}
+        >
+          We need to go back.
+        </div>
+      </Link>
       {characters?.map((character) => (
         <Link key={character.id} href={`/character/${character.id}`}>
           <div
