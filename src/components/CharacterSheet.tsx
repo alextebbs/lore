@@ -11,6 +11,8 @@ interface CharacterSheetItemProps {
   label: string;
   value: string | null;
   stream: boolean;
+  style?: string;
+  allowRegenerationInstructions?: boolean;
   requirements?: (keyof Character)[];
   character: Character;
   setCharacterState: React.Dispatch<React.SetStateAction<Character>>;
@@ -25,8 +27,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     label,
     stream,
     requirements,
+    style = "",
     character,
     setCharacterState,
+    allowRegenerationInstructions = true,
   } = props;
 
   const [responseText, setResponseText] = useState<string | null>(value);
@@ -38,7 +42,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
   const responseTextRef = useRef<HTMLDivElement>(null);
 
-  // Generic function to ger a response from the API.
+  // Generic function to get a response from the API.
   const getResponse = async (url: string) => {
     setDoneGenerating(false);
     setResponseText("");
@@ -140,6 +144,30 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     setEditing(false);
   };
 
+  const handleEditButtonClick = () => {
+    setEditing(true);
+
+    setTimeout(() => {
+      // Focus the response text with the caret at the end:
+      // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
+
+      if (!responseTextRef.current || !responseTextRef.current.childNodes[0])
+        return;
+
+      responseTextRef.current.focus();
+
+      const textLength = responseTextRef.current.innerText.length;
+      const range = document.createRange();
+      const selection = window.getSelection();
+
+      range.setStart(responseTextRef.current.childNodes[0], textLength);
+      range.collapse(true);
+
+      selection?.removeAllRanges();
+      selection?.addRange(range);
+    }, 0);
+  };
+
   const handleRegenerateFormSubmit = async (
     e: React.SyntheticEvent<HTMLFormElement>
   ) => {
@@ -165,12 +193,18 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
   return (
     <div>
-      {editing && <div className="fixed"></div>}
+      {editing && (
+        <div
+          onClick={handleSaveButtonClick}
+          className="fixed bottom-0 left-0 right-0 top-0 z-10"
+        ></div>
+      )}
       <div
-        className={`group mb-4 ${
+        onClick={() => (!editing ? handleEditButtonClick() : null)}
+        className={`group border-b border-transparent p-6 ${
           editing
             ? `relative z-20 shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
-            : ``
+            : `cursor-pointer border-stone-800 hover:bg-stone-900`
         }`}
       >
         <div className="mb-1 flex h-9 items-center text-xs text-red-600">
@@ -179,7 +213,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
           {doneGenerating &&
             (!editing ? (
               <button
-                onClick={() => setEditing(true)}
+                onClick={handleEditButtonClick}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
                 <MdModeEditOutline />{" "}
@@ -188,7 +222,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 </span>
               </button>
             ) : (
-              <div
+              <button
                 onClick={handleSaveButtonClick}
                 className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
               >
@@ -200,16 +234,18 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 >
                   Close
                 </span>
-              </div>
+              </button>
             ))}
         </div>
 
         <>
-          <div className="text-sm">
+          <div className="whitespace-pre-line text-sm">
             {responseText ? (
               <div
                 ref={responseTextRef}
                 contentEditable={editing && doneGenerating}
+                suppressContentEditableWarning
+                className={`${style} transition-colors focus:outline-none focus:ring-0`}
               >
                 {responseText}
               </div>
@@ -219,13 +255,16 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
           </div>
 
           {editing && (
-            <div className="absolute top-[100%] w-[100%] pt-4 text-xs text-stone-400">
+            <div className="absolute top-[100%] w-[100%] text-xs text-stone-400">
               <div>
-                Edit the text above OR try regenerating this field with new
-                instructions.
+                Edit the text above
+                {allowRegenerationInstructions && (
+                  <> OR try regenerating this field with new instructions</>
+                )}
+                .
               </div>
 
-              {doneGenerating && (
+              {doneGenerating && allowRegenerationInstructions && (
                 <form
                   onSubmit={handleRegenerateFormSubmit}
                   className="flex pt-4"
@@ -264,70 +303,114 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const [characterState, setCharacterState] = useState<Character>(character);
 
   return (
-    <div className="mx-auto mb-[120px] mt-8 max-w-2xl justify-center p-6">
-      <CharacterSheetItem
-        field="name"
-        label="Name"
-        stream={true}
-        requirements={["species"]}
-        character={characterState}
-        value={characterState.name}
-        setCharacterState={setCharacterState}
-      />
-
-      <CharacterSheetItem
-        field="species"
-        label="Species"
-        stream={true}
-        requirements={[]}
-        character={characterState}
-        value={characterState.species}
-        setCharacterState={setCharacterState}
-      />
-
-      <CharacterSheetItem
-        field="age"
-        label="Age"
-        stream={false}
-        requirements={["species"]}
-        character={characterState}
-        value={characterState.age}
-        setCharacterState={setCharacterState}
-      />
-
-      <CharacterSheetItem
-        field="physicalDescription"
-        label="Physical Appearance"
-        stream={true}
-        requirements={["name", "species", "age"]}
-        character={characterState}
-        value={characterState.physicalDescription}
-        setCharacterState={setCharacterState}
-      />
-      <CharacterSheetItem
-        field="demeanor"
-        label="Behavior & Demeanor"
-        stream={true}
-        requirements={["name", "species", "age"]}
-        character={characterState}
-        value={characterState.demeanor}
-        setCharacterState={setCharacterState}
-      />
-      <CharacterSheetItem
-        field="backstory"
-        label="Backstory"
-        stream={true}
-        requirements={[
-          "name",
-          "species",
-          "age",
-          "physicalDescription",
-          "demeanor",
-        ]}
-        character={characterState}
-        value={characterState.backstory}
-        setCharacterState={setCharacterState}
-      />
+    <div className="mx-auto w-[100%] max-w-5xl">
+      <div className="flex">
+        <div className="w-[75%] border-l border-r border-stone-800 pb-[120px]">
+          <CharacterSheetItem
+            field="name"
+            label="Name"
+            stream={true}
+            requirements={["species"]}
+            style="text-5xl font-heading"
+            character={characterState}
+            value={characterState.name}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="roleplayTips"
+            label="Tips for roleplaying"
+            stream={true}
+            requirements={["physicalDescription", "demeanor"]}
+            character={characterState}
+            value={characterState.roleplayTips}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="physicalDescription"
+            label="Physical Appearance"
+            stream={true}
+            requirements={["name", "species", "age"]}
+            character={characterState}
+            value={characterState.physicalDescription}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="demeanor"
+            label="Behavior & Demeanor"
+            stream={true}
+            requirements={["name", "species", "age"]}
+            character={characterState}
+            value={characterState.demeanor}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="backstory"
+            label="Backstory"
+            stream={true}
+            requirements={[
+              "name",
+              "species",
+              "age",
+              "physicalDescription",
+              "demeanor",
+            ]}
+            character={characterState}
+            value={characterState.backstory}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="secret"
+            label="Secret"
+            stream={true}
+            requirements={["name", "species", "age", "backstory"]}
+            character={characterState}
+            value={characterState.secret}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="friends"
+            label="Friends"
+            stream={true}
+            style="text-xs"
+            requirements={["name", "species", "age", "backstory"]}
+            character={characterState}
+            value={characterState.friends}
+            setCharacterState={setCharacterState}
+          />
+          <CharacterSheetItem
+            field="enemies"
+            label="Enemies"
+            stream={true}
+            style="text-xs"
+            requirements={["name", "species", "age", "backstory"]}
+            character={characterState}
+            value={characterState.enemies}
+            setCharacterState={setCharacterState}
+          />
+        </div>
+        <div className="w-[25%] border-r border-stone-800">
+          <CharacterSheetItem
+            field="species"
+            label="Species"
+            stream={true}
+            requirements={[]}
+            character={characterState}
+            value={characterState.species}
+            setCharacterState={setCharacterState}
+            allowRegenerationInstructions={false}
+          />
+          <CharacterSheetItem
+            field="age"
+            label="Age"
+            stream={false}
+            requirements={["species"]}
+            character={characterState}
+            value={characterState.age}
+            setCharacterState={setCharacterState}
+            allowRegenerationInstructions={false}
+          />
+        </div>
+      </div>
     </div>
   );
 };

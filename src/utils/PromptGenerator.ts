@@ -9,6 +9,15 @@ export class PromptGenerator {
       campaign setting. You should seek to create characters that are creative,
       distinct, and dynamic. 
 
+      Use the following style notes when writing your response.
+      - Avoid filler words such as however, furthermore, therefore, thus,
+      consequently, and moreover.
+      - When asked to write multiple sentences or paragraphs of text, your
+      descriptions should be evocative, but not overly verbose or poetic.
+      - Refer to the character with their first name only.
+      - Use the present tense at all times.
+      - Write all descriptions in the third person.
+
       The following information is known about the character already. Use this
       information when creating your response.
 
@@ -147,9 +156,7 @@ export class PromptGenerator {
       be 1-2 sentences long.
 
       Follow the following style notes:
-        - Your description should be evocative, but not overly poetic.
         - Describe only the physical appearance, not behavior or demeanor.
-        - Use the present tense at all times.
 
       ${
         regenPrompt
@@ -198,9 +205,6 @@ export class PromptGenerator {
       Now, write a ${regenPrompt ? "new" : ""} backstory describing the
       character's history. The backstory should be a single paragraph in length.
 
-      Follow the following style notes:
-        - Your backstory should be evocative, but not overly poetic.
-
       ${
         regenPrompt
           ? `Use the following instruction when generating a response: ${regenPrompt}`
@@ -226,6 +230,9 @@ export class PromptGenerator {
       - To find the lost treasure of the ancient kingdom.
       - To avenge the death of their father.
 
+      Follow the following style notes:
+        - Use a terse and direct style of writing.
+
       ${
         regenPrompt
           ? `Use the following instruction when generating a response: ${regenPrompt}`
@@ -248,8 +255,11 @@ export class PromptGenerator {
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might threaten this relationship.
 
-      Output each relationship as a single paragraph of text, prepended with a
-      dash and separated by a newline.
+      Output each relationship as a single paragraph of no more than 75 words,
+      prepended with a dash and separated by a newline.
+
+      Follow the following style notes:
+        - Use an extremely terse and direct style of writing.
 
       ${
         regenPrompt
@@ -274,8 +284,11 @@ export class PromptGenerator {
       and one recent event or interaction that might lead to a resolution of
       their grudges.
 
-      Output each relationship as a single paragraph of text, prepended with a
-      dash and separated by a newline.
+      Output each relationship as a single paragraph of no more than 40 words,
+      prepended with a dash and separated by a newline.
+
+      Follow the following style notes:
+        - Use an extremely terse and direct style of writing.
 
       ${
         regenPrompt
@@ -297,6 +310,8 @@ export class PromptGenerator {
       Now, write one secret about the character. This could represent something
       they are ashamed about, a flaw, or hidden knowledge they have access to.
 
+      This should be one paragraph, about 40 words in length.
+
       ${
         regenPrompt
           ? `Use the following instruction when generating a response: ${regenPrompt}`
@@ -314,8 +329,12 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a short guide with tips for an actor that might roleplay as this
-      character. This should be a single paragraph in length.
+      Now, write a short guide with tips for an actor that might roleplay as
+      this character. This should be a single paragraph in length, no more than
+      40 words.
+
+      Follow the following style notes:
+        - Use an extremely terse and direct style of writing.
 
       ${
         regenPrompt
