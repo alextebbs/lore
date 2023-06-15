@@ -1,6 +1,8 @@
 import type { Character } from "@prisma/client";
 import Link from "next/link";
 
+import { signIn } from "next-auth/react";
+
 interface SidebarProps {
   characters?: Character[] | null;
   currentCharacter?: Character | null;
