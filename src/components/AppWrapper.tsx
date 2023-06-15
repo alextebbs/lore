@@ -26,7 +26,7 @@ const AppWrapper: React.FC<AppWrapperProps> = (props) => {
           characters={props.userCharacters}
           currentCharacter={props.character}
         />
-        <div className="flex flex-grow justify-center bg-stone-950">
+        <div className="h- flex flex-grow justify-center bg-stone-950">
           {children}
         </div>
       </div>

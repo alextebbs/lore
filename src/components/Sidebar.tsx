@@ -13,10 +13,13 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { characters, currentCharacter } = props;
 
   return (
-    <div className="flex w-80 flex-col border-l border-l-stone-900">
-      <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600">
-        Mythweaver
-      </div>
+    <div className="flex h-[100vh] w-80 flex-col overflow-auto border-r border-stone-800">
+      <Link href={`/`}>
+        <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600 hover:text-red-600">
+          Mythweaver
+        </div>
+      </Link>
+
       <div className="flex-grow">
         {characters && (
           <>
@@ -27,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                 + New character
               </div>
             </Link>
-            {characters?.map((character) => (
+            {characters?.reverse().map((character) => (
               <Link key={character.id} href={`/character/${character.id}`}>
                 <div
                   className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${

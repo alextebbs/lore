@@ -7,11 +7,6 @@ export const getUserCharacters = async (userId: string) => {
   try {
     const characters = await prisma.character.findMany({
       where: { userId },
-      include: {
-        friends: true,
-        enemies: true,
-        goals: true,
-      },
     });
     return JSON.parse(JSON.stringify(characters)) as Character[];
   } catch (error: unknown) {

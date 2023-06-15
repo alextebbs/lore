@@ -383,10 +383,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         />
       ))} */}
 
-      {characterState.goals.map((goal, index) => (
-        <div key={index}>{goal.description}</div>
-      ))}
-
       <div className="flex min-h-[100%]">
         <div className="w-[75%] border-l border-r border-stone-800 pb-[120px]">
           <CharacterSheetItem
