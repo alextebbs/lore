@@ -14,7 +14,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   return (
     <div className="w-80 border-l border-l-stone-900">
-      <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase">
+      <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600">
         Mythweaver
       </div>
       {characters && (
@@ -49,13 +49,15 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
       )}
       {!characters && (
         <>
-          <button
-            onClick={() => signIn()}
-            className="uppercase text-stone-300 hover:text-red-600"
-          >
-            Sign in
-          </button>{" "}
-          to save your stuff
+          <div className="p-4 text-center">
+            <button
+              onClick={() => signIn()}
+              className="uppercase text-stone-300 hover:text-red-600"
+            >
+              Sign in
+            </button>{" "}
+            to save your stuff
+          </div>
         </>
       )}
     </div>
