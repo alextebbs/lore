@@ -171,11 +171,11 @@ export async function getOpenAIResponse(options: GetOpenAIResponseOptions) {
       const response = await fetch(
         "https://api.openai.com/v1/chat/completions",
         {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${env.OPENAI_API_KEY ?? ""}`,
-          },
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${env.OPENAI_API_KEY ?? ""}`,
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify(payload),
         }
       );

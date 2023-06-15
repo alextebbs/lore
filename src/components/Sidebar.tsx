@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
                 + New character
               </div>
             </Link>
-            {characters?.reverse().map((character) => (
+            {characters?.map((character) => (
               <Link key={character.id} href={`/character/${character.id}`}>
                 <div
                   className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${

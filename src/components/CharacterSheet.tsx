@@ -40,6 +40,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const [doneGenerating, setDoneGenerating] = useState<boolean>(
     character[field] !== null
   );
+
   const [editing, setEditing] = useState<boolean>(false);
 
   const responseTextRef = useRef<HTMLDivElement>(null);

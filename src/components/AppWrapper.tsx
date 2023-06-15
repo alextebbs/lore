@@ -5,6 +5,7 @@ import { Header } from "./Header";
 import { Sidebar } from "./Sidebar";
 import { useState } from "react";
 import type { Character } from "~/utils/types";
+import Head from "next/head";
 
 interface AppWrapperProps {
   children: ReactNode;
@@ -19,6 +20,10 @@ const AppWrapper: React.FC<AppWrapperProps> = (props) => {
 
   return (
     <div className="flex h-screen flex-col">
+      <Head>
+        <title>Mythweaver</title>
+      </Head>
+
       <Header setMenuOpen={setMenuOpen} />
       <div className="flex flex-grow">
         <Sidebar

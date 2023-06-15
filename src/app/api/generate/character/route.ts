@@ -9,8 +9,6 @@ export async function GET(request: Request) {
 
   const session = await getServerSession(OPTIONS);
 
-  console.log("SESSION", session);
-
   const prisma = new PrismaClient();
 
   const prompt = searchParams.get("prompt");
@@ -22,16 +20,16 @@ export async function GET(request: Request) {
       userId: session?.user.id,
       friends: {
         create: [
-          { name: "Friend 1", description: "Friend 1 description" },
-          { name: "Friend 2", description: "Friend 2 description" },
-          { name: "Friend 3", description: "Friend 3 description" },
+          { description: "Friend 1 description" },
+          { description: "Friend 2 description" },
+          { description: "Friend 3 description" },
         ],
       },
       enemies: {
         create: [
-          { name: "Enemy 1", description: "Enemy 1 description" },
-          { name: "Enemy 2", description: "Enemy 2 description" },
-          { name: "Enemy 3", description: "Enemy 3 description" },
+          { description: "Enemy 1 description" },
+          { description: "Enemy 2 description" },
+          { description: "Enemy 3 description" },
         ],
       },
       goals: {
