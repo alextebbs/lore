@@ -1,7 +1,7 @@
 "use client";
 
 import type { Character } from "~/utils/types";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, use } from "react";
 // import { LoadingSpinner } from "./LoadingSpinner";
 
 import { MdModeEditOutline, MdClose, MdRefresh } from "react-icons/md";
@@ -9,7 +9,7 @@ import { MdModeEditOutline, MdClose, MdRefresh } from "react-icons/md";
 interface CharacterSheetItemProps {
   field: keyof Character;
   label: string;
-  value: string | null;
+  value: string | null | undefined;
   stream: boolean;
   style?: string;
   allowRegenerationInstructions?: boolean;
@@ -33,7 +33,9 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     allowRegenerationInstructions = true,
   } = props;
 
-  const [responseText, setResponseText] = useState<string | null>(value);
+  const [responseText, setResponseText] = useState<string | null | undefined>(
+    value
+  );
   const startedGenerating = useRef<boolean>(false);
   const [doneGenerating, setDoneGenerating] = useState<boolean>(
     character[field] !== null
@@ -201,9 +203,9 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       )}
       <div
         onClick={() => (!editing ? handleEditButtonClick() : null)}
-        className={`group border-b border-transparent p-6 ${
+        className={`group border-b p-6 ${
           editing
-            ? `relative z-20 shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
+            ? `relative z-20 border-transparent bg-black shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
             : `cursor-pointer border-stone-800 hover:bg-stone-900`
         }`}
       >
@@ -302,9 +304,90 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   const [characterState, setCharacterState] = useState<Character>(character);
 
+  const saveResponse = async (
+    characterID: string,
+    field: keyof Character,
+    value: string
+  ) => {
+    const response = await fetch(`/api/save/character/${field}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ [field]: value, id: characterID }),
+    });
+
+    const data = (await response.json()) as { update: Character };
+
+    setCharacterState(data.update);
+  };
+
+  const saveRelationalResponse = async (
+    characterID: string,
+    relation: keyof Character,
+    relationField: string,
+    relationValue: string,
+    relationID: string
+  ) => {
+    const response = await fetch(`/api/save/character/${relation}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({
+        id: characterID,
+        [relation]: {
+          update: {
+            where: {
+              id: relationID,
+            },
+            data: {
+              [relationField]: relationValue,
+            },
+          },
+        },
+      }),
+    });
+
+    const data = (await response.json()) as { update: Character };
+
+    setCharacterState(data.update);
+  };
+
+  useEffect(() => {
+    // console.log(
+    //   saveRelationalResponse(
+    //     "cliveva1y0000pb0g7oxcnush",
+    //     "goals",
+    //     "description",
+    //     "Goal Test ABCD",
+    //     "cliw9i7xn0000rt0hrpyzf2f0"
+    //   )
+    // );
+    console.log(Array.from(characterState.goals));
+  }, []);
+
   return (
     <div className="mx-auto w-[100%] max-w-5xl">
-      <div className="flex">
+      {/* {Array.from(characterState.goals).map((goal, index) => (
+        <CharacterSheetItem
+          key={index}
+          field="goals"
+          label="Goal"
+          stream={true}
+          requirements={["species"]}
+          style="text-5xl font-heading"
+          character={characterState}
+          value={characterState.goals[index]?.description}
+          setCharacterState={setCharacterState}
+        />
+      ))} */}
+
+      {characterState.goals.map((goal, index) => (
+        <div key={index}>{goal.description}</div>
+      ))}
+
+      <div className="flex min-h-[100%]">
         <div className="w-[75%] border-l border-r border-stone-800 pb-[120px]">
           <CharacterSheetItem
             field="name"
@@ -367,26 +450,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.secret}
             setCharacterState={setCharacterState}
           />
-
-          {characterState.goals.map((goal, index) => (
-            <CharacterSheetItem
-              key={index}
-              field="goals"
-              label={`Goal ${index + 1}`}
-              stream={true}
-              requirements={[
-                "name",
-                "species",
-                "age",
-                "physicalDescription",
-                "demeanor",
-                "backstory",
-              ]}
-              character={characterState}
-              value={goal.description}
-              setCharacterState={setCharacterState}
-            />
-          ))}
         </div>
         <div className="w-[25%] border-r border-stone-800">
           <CharacterSheetItem

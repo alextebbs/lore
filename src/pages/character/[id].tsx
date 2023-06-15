@@ -28,6 +28,9 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   context
 ) => {
   const { id } = context.query;
+
+  console.log(id);
+
   const session = await getServerSession(context.req, context.res, OPTIONS);
 
   return {

@@ -101,7 +101,6 @@ model CharacterRelationship {
   characterId String
   friend      Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend")
   enemy       Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy")
-  name        String?
   description String?    @db.Text
 
   @@index([characterId])

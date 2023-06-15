@@ -12,14 +12,14 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   return (
     <div className="w-80 border-l border-l-stone-900">
-      <div className="p-4 text-xs uppercase tracking-[0.25em] text-stone-600">
+      {/* <div className="p-4 text-xs uppercase tracking-[0.25em] text-stone-600">
         Your characters
-      </div>
+      </div> */}
       <Link href={`/`}>
         <div
-          className={`border-b border-b-stone-900 p-4 font-heading text-2xl`}
+          className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase text-red-600 hover:bg-stone-900`}
         >
-          We need to go back.
+          + New character
         </div>
       </Link>
       {characters?.map((character) => (

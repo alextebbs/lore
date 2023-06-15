@@ -22,6 +22,11 @@ export async function POST(
       data: {
         [params.field]: res[params.field],
       },
+      include: {
+        friends: true,
+        enemies: true,
+        goals: true,
+      },
     })
     .catch((err) => {
       console.error(err);
