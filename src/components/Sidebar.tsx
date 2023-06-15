@@ -13,53 +13,54 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { characters, currentCharacter } = props;
 
   return (
-    <div className="w-80 border-l border-l-stone-900">
+    <div className="flex w-80 flex-col border-l border-l-stone-900">
       <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600">
         Mythweaver
       </div>
-      {characters && (
-        <>
-          <Link href={`/`}>
-            <div
-              className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase text-red-600 hover:bg-stone-900`}
-            >
-              + New character
-            </div>
-          </Link>
-          {characters?.map((character) => (
-            <Link key={character.id} href={`/character/${character.id}`}>
+      <div className="flex-grow">
+        {characters && (
+          <>
+            <Link href={`/`}>
               <div
-                className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
-                  currentCharacter?.id == character.id
-                    ? `bg-stone-900 text-stone-100`
-                    : `text-stone-400 hover:text-red-600`
-                } `}
+                className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase text-red-600 hover:bg-stone-900`}
               >
-                {character.name || "Unnamed character"}
-
-                {character.age && character.species && (
-                  <div className="font-body text-sm text-stone-600">
-                    {character.age} year old {character.species}
-                  </div>
-                )}
+                + New character
               </div>
             </Link>
-          ))}
-        </>
-      )}
-      {!characters && (
-        <>
-          <div className="p-4 text-center">
-            <button
-              onClick={() => signIn()}
-              className="uppercase text-stone-300 hover:text-red-600"
-            >
-              Sign in
-            </button>{" "}
-            to save your stuff
-          </div>
-        </>
-      )}
+            {characters?.map((character) => (
+              <Link key={character.id} href={`/character/${character.id}`}>
+                <div
+                  className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
+                    currentCharacter?.id == character.id
+                      ? `bg-stone-900 text-stone-100`
+                      : `text-stone-400 hover:text-red-600`
+                  } `}
+                >
+                  {character.name || "Unnamed character"}
+
+                  {character.age && character.species && (
+                    <div className="font-body text-sm text-stone-600">
+                      {character.age} year old {character.species}
+                    </div>
+                  )}
+                </div>
+              </Link>
+            ))}
+          </>
+        )}
+        {!characters && (
+          <>
+            <div className="flex h-[100%] items-center justify-center p-4 text-center text-sm uppercase">
+              <button
+                onClick={() => signIn()}
+                className="uppercase text-stone-300 hover:text-red-600"
+              >
+                <span className="text-red-600">Sign in</span> to save your stuff
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };
