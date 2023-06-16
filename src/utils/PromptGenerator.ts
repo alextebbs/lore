@@ -12,8 +12,6 @@ export class PromptGenerator {
       Use the following style notes when writing your response.
       - Avoid filler words such as however, furthermore, therefore, thus,
       consequently, and moreover.
-      - When asked to write multiple sentences or paragraphs of text, your
-      descriptions should be evocative, but not overly verbose or poetic.
       - Refer to the character with their first name only.
       - Use the present tense at all times.
       - Write all descriptions in the third person.
@@ -42,6 +40,36 @@ export class PromptGenerator {
       ${
         character.backstory
           ? `Character's backstory: ${character.backstory}.`
+          : ``
+      }
+      ${
+        character.goals
+          ? character.goals
+              .map(
+                (goal, index) =>
+                  `Character's goal #${index}: ${goal.description || ``}.`
+              )
+              .join("\n")
+          : ``
+      }
+      ${
+        character.enemies
+          ? character.enemies
+              .map(
+                (enemy, index) =>
+                  `Character's enemy #${index}: ${enemy.description || ``}.`
+              )
+              .join("\n")
+          : ``
+      }
+      ${
+        character.friends
+          ? character.friends
+              .map(
+                (friend, index) =>
+                  `Character's friend #${index}: ${friend.description || ``}.`
+              )
+              .join("\n")
           : ``
       }
     `;
@@ -231,7 +259,7 @@ export class PromptGenerator {
           : ``
       }
 
-      Character's name:
+      Character's Name:
     `;
   }
 
@@ -243,12 +271,15 @@ export class PromptGenerator {
       ${this.generateKnownCharacterInfo(character)}
 
       Now, write a ${regenPrompt ? "new" : ""} single paragraph description of
-      the character's physical appearance, noting something that is unique,
-      distinct, and memorable about their physical form. This description should
-      be 1-2 sentences long.
+      the character's physical appearance. This description should be no more than
+      75 words.
 
       Follow the following style notes:
         - Describe only the physical appearance, not behavior or demeanor.
+        - Write the description as if it was narrated to a player in the game
+          who was encountering the character for the first time, in the style
+          of Dungeons and Dragons "boxed text".
+        - Never directly refer to the character by name.
 
       ${
         regenPrompt
@@ -270,7 +301,7 @@ export class PromptGenerator {
       Now, write a ${regenPrompt ? "new" : ""} single paragraph description of
       the character's behavior and demeanor, noting something that is unique,
       distinct, and memorable about their presence, speaking style, or
-      mannerisms. This description should be 1-2 sentences long.
+      mannerisms. This description should be 1-2 sentences long, no more than 75 words.
 
       Follow the following style notes:
         - Your description should be evocative, but not overly poetic.
@@ -311,16 +342,16 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a list of three primary goals that the character has. These goals should
+      Now, write another new primary goal that the character has. These goals should
       relate to the character's backstory and history.
 
-      Output each goal as a single sentence of text, prepended with a dash and separated
-      by a newline. Goals should be written in the third person.
+      Output the goal as a single sentence of text. Goals should be written in the third person.
+      Goals must be different and distinct from all other goals the character has.
 
       Examples:
-      - To become the greatest warrior in the land.
-      - To find the lost treasure of the ancient kingdom.
-      - To avenge the death of their father.
+      To become the greatest warrior in the land.
+      To find the lost treasure of the ancient kingdom.
+      To avenge the death of their father.
 
       Follow the following style notes:
         - Use a terse and direct style of writing.
@@ -331,7 +362,7 @@ export class PromptGenerator {
           : ``
       }
 
-      Character's goals:
+      Character's goal:
     `;
   }
 
@@ -342,13 +373,12 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a list of three friendly relationships this character has with
-      other characters or factions. Use one paragraph for these descriptions.
+      Now, write another new friendly relationships this character has with
+      a different character or faction. Use one paragraph for these descriptions.
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might threaten this relationship.
 
-      Output each relationship as a single paragraph of no more than 75 words,
-      prepended with a dash and separated by a newline.
+      Output this relationship as a single paragraph of no more than 40 words.
 
       Follow the following style notes:
         - Use an extremely terse and direct style of writing.
@@ -359,7 +389,7 @@ export class PromptGenerator {
           : ``
       }
 
-      Character's friends: 
+      Character's friend: 
     `;
   }
 
@@ -370,14 +400,13 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write a list of three enemy relationships this character has with
-      other characters or factions. Use one paragraph for these descriptions.
+      Now, write another new enemy relationship this character has with
+      a different character or faction. Use one paragraph for this descriptions.
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might lead to a resolution of
       their grudges.
 
-      Output each relationship as a single paragraph of no more than 40 words,
-      prepended with a dash and separated by a newline.
+      Output this relationship as a single paragraph of no more than 40 words.
 
       Follow the following style notes:
         - Use an extremely terse and direct style of writing.
@@ -388,7 +417,7 @@ export class PromptGenerator {
           : ``
       }
 
-      Character's enemies: 
+      Character's enemy: 
     `;
   }
 

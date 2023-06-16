@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from "react";
 
 import { FaDiceD20 } from "react-icons/fa";
 
+import { Canvas, useFrame } from "@react-three/fiber";
+
 import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Dice } from "./Dice";
 
 const EXAMPLES = [
   "the wayward heir of a tyrant queen",
@@ -26,8 +29,10 @@ export const PromptForm: React.FC = () => {
   const contentEditableRef = useRef<HTMLSpanElement>(null);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [inputIsInlineBlock, setInputIsInlineBlock] = useState<boolean>(true);
 
   const [examples, setExamples] = useState<string[] | null>(null);
+  const [buttonHoverState, setButtonHoverState] = useState<boolean>(false);
 
   const shuffle = (array: string[]) => {
     const shuffled = array.sort(() => Math.random() - 0.5);
@@ -38,12 +43,26 @@ export const PromptForm: React.FC = () => {
     shuffle(EXAMPLES);
   }, []);
 
-  const handleExampleClick = (example: string) => {
-    const input = inputRef.current as HTMLInputElement;
-    input.value = example;
+  const handlePromptInput = () => {
+    const currentSpanWidth =
+      contentEditableRef.current?.getBoundingClientRect().width;
 
-    const contentEditable = contentEditableRef.current as HTMLSpanElement;
-    contentEditable.innerText = example;
+    if (currentSpanWidth && currentSpanWidth > 200) {
+      setInputIsInlineBlock(false);
+    } else {
+      setInputIsInlineBlock(true);
+    }
+
+    if (inputRef.current && contentEditableRef.current) {
+      inputRef.current.value = contentEditableRef.current.innerText;
+    }
+  };
+
+  const handleExampleClick = (example: string) => {
+    if (contentEditableRef.current) {
+      contentEditableRef.current.innerText = example;
+      handlePromptInput();
+    }
   };
 
   const handleFormSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
@@ -71,19 +90,13 @@ export const PromptForm: React.FC = () => {
     }
   };
 
-  const handlePromptInput = (e: React.SyntheticEvent<HTMLSpanElement>) => {
-    const span = e.target as HTMLSpanElement;
-    const input = inputRef.current as HTMLInputElement;
-    input.value = span.innerText;
-  };
-
   return (
     <main className="flex flex-col items-center justify-center">
       <div className="flex flex-grow flex-col items-center justify-center">
         <div className="mx-auto max-w-[50rem] p-4 text-center">
           {!isLoading ? (
             <>
-              <div className="mb-8 flex justify-center">
+              {/* <div className="mb-8 flex justify-center">
                 <Image
                   quality={100}
                   src="/book-2.png"
@@ -91,7 +104,7 @@ export const PromptForm: React.FC = () => {
                   height={186}
                   alt="An Old Book"
                 />
-              </div>
+              </div> */}
 
               <p className="mb-2 text-sm">
                 Complete the sentence below to generate a character.
@@ -103,12 +116,14 @@ export const PromptForm: React.FC = () => {
 
               <form onSubmit={handleFormSubmit}>
                 <div className="my-8 font-heading text-3xl">
-                  The character is{" "}
+                  <span className="inline">The character is </span>{" "}
                   <span
                     contentEditable
                     ref={contentEditableRef}
                     onInput={handlePromptInput}
-                    className="inline-block min-w-[200px] border-b text-left focus:outline-none"
+                    className={`${
+                      inputIsInlineBlock ? `inline-block` : `inline`
+                    } min-w-[200px] border-b text-left focus:outline-none`}
                   ></span>
                   .
                 </div>
@@ -117,11 +132,24 @@ export const PromptForm: React.FC = () => {
 
                 <div>
                   <button
-                    className="inline-flex rounded border border-red-600 p-3 px-8 font-heading text-2xl tracking-[0.05em] text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                    className="inline-flex items-center rounded border border-red-700 p-2 pl-7 pr-5 font-heading text-2xl tracking-[0em] text-red-600 transition-colors hover:bg-red-700 hover:text-black"
+                    onMouseEnter={() => setButtonHoverState(true)}
+                    onMouseLeave={() => setButtonHoverState(false)}
                     type="submit"
                   >
-                    Roll
-                    <FaDiceD20 className="relative top-[0.2rem] ml-4" />
+                    roll character
+                    <div className="ml-3 h-[48px] w-[48px]">
+                      <Canvas
+                        gl={{ antialias: true }}
+                        orthographic
+                        camera={{
+                          near: 0,
+                          position: [0, 0, 100],
+                        }}
+                      >
+                        <Dice isHovered={buttonHoverState} />
+                      </Canvas>
+                    </div>
                   </button>
                 </div>
               </form>
@@ -149,7 +177,18 @@ export const PromptForm: React.FC = () => {
               </button>
             </>
           ) : (
-            <LoadingSpinner />
+            <div className="h-[48px] w-[48px]">
+              <Canvas
+                gl={{ antialias: true }}
+                orthographic
+                camera={{
+                  near: 0,
+                  position: [0, 0, 100],
+                }}
+              >
+                <Dice isHovered={false} />
+              </Canvas>
+            </div>
           )}
         </div>
       </div>

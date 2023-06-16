@@ -5,6 +5,8 @@ import { useCallback, useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { Canvas } from "@react-three/fiber";
+import { Dice } from "./Dice";
 
 interface CharacterSheetImageProps {
   character: Character;
@@ -62,11 +64,23 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
           src={character.imageURL}
           width={255}
           height={255}
+          className="w-full sm:w-auto"
           alt={`Portrait of ${character.name || `your character`}`}
         />
       ) : (
         <div className="flex h-[255px] items-center justify-center bg-black">
-          <LoadingSpinner />
+          <div className="h-[48px] w-[48px]">
+            <Canvas
+              gl={{ antialias: true }}
+              orthographic
+              camera={{
+                near: 0,
+                position: [0, 0, 100],
+              }}
+            >
+              <Dice isHovered={false} />
+            </Canvas>
+          </div>
         </div>
       )}
     </div>

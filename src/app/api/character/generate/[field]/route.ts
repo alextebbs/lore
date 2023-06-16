@@ -31,8 +31,13 @@ export async function GET(
     character,
     params.field,
     searchParams.has("regenrate"),
-    searchParams.has("prompt") ? searchParams.get("prompt") : null
+    searchParams.get("prompt") ?? null
   );
+
+  console.log(`
+    GENERATING ${params.field} ----------------------
+    PROMPT: ${prompt}
+  `);
 
   const response = await getOpenAIResponse({
     prompt,

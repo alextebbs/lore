@@ -5,6 +5,7 @@ import type { Character } from "~/utils/types";
 
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useSession } from "next-auth/react";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -40,6 +41,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const [responseText, setResponseText] = useState<string | null | undefined>(
     value
   );
+
   const [doneGenerating, setDoneGenerating] = useState<boolean>(
     character[field] !== null
   );

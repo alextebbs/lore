@@ -8,6 +8,7 @@ import { BiLink } from "react-icons/bi";
 
 import { CharacterSheetItem } from "./CharacterSheetItem";
 import { CharacterSheetImage } from "./CharacterSheetImage";
+import { useSession } from "next-auth/react";
 
 interface CharacterSheetProps {
   character: Character;
@@ -27,6 +28,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   const [showingClipboardText, setShowingClipboardText] =
     useState<boolean>(false);
+
+  const session = useSession();
 
   const saveResponse = async (options: SaveResponseOptions) => {
     const { field, value, relationID } = options;
@@ -80,14 +83,16 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   return (
     <div className="mx-auto h-max w-full max-w-5xl flex-grow border-l border-r border-stone-800">
-      <div className="sticky top-0 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500">
-        <button
-          onClick={handleRerollClick}
-          className="inline-flex rounded px-4 py-2  uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
-        >
-          Reroll
-          <FaDiceD20 className="ml-2 text-base" />
-        </button>
+      <div className="flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
+        {session && (
+          <button
+            onClick={handleRerollClick}
+            className="inline-flex rounded px-4 py-2  uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
+          >
+            Reroll
+            <FaDiceD20 className="ml-2 text-base" />
+          </button>
+        )}
         <button
           onClick={handleShareButtonClick}
           className="relative inline-flex rounded px-4 py-2 uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
@@ -107,9 +112,9 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           Saved: {lastSavedDate.toString()}
         </div>
       </div>
-      <div className="flex">
-        <div className="flex-grow pb-[120px]">
-          <div className="flex min-h-[255px] flex-col justify-end">
+      <div className="flex flex-col-reverse sm:flex-row">
+        <div className="flex-grow">
+          <div className="flex flex-col justify-end sm:min-h-[255px]">
             <CharacterSheetItem
               field="name"
               label="Name"
@@ -121,9 +126,19 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               saveResponse={saveResponse}
             />
           </div>
+        </div>
+        <div className="shrink-0 border-l border-stone-800 sm:w-[255px]">
+          <CharacterSheetImage
+            character={characterState}
+            saveResponse={saveResponse}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col-reverse sm:flex-row">
+        <div className="flex-grow pb-[120px]">
           <CharacterSheetItem
             field="roleplayTips"
-            label="Tips for roleplaying"
+            label="Roleplaying Tips"
             stream={true}
             requirements={["physicalDescription", "demeanor"]}
             character={characterState}
@@ -132,7 +147,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           />
           <CharacterSheetItem
             field="physicalDescription"
-            label="Physical Appearance"
+            label="Appearance"
             stream={true}
             requirements={["name", "species", "age"]}
             character={characterState}
@@ -141,7 +156,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           />
           <CharacterSheetItem
             field="demeanor"
-            label="Behavior & Demeanor"
+            label="Behavior"
             stream={true}
             requirements={["name", "species", "age"]}
             character={characterState}
@@ -173,26 +188,49 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             saveResponse={saveResponse}
           />
 
-          {character.goals.map((goal, index) => (
+          {character.goals.map((item, index) => (
             <CharacterSheetItem
-              key={goal.id}
+              key={item.id}
               field="goals"
               label={`Goal ${index + 1}`}
               stream={true}
-              requirements={[]}
+              requirements={["backstory", "secret", "name"]}
               character={characterState}
-              value={goal.description}
+              value={item.description}
               saveResponse={saveResponse}
-              relationID={goal.id}
+              relationID={item.id}
             />
           ))}
-        </div>
-        <div className="w-[255px] shrink-0 border-l border-stone-800">
-          <CharacterSheetImage
-            character={characterState}
-            saveResponse={saveResponse}
-          />
 
+          {/* {character.friends.map((item, index) => (
+            <CharacterSheetItem
+              key={item.id}
+              field="goals"
+              label={`Friend ${index + 1}`}
+              stream={true}
+              requirements={["backstory", "secret", "name"]}
+              character={characterState}
+              value={item.description}
+              saveResponse={saveResponse}
+              relationID={item.id}
+            />
+          ))}
+
+          {character.enemies.map((item, index) => (
+            <CharacterSheetItem
+              key={item.id}
+              field="goals"
+              label={`Enemy ${index + 1}`}
+              stream={true}
+              requirements={["backstory", "secret", "name"]}
+              character={characterState}
+              value={item.description}
+              saveResponse={saveResponse}
+              relationID={item.id}
+            />
+          ))} */}
+        </div>
+        <div className="shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetItem
             field="species"
             label="Species"
@@ -202,7 +240,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.species}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="age"
@@ -213,7 +251,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.age}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="height"
@@ -224,7 +262,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.height}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="weight"
@@ -235,7 +273,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.weight}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="eyeColor"
@@ -246,7 +284,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.eyeColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="hairColor"
@@ -257,7 +295,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.hairColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-2xl font-heading"}
+            style={"text-xl sm:text-2xl font-heading"}
           />
         </div>
       </div>

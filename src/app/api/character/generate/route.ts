@@ -19,23 +19,23 @@ export async function GET(request: Request) {
       userId: session?.user.id,
       friends: {
         create: [
-          { description: "Friend 1 description" },
-          { description: "Friend 2 description" },
-          { description: "Friend 3 description" },
+          { description: null },
+          { description: null },
+          { description: null },
         ],
       },
       enemies: {
         create: [
-          { description: "Enemy 1 description" },
-          { description: "Enemy 2 description" },
-          { description: "Enemy 3 description" },
+          { description: null },
+          { description: null },
+          { description: null },
         ],
       },
       goals: {
         create: [
-          { description: "Goal 1 description" },
-          { description: "Goal 2 description" },
-          { description: "Goal 3 description" },
+          { description: null },
+          { description: null },
+          { description: null },
         ],
       },
     },

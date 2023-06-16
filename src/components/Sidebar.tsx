@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   };
 
   return (
-    <div className="flex h-screen w-80 flex-col overflow-auto border-r border-stone-800">
+    <div className="fixed flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 lg:static lg:w-80 lg:translate-x-0">
       <Link href={`/`}>
         <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600 hover:text-red-600">
           Mythweaver
