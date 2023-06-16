@@ -5,15 +5,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: [
-          '"IBM Plex Mono"',
-          "ui-monospace",
-          "SFMono-Regular",
-          "monospace",
-        ],
-        display: ['"Sabbath Black"', "serif"],
+        body: ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "monospace"],
         heading: ['"pragmatapro-fraktur"', "serif"],
-        placeholder: ['"Viking"', "serif"],
       },
     },
   },

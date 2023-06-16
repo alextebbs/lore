@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { signIn } from "next-auth/react";
 import { MdClose } from "react-icons/md";
+import { GiScrollQuill } from "react-icons/gi";
 
 interface SidebarProps {
   characters?: Character[] | null;
@@ -24,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   return (
     <div className="fixed flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 lg:static lg:w-80 lg:translate-x-0">
       <Link href={`/`}>
-        <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600 hover:text-red-600">
+        <div className="flex border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600 hover:text-red-600">
           Mythweaver
         </div>
       </Link>
@@ -34,9 +35,9 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           <>
             <Link href={`/`}>
               <div
-                className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
+                className={`flex border-b border-b-stone-900 p-4 font-body text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
               >
-                + New character
+                <GiScrollQuill className="mr-3 text-xl" /> New character
               </div>
             </Link>
             {characters?.map((character) => (

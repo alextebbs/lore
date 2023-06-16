@@ -6,6 +6,8 @@ import { FaDiceD20 } from "react-icons/fa";
 
 import { Canvas, useFrame } from "@react-three/fiber";
 
+import { GiScrollQuill } from "react-icons/gi";
+
 import Image from "next/image";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { Dice } from "./Dice";
@@ -106,6 +108,10 @@ export const PromptForm: React.FC = () => {
                 />
               </div> */}
 
+              <div className="mb-8 flex justify-center text-[72px] text-stone-900">
+                <GiScrollQuill />
+              </div>
+
               <p className="mb-2 text-sm">
                 Complete the sentence below to generate a character.
               </p>
@@ -154,9 +160,11 @@ export const PromptForm: React.FC = () => {
                 </div>
               </form>
 
-              <p className="mt-12 text-xs text-stone-400">For example...</p>
+              <p className="mt-12 text-xs italic text-stone-500">
+                For example...
+              </p>
 
-              <ul className="mb-4 mt-2 text-xs text-stone-400">
+              <ul className="mb-4 mt-2 text-xs text-stone-500">
                 {examples?.map((example) => (
                   <li
                     key={example}

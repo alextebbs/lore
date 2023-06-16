@@ -59,16 +59,48 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
 
   return (
     <div className="border-b border-stone-800">
+      <svg className="hidden" image-rendering="optimizeSpeed">
+        {/* https://github.com/tomren1/dither-with-css  */}
+        <filter
+          id="dither"
+          color-interpolation-filters="sRGB"
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+        >
+          <feImage
+            width="4"
+            height="4"
+            xlinkHref="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAG0lEQVR42mNgYGD4X19f/59h//79/+3t7f8DAEGyCHSQnFc+AAAAAElFTkSuQmCC"
+          />
+          <feTile />
+          <feComposite
+            operator="arithmetic"
+            k1="0"
+            k2="1"
+            k3="1"
+            k4="-0.5"
+            in="SourceGraphic"
+          />
+          <feComponentTransfer>
+            <feFuncR type="discrete" tableValues="0 1" />
+            <feFuncG type="discrete" tableValues="0 1" />
+            <feFuncB type="discrete" tableValues="0 1" />
+          </feComponentTransfer>
+        </filter>
+      </svg>
       {character.imageURL ? (
         <img
           src={character.imageURL}
           width={255}
           height={255}
           className="w-full sm:w-auto"
+          style={{ filter: "url(#dither)" }}
           alt={`Portrait of ${character.name || `your character`}`}
         />
       ) : (
-        <div className="flex h-[255px] items-center justify-center bg-black">
+        <div className="flex h-[255px] flex-col items-center justify-center">
           <div className="h-[48px] w-[48px]">
             <Canvas
               gl={{ antialias: true }}
@@ -80,6 +112,9 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
             >
               <Dice isHovered={false} />
             </Canvas>
+          </div>
+          <div className="mt-3 text-xs uppercase tracking-[0.15em] text-stone-700">
+            Generating image
           </div>
         </div>
       )}

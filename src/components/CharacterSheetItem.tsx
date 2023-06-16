@@ -12,12 +12,12 @@ interface CharacterSheetItemProps {
   label: string;
   value: string | null | undefined;
   stream: boolean;
-  style?: string;
   allowRegeneration?: boolean;
   requirements?: (keyof Character)[];
   character: Character;
   saveResponse: (options: SaveResponseOptions) => Promise<void>;
   relationID?: string;
+  style: "condensed" | "normal" | "header";
 }
 
 export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
@@ -29,7 +29,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     label,
     stream,
     requirements,
-    style = "",
+    style = "normal",
     character,
     allowRegeneration = true,
     relationID,
@@ -193,20 +193,22 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       )}
       <div
         onClick={() => (!editing ? handleEditButtonClick() : null)}
-        className={`group border-b p-6 py-5 ${
+        className={`group border-b p-6 
+        ${style == "condensed" ? "py-3 pt-2" : "py-5"}
+        ${
           editing
             ? `relative z-20 border-transparent bg-black shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
             : `cursor-pointer border-stone-800 hover:bg-stone-900`
         }`}
       >
-        <div className="mb-1 flex h-9 items-center text-xs text-red-600">
+        <div className="mb-1 flex h-7 items-center text-xs text-red-600">
           <span className="uppercase tracking-[0.25em]">{label}</span>
 
           {doneGenerating &&
             (!editing ? (
               <button
                 onClick={handleEditButtonClick}
-                className="ml-1 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
+                className="ml-2 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
               >
                 <MdModeEditOutline />{" "}
                 <span className="inline-block pl-2 opacity-0 transition-all group-hover:opacity-100">
@@ -237,7 +239,13 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 ref={responseTextRef}
                 contentEditable={editing && doneGenerating}
                 suppressContentEditableWarning
-                className={`${style} transition-colors focus:outline-none focus:ring-0`}
+                className={`
+                  transition-colors focus:outline-none focus:ring-0 
+                  ${
+                    style == "header" ? `font-heading text-3xl sm:text-5xl` : ``
+                  }
+                  ${style == "condensed" ? `text-lg` : ``}
+                `}
               >
                 {responseText}
               </div>

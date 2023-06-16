@@ -120,7 +120,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               label="Name"
               stream={true}
               requirements={["species"]}
-              style="text-5xl font-heading"
+              style="header"
               character={characterState}
               value={characterState.name}
               saveResponse={saveResponse}
@@ -240,7 +240,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.species}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
           <CharacterSheetItem
             field="age"
@@ -251,18 +251,18 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.age}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
           <CharacterSheetItem
             field="height"
             label="Height"
             stream={false}
             requirements={["physicalDescription"]}
-            character={characterState}
             value={characterState.height}
             allowRegeneration={false}
+            character={characterState}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
           <CharacterSheetItem
             field="weight"
@@ -273,7 +273,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.weight}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
           <CharacterSheetItem
             field="eyeColor"
@@ -284,7 +284,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.eyeColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
           <CharacterSheetItem
             field="hairColor"
@@ -295,7 +295,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.hairColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
-            style={"text-xl sm:text-2xl font-heading"}
+            style={"condensed"}
           />
         </div>
       </div>
