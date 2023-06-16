@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { FaDiceD20 } from "react-icons/fa";
 
 import Image from "next/image";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 const EXAMPLES = [
   "the wayward heir of a tyrant queen",
@@ -96,7 +97,7 @@ export const PromptForm: React.FC = () => {
                 Complete the sentence below to generate a character.
               </p>
 
-              <p className="text-xs text-stone-500">
+              <p className="text-xs italic text-stone-500">
                 (or leave it empty to generate a random character)
               </p>
 
@@ -148,7 +149,7 @@ export const PromptForm: React.FC = () => {
               </button>
             </>
           ) : (
-            <div>Loading...</div>
+            <LoadingSpinner />
           )}
         </div>
       </div>

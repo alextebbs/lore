@@ -5,7 +5,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"Roboto Mono"', "ui-monospace", "SFMono-Regular", "monospace"],
+        body: [
+          '"IBM Plex Mono"',
+          "ui-monospace",
+          "SFMono-Regular",
+          "monospace",
+        ],
         display: ['"Sabbath Black"', "serif"],
         heading: ['"pragmatapro-fraktur"', "serif"],
         placeholder: ['"Viking"', "serif"],

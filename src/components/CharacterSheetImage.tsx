@@ -4,6 +4,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface CharacterSheetImageProps {
   character: Character;
@@ -65,7 +66,7 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
         />
       ) : (
         <div className="flex h-[255px] items-center justify-center bg-black">
-          Loading...
+          <LoadingSpinner />
         </div>
       )}
     </div>

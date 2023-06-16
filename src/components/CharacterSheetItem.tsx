@@ -4,6 +4,7 @@ import { FaDiceD20 } from "react-icons/fa";
 import type { Character } from "~/utils/types";
 
 import type { SaveResponseOptions } from "./CharacterSheet";
+import { LoadingSpinner } from "./LoadingSpinner";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -239,7 +240,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 {responseText}
               </div>
             ) : (
-              "Loading..."
+              <LoadingSpinner />
             )}
           </div>
 
@@ -268,7 +269,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                       <input
                         name="prompt"
                         placeholder="Instructions for regeneration"
-                        className="w-full border bg-black bg-transparent px-4 py-2"
+                        className="w-full rounded border bg-black bg-transparent px-4 py-2"
                       />
                       <div className="absolute right-4 top-[50%] -translate-y-1/2">
                         <label className="flex items-center">
@@ -278,7 +279,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                       </div>
                     </div>
                     <button
-                      className="flex items-center border border-red-600 pl-3 pr-4 text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                      className="flex items-center rounded border border-red-600 pl-3 pr-4 uppercase tracking-[0.15em] text-red-600 transition-colors hover:bg-red-600 hover:text-white"
                       type="submit"
                     >
                       <FaDiceD20 className="mr-2" />
