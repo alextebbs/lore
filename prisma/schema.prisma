@@ -61,12 +61,6 @@ datasource db {
   relationMode = "prisma"
 }
 
-// goals               String?  @db.Text
-// enemies             String?  @db.Text
-// friends             String?  @db.Text
-// goals               Goal[]
-// rivals              SimpleCharacter[]
-
 model Character {
   id                  String                  @id @default(cuid())
   createdAt           DateTime                @default(now())
@@ -87,6 +81,7 @@ model Character {
   demeanor            String?                 @db.Text
   secret              String?                 @db.Text
   roleplayTips        String?                 @db.Text
+  imageURL            String?
   goals               Goal[]
   friends             CharacterRelationship[] @relation(name: "Friend", map: "character_friends_fk")
   enemies             CharacterRelationship[] @relation(name: "Enemy", map: "character_enemies_fk")
@@ -99,8 +94,8 @@ model CharacterRelationship {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   characterId String
-  friend      Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend")
-  enemy       Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy")
+  friend      Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend", onDelete: Cascade)
+  enemy       Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy", onDelete: Cascade)
   description String?    @db.Text
 
   @@index([characterId])

@@ -1,391 +1,113 @@
 "use client";
 
 import type { Character } from "~/utils/types";
-import { useEffect, useState, useRef, use } from "react";
-// import { LoadingSpinner } from "./LoadingSpinner";
+import { useState } from "react";
 
-import { MdModeEditOutline, MdClose, MdRefresh } from "react-icons/md";
+import { FaDiceD20 } from "react-icons/fa";
+import { BiLink } from "react-icons/bi";
 
-interface CharacterSheetItemProps {
-  field: keyof Character;
-  label: string;
-  value: string | null | undefined;
-  stream: boolean;
-  style?: string;
-  allowRegenerationInstructions?: boolean;
-  requirements?: (keyof Character)[];
-  character: Character;
-  setCharacterState: React.Dispatch<React.SetStateAction<Character>>;
-}
-
-export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
-  props
-) => {
-  const {
-    value,
-    field,
-    label,
-    stream,
-    requirements,
-    style = "",
-    character,
-    setCharacterState,
-    allowRegenerationInstructions = true,
-  } = props;
-
-  const [responseText, setResponseText] = useState<string | null | undefined>(
-    value
-  );
-  const startedGenerating = useRef<boolean>(false);
-  const [doneGenerating, setDoneGenerating] = useState<boolean>(
-    character[field] !== null
-  );
-
-  const [editing, setEditing] = useState<boolean>(false);
-
-  const responseTextRef = useRef<HTMLDivElement>(null);
-
-  // Generic function to get a response from the API.
-  const getResponse = async (url: string) => {
-    setDoneGenerating(false);
-    setResponseText("");
-
-    const response = await fetch(url);
-
-    if (!response.ok) throw new Error(response.statusText);
-
-    const data = response.body;
-
-    if (!data) return;
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      setResponseText((prev) => (prev ? prev + chunkValue : chunkValue));
-    }
-
-    setDoneGenerating(true);
-  };
-
-  // Generate this field if it is null when the character loads.
-  useEffect(() => {
-    const generateResponse = async () => {
-      // If we already have a value or we are currently generating one, don't.
-      if (value || startedGenerating.current) return;
-
-      // If we need to await something else to generate this, wait.
-      for (const requirement of requirements ?? []) {
-        if (!character[requirement]) return;
-      }
-
-      // This is mostly to get around StrictMode stuff
-      startedGenerating.current = true;
-
-      await getResponse(
-        `/api/generate/character/${field}/?id=${character.id}${
-          stream ? "&stream" : ""
-        }`
-      );
-    };
-
-    generateResponse().catch(console.error);
-  }, [
-    field,
-    stream,
-    character,
-    setCharacterState,
-    requirements,
-    responseText,
-    value,
-  ]);
-
-  // Watch for changes to the response text and save them if we are doneGenerating
-  useEffect(() => {
-    if (!doneGenerating) return;
-
-    // This should be factored out into a stanalone function
-    const saveResponse = async () => {
-      await fetch(`/api/save/character/${field}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ [field]: responseText, id: character.id }),
-      });
-
-      setCharacterState((prev) => ({ ...prev, [field]: responseText }));
-    };
-
-    saveResponse().catch(console.error);
-  }, [responseText, field, setCharacterState, character.id, doneGenerating]);
-
-  const handleSaveButtonClick = () => {
-    const newResponseText = responseTextRef.current?.textContent ?? null;
-
-    if (!newResponseText) return;
-
-    // This should be factored out into a stanalone function
-    const saveResponse = async () => {
-      await fetch(`/api/save/character/${field}`, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ [field]: newResponseText, id: character.id }),
-      });
-
-      setCharacterState((prev) => ({ ...prev, [field]: newResponseText }));
-    };
-
-    saveResponse().catch(console.error);
-
-    setEditing(false);
-  };
-
-  const handleEditButtonClick = () => {
-    setEditing(true);
-
-    // Focus the response text with the caret at the end:
-    // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
-
-    setTimeout(() => {
-      if (!responseTextRef.current || !responseTextRef.current.childNodes[0])
-        return;
-
-      responseTextRef.current.focus();
-
-      const textLength = responseTextRef.current.innerText.length;
-      const range = document.createRange();
-      const selection = window.getSelection();
-
-      range.setStart(responseTextRef.current.childNodes[0], textLength);
-      range.collapse(true);
-
-      selection?.removeAllRanges();
-      selection?.addRange(range);
-    }, 0);
-  };
-
-  const handleRegenerateFormSubmit = async (
-    e: React.SyntheticEvent<HTMLFormElement>
-  ) => {
-    e.preventDefault();
-
-    setEditing(false);
-
-    const form = e.target as HTMLFormElement;
-    const elements = form.elements as typeof form.elements & {
-      prompt: { value: string };
-    };
-
-    let url = `/api/generate/character/${field}/?id=${character.id}&regenerate${
-      stream ? "&stream" : ""
-    }`;
-
-    if (elements.prompt.value) {
-      url += `&prompt=${elements.prompt.value}`;
-    }
-
-    await getResponse(url);
-  };
-
-  return (
-    <div>
-      {editing && (
-        <div
-          onClick={handleSaveButtonClick}
-          className="fixed bottom-0 left-0 right-0 top-0 z-10"
-        ></div>
-      )}
-      <div
-        onClick={() => (!editing ? handleEditButtonClick() : null)}
-        className={`group border-b p-6 ${
-          editing
-            ? `relative z-20 border-transparent bg-black shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
-            : `cursor-pointer border-stone-800 hover:bg-stone-900`
-        }`}
-      >
-        <div className="mb-1 flex h-9 items-center text-xs text-red-600">
-          <span className="uppercase tracking-[0.25em]">{label}</span>
-
-          {doneGenerating &&
-            (!editing ? (
-              <button
-                onClick={handleEditButtonClick}
-                className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
-              >
-                <MdModeEditOutline />{" "}
-                <span className="inline-block pl-2 opacity-0 transition-all group-hover:opacity-100">
-                  Edit
-                </span>
-              </button>
-            ) : (
-              <button
-                onClick={handleSaveButtonClick}
-                className="ml-2 flex cursor-pointer items-center justify-center border border-transparent p-2 pr-3 hover:border-red-600"
-              >
-                <MdClose />
-                <span
-                  className={`inline-block pl-2 transition-all ${
-                    !editing ? `opacity-0 group-hover:opacity-100` : ``
-                  }`}
-                >
-                  Close
-                </span>
-              </button>
-            ))}
-        </div>
-
-        <>
-          <div className="whitespace-pre-line text-sm">
-            {responseText ? (
-              <div
-                ref={responseTextRef}
-                contentEditable={editing && doneGenerating}
-                suppressContentEditableWarning
-                className={`${style} transition-colors focus:outline-none focus:ring-0`}
-              >
-                {responseText}
-              </div>
-            ) : (
-              "Loading..."
-            )}
-          </div>
-
-          {editing && (
-            <div className="absolute top-[100%] w-[100%] text-xs text-stone-400">
-              <div>
-                Edit the text above
-                {allowRegenerationInstructions && (
-                  <> OR try regenerating this field with new instructions</>
-                )}
-                .
-              </div>
-
-              {doneGenerating && allowRegenerationInstructions && (
-                <form
-                  onSubmit={handleRegenerateFormSubmit}
-                  className="flex pt-4"
-                >
-                  <input
-                    name="prompt"
-                    placeholder="Instructions for regeneration"
-                    className="mr-2 flex-1 border bg-transparent px-4 py-2"
-                  />
-                  <button
-                    className="flex items-center border border-red-600 pl-3 pr-4 text-red-600 transition-colors hover:bg-red-600 hover:text-white"
-                    type="submit"
-                  >
-                    <span className="mr-2 text-xl">
-                      <MdRefresh />
-                    </span>
-                    Regenerate
-                  </button>
-                </form>
-              )}
-            </div>
-          )}
-        </>
-      </div>
-    </div>
-  );
-};
+import { CharacterSheetItem } from "./CharacterSheetItem";
 
 interface CharacterSheetProps {
   character: Character;
+}
+
+export interface SaveResponseOptions {
+  field: keyof Character;
+  value: string;
+  relationID?: string;
 }
 
 export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const { character } = props;
 
   const [characterState, setCharacterState] = useState<Character>(character);
+  const [lastSavedDate, setLastSavedDate] = useState<Date>(character.updatedAt);
 
-  const saveResponse = async (
-    characterID: string,
-    field: keyof Character,
-    value: string
-  ) => {
-    const response = await fetch(`/api/save/character/${field}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({ [field]: value, id: characterID }),
-    });
+  const [showingClipboardText, setShowingClipboardText] =
+    useState<boolean>(false);
 
-    const data = (await response.json()) as { update: Character };
+  const saveResponse = async (options: SaveResponseOptions) => {
+    const { field, value, relationID } = options;
 
-    setCharacterState(data.update);
-  };
-
-  const saveRelationalResponse = async (
-    characterID: string,
-    relation: keyof Character,
-    relationField: string,
-    relationValue: string,
-    relationID: string
-  ) => {
-    const response = await fetch(`/api/save/character/${relation}`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "POST",
-      body: JSON.stringify({
-        id: characterID,
-        [relation]: {
-          update: {
-            where: {
-              id: relationID,
-            },
-            data: {
-              [relationField]: relationValue,
+    const payload = {
+      id: character.id,
+      [field]: !relationID
+        ? value
+        : {
+            update: {
+              where: { id: relationID },
+              data: { description: value },
             },
           },
-        },
-      }),
+    };
+
+    const response = await fetch(`/api/character/save/${field}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(payload),
     });
+
+    console.log(`SAVED: FIELD: ${field}, VALUE: ${value}`);
 
     const data = (await response.json()) as { update: Character };
 
     setCharacterState(data.update);
+    setLastSavedDate(data.update.updatedAt);
   };
 
-  useEffect(() => {
-    // console.log(
-    //   saveRelationalResponse(
-    //     "cliveva1y0000pb0g7oxcnush",
-    //     "goals",
-    //     "description",
-    //     "Goal Test ABCD",
-    //     "cliw9i7xn0000rt0hrpyzf2f0"
-    //   )
-    // );
-    console.log(Array.from(characterState.goals));
-  }, []);
+  const handleShareButtonClick = async () => {
+    setShowingClipboardText(true);
+    await navigator.clipboard.writeText(window.location.href);
+  };
+
+  const handleRerollClick = () => {
+    setCharacterState((prev) => ({
+      ...prev,
+      name: null,
+      roleplayTips: null,
+      species: null,
+      age: null,
+      demeanor: null,
+      physicalDescription: null,
+      backstory: null,
+      secret: null,
+    }));
+  };
 
   return (
-    <div className="mx-auto w-[100%] max-w-5xl">
-      {/* {Array.from(characterState.goals).map((goal, index) => (
-        <CharacterSheetItem
-          key={index}
-          field="goals"
-          label="Goal"
-          stream={true}
-          requirements={["species"]}
-          style="text-5xl font-heading"
-          character={characterState}
-          value={characterState.goals[index]?.description}
-          setCharacterState={setCharacterState}
-        />
-      ))} */}
-
-      <div className="flex min-h-[100%]">
-        <div className="w-[75%] border-l border-r border-stone-800 pb-[120px]">
+    <div className="mx-auto h-max w-full max-w-5xl flex-grow border-l border-r border-stone-800">
+      <div className="sticky top-0 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500">
+        <button
+          onClick={handleRerollClick}
+          className="inline-flex rounded px-4 py-2  uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
+        >
+          Reroll
+          <FaDiceD20 className="ml-2 text-base" />
+        </button>
+        <button
+          onClick={handleShareButtonClick}
+          className="relative inline-flex rounded px-4 py-2 uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
+        >
+          Share
+          <BiLink className="ml-2 text-base" />
+        </button>
+        <div
+          onTransitionEnd={() => setShowingClipboardText(false)}
+          className={`pointer-events-none ml-2 normal-case tracking-normal text-stone-300 transition-opacity duration-300 ${
+            showingClipboardText ? `opacity-1` : `opacity-0 delay-[3000ms]`
+          }`}
+        >
+          Copied link
+        </div>
+        <div className="ml-auto inline-flex px-4 py-2 uppercase tracking-[0.15em]">
+          Saved: {lastSavedDate.toString()}
+        </div>
+      </div>
+      <div className="flex">
+        <div className="w-[75%] pb-[120px]">
           <CharacterSheetItem
             field="name"
             label="Name"
@@ -394,7 +116,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             style="text-5xl font-heading"
             character={characterState}
             value={characterState.name}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="roleplayTips"
@@ -403,7 +125,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["physicalDescription", "demeanor"]}
             character={characterState}
             value={characterState.roleplayTips}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="physicalDescription"
@@ -412,7 +134,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["name", "species", "age"]}
             character={characterState}
             value={characterState.physicalDescription}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="demeanor"
@@ -421,7 +143,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["name", "species", "age"]}
             character={characterState}
             value={characterState.demeanor}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="backstory"
@@ -436,7 +158,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             ]}
             character={characterState}
             value={characterState.backstory}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="secret"
@@ -445,10 +167,24 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["name", "species", "age", "backstory"]}
             character={characterState}
             value={characterState.secret}
-            setCharacterState={setCharacterState}
+            saveResponse={saveResponse}
           />
+
+          {character.goals.map((goal, index) => (
+            <CharacterSheetItem
+              key={goal.id}
+              field="goals"
+              label={`Goal ${index + 1}`}
+              stream={true}
+              requirements={[]}
+              character={characterState}
+              value={goal.description}
+              saveResponse={saveResponse}
+              relationID={goal.id}
+            />
+          ))}
         </div>
-        <div className="w-[25%] border-r border-stone-800">
+        <div className="w-[25%] border-l border-stone-800">
           <CharacterSheetItem
             field="species"
             label="Species"
@@ -456,8 +192,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={[]}
             character={characterState}
             value={characterState.species}
-            setCharacterState={setCharacterState}
-            allowRegenerationInstructions={false}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
           />
           <CharacterSheetItem
             field="age"
@@ -466,8 +202,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["species"]}
             character={characterState}
             value={characterState.age}
-            setCharacterState={setCharacterState}
-            allowRegenerationInstructions={false}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
           />
         </div>
       </div>

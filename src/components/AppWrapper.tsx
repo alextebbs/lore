@@ -19,19 +19,20 @@ const AppWrapper: React.FC<AppWrapperProps> = (props) => {
   const { children } = props;
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex flex-col">
       <Head>
         <title>Mythweaver</title>
       </Head>
 
       <Header setMenuOpen={setMenuOpen} />
+
       <div className="flex flex-grow">
         <Sidebar
           menuOpen={menuOpen}
           characters={props.userCharacters}
           currentCharacter={props.character}
         />
-        <div className="h- flex flex-grow justify-center bg-stone-950">
+        <div className="relative flex h-screen flex-grow justify-center overflow-auto bg-stone-950">
           {children}
         </div>
       </div>

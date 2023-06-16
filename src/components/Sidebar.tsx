@@ -13,7 +13,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { characters, currentCharacter } = props;
 
   return (
-    <div className="flex h-[100vh] w-80 flex-col overflow-auto border-r border-stone-800">
+    <div className="flex h-screen w-80 flex-col overflow-auto border-r border-stone-800">
       <Link href={`/`}>
         <div className="border-b border-stone-900 p-4 font-heading text-3xl uppercase tracking-[0.05em] text-stone-600 hover:text-red-600">
           Mythweaver
@@ -25,7 +25,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           <>
             <Link href={`/`}>
               <div
-                className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase text-red-600 hover:bg-stone-900`}
+                className={`border-b border-b-stone-900 p-4 font-body text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
               >
                 + New character
               </div>
