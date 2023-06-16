@@ -27,7 +27,7 @@ export async function GET(request: Request) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      prompt: `Fantasy portrait of a ${species} with ${eyeColor} eyes and ${hairColor} hair`,
+      prompt: `Fantasy portrait of a ${species} with ${eyeColor} eyes and ${hairColor} hair. Epic fantasy art, sharp, award winning on Artstation, 4k HD.`,
       size: "256x256",
     }),
   });

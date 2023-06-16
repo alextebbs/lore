@@ -30,7 +30,7 @@ export async function GET(
   const prompt = new PromptGenerator().generate(
     character,
     params.field,
-    searchParams.has("regenerate"),
+    searchParams.has("regenrate"),
     searchParams.has("prompt") ? searchParams.get("prompt") : null
   );
 

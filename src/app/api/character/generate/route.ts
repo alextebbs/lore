@@ -1,7 +1,6 @@
 import { PrismaClient } from "@prisma/client/edge";
 
 import { getServerSession } from "next-auth/next";
-
 import { OPTIONS } from "~/app/api/auth/[...nextauth]/route";
 
 export async function GET(request: Request) {

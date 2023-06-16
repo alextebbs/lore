@@ -1,7 +1,9 @@
 import type { Character } from "@prisma/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { signIn } from "next-auth/react";
+import { MdClose } from "react-icons/md";
 
 interface SidebarProps {
   characters?: Character[] | null;
@@ -11,6 +13,13 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
   const { characters, currentCharacter } = props;
+
+  const router = useRouter();
+
+  const handleDeleteCharacter = async (id: string) => {
+    await fetch(`/api/character/delete?id=${id}`);
+    router.push(`/`);
+  };
 
   return (
     <div className="flex h-screen w-80 flex-col overflow-auto border-r border-stone-800">
@@ -31,23 +40,31 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
               </div>
             </Link>
             {characters?.map((character) => (
-              <Link key={character.id} href={`/character/${character.id}`}>
-                <div
-                  className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
-                    currentCharacter?.id == character.id
-                      ? `bg-stone-900 text-stone-100`
-                      : `text-stone-400 hover:text-red-600`
-                  } `}
-                >
-                  {character.name || "Unnamed character"}
+              <div key={character.id} className="group relative">
+                <Link href={`/character/${character.id}`}>
+                  <div
+                    className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
+                      currentCharacter?.id == character.id
+                        ? `bg-stone-900 text-stone-100`
+                        : `text-stone-400 hover:text-red-600`
+                    } `}
+                  >
+                    {character.name || "Unnamed character"}
 
-                  {character.age && character.species && (
-                    <div className="font-body text-sm text-stone-600">
-                      {character.age} year old {character.species}
-                    </div>
-                  )}
-                </div>
-              </Link>
+                    {character.age && character.species && (
+                      <div className="font-body text-sm text-stone-600">
+                        {character.age} year old {character.species}
+                      </div>
+                    )}
+                  </div>
+                </Link>
+                <button
+                  onClick={() => handleDeleteCharacter(character.id)}
+                  className="absolute right-0 top-0 hidden p-2 text-xl text-stone-600 hover:text-red-600 group-hover:block"
+                >
+                  <MdClose />
+                </button>
+              </div>
             ))}
           </>
         )}

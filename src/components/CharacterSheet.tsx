@@ -108,17 +108,19 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         </div>
       </div>
       <div className="flex">
-        <div className="w-[75%] pb-[120px]">
-          <CharacterSheetItem
-            field="name"
-            label="Name"
-            stream={true}
-            requirements={["species"]}
-            style="text-5xl font-heading"
-            character={characterState}
-            value={characterState.name}
-            saveResponse={saveResponse}
-          />
+        <div className="flex-grow pb-[120px]">
+          <div className="flex min-h-[255px] flex-col justify-end">
+            <CharacterSheetItem
+              field="name"
+              label="Name"
+              stream={true}
+              requirements={["species"]}
+              style="text-5xl font-heading"
+              character={characterState}
+              value={characterState.name}
+              saveResponse={saveResponse}
+            />
+          </div>
           <CharacterSheetItem
             field="roleplayTips"
             label="Tips for roleplaying"
@@ -185,7 +187,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           ))}
         </div>
-        <div className="w-[25%] border-l border-stone-800">
+        <div className="w-[255px] shrink-0 border-l border-stone-800">
           <CharacterSheetImage
             character={characterState}
             saveResponse={saveResponse}
@@ -200,6 +202,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.species}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="age"
@@ -210,6 +213,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.age}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="height"
@@ -220,6 +224,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.height}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="weight"
@@ -230,6 +235,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.weight}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="eyeColor"
@@ -240,6 +246,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.eyeColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
           <CharacterSheetItem
             field="hairColor"
@@ -250,6 +257,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             value={characterState.hairColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
+            style={"text-2xl font-heading"}
           />
         </div>
       </div>

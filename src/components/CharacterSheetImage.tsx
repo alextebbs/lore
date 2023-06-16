@@ -1,6 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
+// ^ passing on this for now
+
 import { useCallback, useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
-import Image from "next/image";
 import type { SaveResponseOptions } from "./CharacterSheet";
 
 interface CharacterSheetImageProps {
@@ -53,12 +55,18 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
   ]);
 
   return (
-    <div>
-      {character.imageURL && (
-        <Image
+    <div className="border-b border-stone-800">
+      {character.imageURL ? (
+        <img
           src={character.imageURL}
+          width={255}
+          height={255}
           alt={`Portrait of ${character.name || `your character`}`}
         />
+      ) : (
+        <div className="flex h-[255px] items-center justify-center bg-black">
+          Loading...
+        </div>
       )}
     </div>
   );

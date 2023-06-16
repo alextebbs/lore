@@ -190,7 +190,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       )}
       <div
         onClick={() => (!editing ? handleEditButtonClick() : null)}
-        className={`group border-b p-6 ${
+        className={`group border-b p-6 py-5 ${
           editing
             ? `relative z-20 border-transparent bg-black shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
             : `cursor-pointer border-stone-800 hover:bg-stone-900`
