@@ -81,7 +81,7 @@ model Character {
   demeanor            String?                 @db.Text
   secret              String?                 @db.Text
   roleplayTips        String?                 @db.Text
-  imageURL            String?
+  imageURL            String?                 @db.Text
   goals               Goal[]
   friends             CharacterRelationship[] @relation(name: "Friend", map: "character_friends_fk")
   enemies             CharacterRelationship[] @relation(name: "Enemy", map: "character_enemies_fk")

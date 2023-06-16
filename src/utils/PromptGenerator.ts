@@ -125,6 +125,98 @@ export class PromptGenerator {
     `;
   }
 
+  generateHeightPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, generate a ${regenPrompt ? "new" : ""} height for the character. 
+
+      Return the height as a number in inches and feet. Use no punctuation in your response.
+
+      Examples: 6'2", 5'3in"
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's height:
+    `;
+  }
+
+  generateWeightPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, generate a ${regenPrompt ? "new" : ""} weight for the character. 
+
+      Return the height as a number in pounds. Use no punctuation in your response.
+
+      Examples: 120lbs, 200lbs
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's weight:
+    `;
+  }
+
+  generateHairColorPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, generate a ${regenPrompt ? "new" : ""} hair color for the character. 
+
+      Return the color as a single word. Use no punctuation in your response.
+
+      Examples: Brown, Black, Red, Blonde
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's hair color:
+    `;
+  }
+
+  generateEyeColorPrompt(
+    character: Character,
+    regenPrompt: string | null = null
+  ) {
+    return outdent`
+      ${this.generateKnownCharacterInfo(character)}
+
+      Now, generate a ${regenPrompt ? "new" : ""} eye color for the character. 
+
+      Return the color as a single word. Use no punctuation in your response.
+
+      Examples: Green, Blue, Brown, Hazel
+
+      ${
+        regenPrompt
+          ? `Use the following instruction when generating a response: ${regenPrompt}`
+          : ``
+      }
+
+      Character's eye color:
+    `;
+  }
+
   generateNamePrompt(character: Character, regenPrompt: string | null = null) {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
@@ -400,6 +492,18 @@ export class PromptGenerator {
 
       case "secret":
         return this.generateSecretPrompt(character, regenPrompt);
+
+      case "height":
+        return this.generateHeightPrompt(character, regenPrompt);
+
+      case "weight":
+        return this.generateWeightPrompt(character, regenPrompt);
+
+      case "hairColor":
+        return this.generateHairColorPrompt(character, regenPrompt);
+
+      case "eyeColor":
+        return this.generateEyeColorPrompt(character, regenPrompt);
 
       case "roleplayTips":
         return this.generateRoleplayTipsPrompt(character, regenPrompt);

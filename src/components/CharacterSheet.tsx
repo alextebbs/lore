@@ -7,6 +7,7 @@ import { FaDiceD20 } from "react-icons/fa";
 import { BiLink } from "react-icons/bi";
 
 import { CharacterSheetItem } from "./CharacterSheetItem";
+import { CharacterSheetImage } from "./CharacterSheetImage";
 
 interface CharacterSheetProps {
   character: Character;
@@ -185,6 +186,11 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           ))}
         </div>
         <div className="w-[25%] border-l border-stone-800">
+          <CharacterSheetImage
+            character={characterState}
+            saveResponse={saveResponse}
+          />
+
           <CharacterSheetItem
             field="species"
             label="Species"
@@ -202,6 +208,46 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             requirements={["species"]}
             character={characterState}
             value={characterState.age}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
+          />
+          <CharacterSheetItem
+            field="height"
+            label="Height"
+            stream={false}
+            requirements={["physicalDescription"]}
+            character={characterState}
+            value={characterState.height}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
+          />
+          <CharacterSheetItem
+            field="weight"
+            label="Weight"
+            stream={false}
+            requirements={["physicalDescription"]}
+            character={characterState}
+            value={characterState.weight}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
+          />
+          <CharacterSheetItem
+            field="eyeColor"
+            label="Eye Color"
+            stream={false}
+            requirements={["physicalDescription"]}
+            character={characterState}
+            value={characterState.eyeColor}
+            allowRegeneration={false}
+            saveResponse={saveResponse}
+          />
+          <CharacterSheetItem
+            field="hairColor"
+            label="Hair Color"
+            stream={false}
+            requirements={["physicalDescription"]}
+            character={characterState}
+            value={characterState.hairColor}
             allowRegeneration={false}
             saveResponse={saveResponse}
           />

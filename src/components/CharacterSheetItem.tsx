@@ -203,7 +203,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
             (!editing ? (
               <button
                 onClick={handleEditButtonClick}
-                className="ml-2 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
+                className="ml-1 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
               >
                 <MdModeEditOutline />{" "}
                 <span className="inline-block pl-2 opacity-0 transition-all group-hover:opacity-100">
@@ -213,7 +213,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
             ) : (
               <button
                 onClick={handleSaveButtonClick}
-                className="ml-2 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
+                className="ml-1 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
               >
                 <MdCheck />
                 <span
