@@ -17,7 +17,7 @@ interface CharacterSheetItemProps {
   character: Character;
   saveResponse: (options: SaveResponseOptions) => Promise<void>;
   relationID?: string;
-  style: "condensed" | "normal" | "header";
+  style?: "condensed" | "normal" | "header";
 }
 
 export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
