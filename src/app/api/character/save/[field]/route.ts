@@ -1,6 +1,7 @@
-import { PrismaClient } from "@prisma/client/edge";
 import { NextResponse } from "next/server";
 import { type Character } from "~/utils/types";
+
+import { db } from "~/utils/db";
 
 export const runtime = "edge";
 
@@ -12,9 +13,7 @@ export async function POST(
 
   // console.log("SAVING", res);
 
-  const prisma = new PrismaClient();
-
-  const update = await prisma.character
+  const update = await db.character
     .update({
       where: {
         id: res.id,

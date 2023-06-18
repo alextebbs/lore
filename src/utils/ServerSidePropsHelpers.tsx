@@ -1,11 +1,10 @@
-import { PrismaClient } from "@prisma/client";
 import { type Character } from "~/utils/types";
 
-const prisma = new PrismaClient();
+import { db } from "~/utils/db";
 
 export const getUserCharacters = async (userId: string) => {
   try {
-    const characters = await prisma.character.findMany({
+    const characters = await db.character.findMany({
       where: { userId },
     });
     return JSON.parse(JSON.stringify(characters)) as Character[];
@@ -17,7 +16,7 @@ export const getUserCharacters = async (userId: string) => {
 
 export const getSingleCharacter = async (id: string) => {
   try {
-    const character = await prisma.character.findUnique({
+    const character = await db.character.findUnique({
       where: { id },
       include: {
         friends: true,

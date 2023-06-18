@@ -1,10 +1,18 @@
 # Mythweaver
 
-Uses GPT to generate lore for use in tabletop roleplaying games. Currently generates NPCs.
-
 Check it out: https://lore-orpin.vercel.app/
 
-### TODO
+This is an NPC Generator using OpenAI to create fictional characters for use in
+tabletop roleplaying games. I built this as a way to teach myself Next.js and
+architecting a more fully-featured "app" or "product" on the web.
+
+Some features:
+
+- You can log in to save characters, your characters are stored in a DB.
+- Characters can be edited, deleted, or shared via their permalink.
+- Fields on the character sheet can be regenerated.
+
+## TODO
 
 ### High
 
@@ -19,17 +27,17 @@ Check it out: https://lore-orpin.vercel.app/
 - You should be able to create a character without a login, and then associate
   that character with your login (no idea how to do this)
 
-- Relational stuff is still messed up
-  - Friends/Enemies is giving 6 of each
-
 ### Mid
 
 - Images need to actually get stored somewhere, unfortunately
 - Character name should fill in in the sidebar when character is being generated
-- Sort out prompts, add examples, tune them
-  - Relational items are still a bit wacky in prompt generator
 - Reroll doesn't do anything
 - Use this? https://vercel.com/blog/introducing-the-vercel-ai-sdk
+- Sort out prompts, add examples, tune them
+
+- Relational stuff is still messed up
+  - Friends/Enemies is giving 6 of each. The database relation isn't set right
+  - Relational items are still a bit wacky in prompt generator
 
 ### Low
 

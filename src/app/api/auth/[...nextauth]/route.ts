@@ -2,12 +2,9 @@ import { type NextApiHandler } from "next";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import GoogleProvider from "next-auth/providers/google";
-import { PrismaClient } from "@prisma/client";
-
+import { db } from "~/utils/db";
 import { env } from "~/env.mjs";
 import { type Adapter } from "next-auth/adapters";
-
-const prisma = new PrismaClient();
 
 // QUESTION:
 // is this the right thing to do here? I think I need to extend the User and
@@ -23,7 +20,7 @@ declare module "next-auth" {
 }
 
 export const OPTIONS: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as Adapter,
+  adapter: PrismaAdapter(db) as Adapter,
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_ID,

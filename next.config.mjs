@@ -9,6 +9,10 @@ const config = {
   reactStrictMode: true,
   transpilePackages: ["three"],
 
+  images: {
+    domains: ["res.cloudinary.com"],
+  },
+
   experimental: {
     appDir: true,
   },
