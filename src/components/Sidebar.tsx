@@ -1,7 +1,6 @@
 import type { Character } from "@prisma/client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
 import { signIn } from "next-auth/react";
 import { MdClose } from "react-icons/md";
 import { GiScrollQuill } from "react-icons/gi";
@@ -19,7 +18,10 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
 
   const handleDeleteCharacter = async (id: string) => {
     await fetch(`/api/character/delete?id=${id}`);
-    router.push(`/`);
+
+    if (currentCharacter?.id === id) {
+      router.push(`/`);
+    }
   };
 
   return (

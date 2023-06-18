@@ -10,6 +10,7 @@ export async function GET(request: Request) {
 
   const session = await getServerSession(OPTIONS);
 
+  console.time("delete");
   // QUESTION: I really only want to delete one character here. I'm using
   // deleteMany because the regular delete will only let me find characters by
   // their id, not their id and their userId. Is there a better way to do this?
@@ -19,6 +20,7 @@ export async function GET(request: Request) {
       userId: session?.user.id,
     },
   });
+  console.timeEnd("delete");
 
   return new Response(JSON.stringify(response));
 }

@@ -1,15 +1,9 @@
 import type { Character } from "~/utils/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-
 import { FaDiceD20 } from "react-icons/fa";
-
-import { Canvas, useFrame } from "@react-three/fiber";
-
+import { Canvas } from "@react-three/fiber";
 import { GiScrollQuill } from "react-icons/gi";
-
-import Image from "next/image";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { Dice } from "./Dice";
 
 const EXAMPLES = [
@@ -24,6 +18,7 @@ const EXAMPLES = [
   "a changeling searching for their true identity",
   "a barbarian haunted by the ghost of their dead lover",
   "a benign ruler of a kingdom of undead",
+  "an altrustic necromancer who is trying to end death",
 ];
 
 export const PromptForm: React.FC = () => {
@@ -98,16 +93,6 @@ export const PromptForm: React.FC = () => {
         <div className="mx-auto max-w-[50rem] p-4 text-center">
           {!isLoading ? (
             <>
-              {/* <div className="mb-8 flex justify-center">
-                <Image
-                  quality={100}
-                  src="/book-2.png"
-                  width={256}
-                  height={186}
-                  alt="An Old Book"
-                />
-              </div> */}
-
               <div className="mb-8 flex justify-center text-[72px] text-stone-900">
                 <GiScrollQuill />
               </div>

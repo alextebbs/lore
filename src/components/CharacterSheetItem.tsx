@@ -17,6 +17,7 @@ interface CharacterSheetItemProps {
   character: Character;
   saveResponse: (options: SaveResponseOptions) => Promise<void>;
   relationID?: string;
+  relationIdx?: number;
   style?: "condensed" | "normal" | "header";
 }
 
@@ -33,6 +34,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     character,
     allowRegeneration = true,
     relationID,
+    relationIdx,
     saveResponse,
   } = props;
 
@@ -88,6 +90,15 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
         if (!character[requirement]) return;
       }
 
+      // If this is a relation field, we need to let the other relations generate first.
+      if (relationIdx) {
+        const count = (
+          character[field] as Array<{ description: string }>
+        ).filter((item) => item.description).length;
+
+        if (count < relationIdx) return;
+      }
+
       // This is mostly to get around StrictMode stuff
       startedGenerating.current = true;
 
@@ -99,7 +110,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     };
 
     generateResponse().catch(console.error);
-  }, [character, field, requirements, stream, value]);
+  }, [character, field, relationIdx, requirements, stream, value]);
 
   const handleEditButtonClick = () => {
     setEditing(true);
@@ -133,17 +144,33 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     setEditing(false);
 
     const form = e.target as HTMLFormElement;
+
     const elements = form.elements as typeof form.elements & {
       prompt: { value: string };
+      useExistingData: { checked: boolean };
     };
 
-    let url = `/api/character/generate/${field}/?id=${character.id}&regenerate${
-      stream ? "&stream" : ""
-    }`;
+    const params = new URLSearchParams({
+      id: character.id,
+      regenerate: "",
+      prompt: elements.prompt.value,
+    });
 
-    if (elements.prompt.value) {
-      url += `&prompt=${elements.prompt.value}`;
+    if (stream) {
+      params.append("stream", "");
     }
+
+    if (elements.useExistingData.checked) {
+      params.append("useExistingData", "");
+    }
+
+    if (relationID) {
+      params.append("relationID", relationID);
+    }
+
+    const url = `/api/character/generate/${field}/?${params.toString()}`;
+
+    console.log(url);
 
     await getResponse(url);
   };
@@ -281,9 +308,9 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                         placeholder="Instructions for regeneration"
                         className="w-full rounded border bg-black bg-transparent px-4 py-2"
                       />
-                      <div className="absolute right-4 top-[50%] -translate-y-1/2">
+                      <div className="absolute right-3 top-[50%] -translate-y-1/2">
                         <label className="flex items-center">
-                          <span className="pr-2">Use existing data?</span>
+                          <span className="pr-2">Use existing text?</span>
                           <input name="useExistingData" type="checkbox" />
                         </label>
                       </div>

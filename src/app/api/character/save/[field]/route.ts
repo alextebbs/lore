@@ -10,7 +10,7 @@ export async function POST(
 ) {
   const res = (await request.json()) as Character;
 
-  console.log("SAVING", res);
+  // console.log("SAVING", res);
 
   const prisma = new PrismaClient();
 

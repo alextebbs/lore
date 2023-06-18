@@ -4,7 +4,6 @@
 import { useCallback, useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
-import { LoadingSpinner } from "./LoadingSpinner";
 import { Canvas } from "@react-three/fiber";
 import { Dice } from "./Dice";
 
@@ -59,11 +58,11 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
 
   return (
     <div className="border-b border-stone-800">
-      <svg className="hidden" image-rendering="optimizeSpeed">
+      <svg className="hidden" imageRendering="optimizeSpeed">
         {/* https://github.com/tomren1/dither-with-css  */}
         <filter
           id="dither"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
           x="0"
           y="0"
           width="100%"

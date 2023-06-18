@@ -18,7 +18,12 @@ export default function Page(props: PageProps) {
 
   if (!character) {
     // Render an error message or redirect if character is null
-    return <div>Character not found.</div>;
+    // QUESTION: Should this actually give a 404?
+    return (
+      <div className="flex h-screen items-center justify-center text-xs uppercase tracking-[0.15em]">
+        Character not found
+      </div>
+    );
   }
 
   return <CharacterSheet character={character} />;
@@ -28,8 +33,6 @@ export const getServerSideProps: GetServerSideProps<PageProps> = async (
   context
 ) => {
   const { id } = context.query;
-
-  console.log(id);
 
   const session = await getServerSession(context.req, context.res, OPTIONS);
 

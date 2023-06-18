@@ -43,16 +43,6 @@ export class PromptGenerator {
           : ``
       }
       ${
-        character.goals
-          ? character.goals
-              .map(
-                (goal, index) =>
-                  `Character's goal #${index}: ${goal.description || ``}.`
-              )
-              .join("\n")
-          : ``
-      }
-      ${
         character.enemies
           ? character.enemies
               .map(
@@ -362,6 +352,17 @@ export class PromptGenerator {
           : ``
       }
 
+      ${
+        character.goals
+          ? character.goals
+              .map(
+                (goal, index) =>
+                  `Character's goal #${index}: ${goal.description || ``}.`
+              )
+              .join("\n")
+          : ``
+      }
+
       Character's goal:
     `;
   }
@@ -373,7 +374,7 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, write another new friendly relationships this character has with
+      Now, write another new friendly relationship this character has with
       a different character or faction. Use one paragraph for these descriptions.
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might threaten this relationship.
@@ -484,13 +485,8 @@ export class PromptGenerator {
   generate(
     character: Character,
     field: keyof Character,
-    regenerate = false,
     regenPrompt: string | null = null
   ) {
-    if (regenerate) {
-      character = { ...character, [field]: null };
-    }
-
     switch (field) {
       case "physicalDescription":
         return this.generatePhysicalDescriptionPrompt(character, regenPrompt);

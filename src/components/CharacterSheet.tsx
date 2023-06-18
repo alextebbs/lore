@@ -83,7 +83,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   return (
     <div className="mx-auto h-max w-full max-w-5xl flex-grow border-l border-r border-stone-800">
-      <div className="flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
+      <div className="z-10 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
         {session && (
           <button
             onClick={handleRerollClick}
@@ -115,6 +115,12 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
       <div className="flex flex-col-reverse sm:flex-row">
         <div className="flex-grow">
           <div className="flex flex-col justify-end sm:min-h-[255px]">
+            {characterState.originStatement && (
+              <div className="mb-auto p-4 text-xs text-stone-600">
+                Prompt: {characterState.originStatement || "none"}.
+              </div>
+            )}
+
             <CharacterSheetItem
               field="name"
               label="Name"
@@ -199,6 +205,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               value={item.description}
               saveResponse={saveResponse}
               relationID={item.id}
+              relationIdx={index}
             />
           ))}
 
@@ -215,7 +222,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               relationID={item.id}
             />
           ))}
-
           {character.enemies.map((item, index) => (
             <CharacterSheetItem
               key={item.id}
