@@ -1,3 +1,5 @@
+"use client";
+
 import type { Character } from "~/utils/types";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";

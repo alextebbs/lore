@@ -1,26 +1,33 @@
+"use client";
+
 import type { Character } from "@prisma/client";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
-import { MdClose } from "react-icons/md";
+import Link from "next/link";
+import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { GiScrollQuill } from "react-icons/gi";
+import { MdClose } from "react-icons/md";
 
 interface SidebarProps {
-  characters?: Character[] | null;
-  currentCharacter?: Character | null;
-  menuOpen?: boolean;
+  userCharacters?: Character[] | null;
 }
 
 export const Sidebar: React.FC<SidebarProps> = (props) => {
-  const { characters, currentCharacter } = props;
+  const { userCharacters } = props;
+
+  const segments = useSelectedLayoutSegments();
+
+  const currentCharacterID =
+    segments[0] === "character" ? segments[1] : undefined;
 
   const router = useRouter();
 
   const handleDeleteCharacter = async (id: string) => {
     await fetch(`/api/character/delete?id=${id}`);
 
-    if (currentCharacter?.id === id) {
+    if (currentCharacterID === id) {
       router.push(`/`);
+    } else {
+      router.refresh();
     }
   };
 
@@ -33,21 +40,21 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
       </Link>
 
       <div className="flex-grow">
-        {characters && (
+        {userCharacters && (
           <>
             <Link href={`/`}>
               <div
-                className={`flex border-b border-b-stone-900 p-4 font-body text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
+                className={`flex border-b border-b-stone-900 p-4 text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
               >
                 <GiScrollQuill className="mr-3 text-xl" /> New character
               </div>
             </Link>
-            {characters?.map((character) => (
+            {userCharacters?.map((character) => (
               <div key={character.id} className="group relative">
                 <Link href={`/character/${character.id}`}>
                   <div
                     className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
-                      currentCharacter?.id == character.id
+                      currentCharacterID == character.id
                         ? `bg-stone-900 text-stone-100`
                         : `text-stone-400 hover:text-red-600`
                     } `}
@@ -71,7 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
             ))}
           </>
         )}
-        {!characters && (
+        {!userCharacters && (
           <>
             <div className="flex h-[100%] items-center justify-center p-4 text-center text-sm uppercase">
               <button

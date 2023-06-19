@@ -1,11 +1,9 @@
-/* eslint-disable @next/next/no-img-element */
-// ^ passing on this for now
-
 import { useCallback, useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { Canvas } from "@react-three/fiber";
 import { Dice } from "./Dice";
+import Image from "next/image";
 
 interface CharacterSheetImageProps {
   character: Character;
@@ -90,11 +88,11 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
         </filter>
       </svg>
       {character.imageURL ? (
-        <img
+        <Image
           src={character.imageURL}
-          width={255}
-          height={255}
-          className="w-full sm:w-auto"
+          width={510}
+          height={510}
+          className="w-full"
           style={{ filter: "url(#dither)" }}
           alt={`Portrait of ${character.name || `your character`}`}
         />

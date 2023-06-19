@@ -1,14 +1,12 @@
 import { PrismaClient } from "@prisma/client/edge";
-
-import { getServerSession } from "next-auth/next";
-import { OPTIONS } from "~/app/api/auth/[...nextauth]/route";
+import { getAuthSession } from "~/utils/auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   const prisma = new PrismaClient();
 
-  const session = await getServerSession(OPTIONS);
+  const session = await getAuthSession();
 
   console.time("reroll");
 

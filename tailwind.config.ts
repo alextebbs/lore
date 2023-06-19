@@ -5,7 +5,12 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ["IBM Plex Mono", "ui-monospace", "SFMono-Regular", "monospace"],
+        body: [
+          "var(--font-plex)",
+          "ui-monospace",
+          "SFMono-Regular",
+          "monospace",
+        ],
         heading: ['"pragmatapro-fraktur"', "serif"],
       },
     },

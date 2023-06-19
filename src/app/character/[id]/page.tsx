@@ -22,16 +22,6 @@ const page = async ({ params }: PageProps) => {
 
   if (!character) return notFound();
 
-  if (!id) {
-    // Render an error message or redirect if character is null
-    // QUESTION: Should this actually give a 404?
-    return (
-      <div className="flex h-screen items-center justify-center text-xs uppercase tracking-[0.15em]">
-        Character not found
-      </div>
-    );
-  }
-
   return <CharacterSheet character={character} />;
 };
 

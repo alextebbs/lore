@@ -10,7 +10,10 @@ const config = {
   transpilePackages: ["three"],
 
   images: {
-    domains: ["res.cloudinary.com"],
+    domains: [
+      "res.cloudinary.com",
+      "oaidalleapiprodscus.blob.core.windows.net",
+    ],
   },
 
   experimental: {

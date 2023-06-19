@@ -82,7 +82,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   };
 
   return (
-    <div className="mx-auto h-max w-full max-w-5xl flex-grow border-l border-r border-stone-800">
+    <div className="mx-auto h-max min-h-screen w-full max-w-5xl flex-grow border-l border-r border-stone-800">
       <div className="z-10 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
         {session && (
           <button
@@ -133,7 +133,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           </div>
         </div>
-        <div className="shrink-0 border-l border-stone-800 sm:w-[255px]">
+        <div className="shrink-0 border-l border-stone-800 sm:min-h-screen sm:w-[255px]">
           <CharacterSheetImage
             character={characterState}
             saveResponse={saveResponse}

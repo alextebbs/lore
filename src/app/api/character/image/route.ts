@@ -1,8 +1,11 @@
 import { env } from "~/env.mjs";
 
-// import { v2 as cloudinary } from "cloudinary";
-
+// Something is screwed up with cloudinary and nextJS - I'm ignoring actually saving the images for now.
+// Will either wait until this issue gets fixed or try to use Vercel's Blob storage.
+//
 // https://community.cloudinary.com/discussion/238/build-error-coffee-script-module-not-found
+//
+// import { v2 as cloudinary } from "cloudinary";
 // cloudinary.config({
 //   cloud_name: env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
 //   api_key: env.CLOUDINARY_API_KEY,
@@ -37,7 +40,6 @@ export async function GET(request: Request) {
     },
     body: JSON.stringify({
       prompt: `Fantasy portrait of a ${species} with ${eyeColor} eyes and ${hairColor} hair. Epic fantasy art, sharp, award winning on Artstation, 4k HD.`,
-      // prompt: `Fantasy portrait of a elf with blue eyes and green hair. Epic fantasy art, sharp, award winning on Artstation, 4k HD.`,
       size: "256x256",
     }),
   });
@@ -54,8 +56,6 @@ export async function GET(request: Request) {
   //     console.log(result);
   //   }
   // );
-
-  // console.log(cloudinaryResponse);
 
   return new Response(
     JSON.stringify(json.data[0]?.url ?? "Failed to generate")
