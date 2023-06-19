@@ -1,7 +1,7 @@
 // This file caches prisma for local development.
 
 import { PrismaClient } from "@prisma/client/edge";
-// import "server-only";
+import "server-only";
 
 declare global {
   // eslint-disable-next-line no-var, no-unused-vars

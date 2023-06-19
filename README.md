@@ -25,6 +25,7 @@ Some features:
 
 - You should be able to create a character without a login, and then associate
   that character with your login (no idea how to do this)
+  - Maybe any character you've created could be "claimed"?
 
 ### Mid
 

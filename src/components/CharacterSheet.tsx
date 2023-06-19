@@ -2,10 +2,8 @@
 
 import type { Character } from "~/utils/types";
 import { useState } from "react";
-
 import { FaDiceD20 } from "react-icons/fa";
 import { BiLink } from "react-icons/bi";
-
 import { CharacterSheetItem } from "./CharacterSheetItem";
 import { CharacterSheetImage } from "./CharacterSheetImage";
 import { useSession } from "next-auth/react";
@@ -133,7 +131,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           </div>
         </div>
-        <div className="shrink-0 border-l border-stone-800 sm:min-h-screen sm:w-[255px]">
+        <div className="shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetImage
             character={characterState}
             saveResponse={saveResponse}
