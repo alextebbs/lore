@@ -6,6 +6,7 @@ import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useSession } from "next-auth/react";
+import { start } from "repl";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -51,66 +52,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const [editing, setEditing] = useState<boolean>(false);
 
   const responseTextRef = useRef<HTMLDivElement>(null);
-
-  // Generic function to get a response from the API.
-  const getResponse = async (url: string) => {
-    setDoneGenerating(false);
-    setResponseText("");
-
-    const response = await fetch(url);
-
-    if (!response.ok) throw new Error(response.statusText);
-
-    const data = response.body;
-
-    if (!data) return;
-
-    const reader = data.getReader();
-    const decoder = new TextDecoder();
-    let done = false;
-
-    while (!done) {
-      const { value, done: doneReading } = await reader.read();
-      done = doneReading;
-      const chunkValue = decoder.decode(value);
-      setResponseText((prev) => (prev ? prev + chunkValue : chunkValue));
-    }
-
-    setDoneGenerating(true);
-  };
-
-  // Generate this field if it is null when the character loads.
-  useEffect(() => {
-    const generateResponse = async () => {
-      // If we already have a value or we are currently generating one, don't.
-      if (value || startedGenerating.current) return;
-
-      // If we need to await something else to generate this, wait.
-      for (const requirement of requirements ?? []) {
-        if (!character[requirement]) return;
-      }
-
-      // If this is a relation field, we need to let the other relations generate first.
-      if (relationIdx) {
-        const count = (
-          character[field] as Array<{ description: string }>
-        ).filter((item) => item.description).length;
-
-        if (count < relationIdx) return;
-      }
-
-      // This is mostly to get around StrictMode stuff
-      startedGenerating.current = true;
-
-      await getResponse(
-        `/api/character/generate/${field}/?id=${character.id}${
-          stream ? "&stream" : ""
-        }`
-      );
-    };
-
-    generateResponse().catch(console.error);
-  }, [character, field, relationIdx, requirements, stream, value]);
 
   const handleEditButtonClick = () => {
     setEditing(true);
@@ -175,6 +116,66 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     await getResponse(url);
   };
 
+  // Generic function to get a response from the API.
+  const getResponse = async (url: string) => {
+    setDoneGenerating(false);
+    setResponseText("");
+
+    const response = await fetch(url);
+
+    if (!response.ok) throw new Error(response.statusText);
+
+    const data = response.body;
+
+    if (!data) return;
+
+    const reader = data.getReader();
+    const decoder = new TextDecoder();
+    let done = false;
+
+    while (!done) {
+      const { value, done: doneReading } = await reader.read();
+      done = doneReading;
+      const chunkValue = decoder.decode(value);
+      setResponseText((prev) => (prev ? prev + chunkValue : chunkValue));
+    }
+
+    setDoneGenerating(true);
+  };
+
+  // Generate this field if it is null when the character loads.
+  useEffect(() => {
+    const generateResponse = async () => {
+      // If we already have a value or we are currently generating one, don't.
+      if (value || startedGenerating.current) return;
+
+      // If we need to await something else to generate this, wait.
+      for (const requirement of requirements ?? []) {
+        if (!character[requirement]) return;
+      }
+
+      // If this is a relation field, we need to let the other relations generate first.
+      if (relationIdx) {
+        const count = (
+          character[field] as Array<{ description: string }>
+        ).filter((item) => item.description).length;
+
+        if (count < relationIdx) return;
+      }
+
+      // This is mostly to get around StrictMode stuff
+      startedGenerating.current = true;
+
+      await getResponse(
+        `/api/character/generate/${field}/?id=${character.id}${
+          stream ? "&stream" : ""
+        }`
+      );
+    };
+
+    generateResponse().catch(console.error);
+  }, [character, field, relationIdx, requirements, stream, value]);
+
   // if I put saveResponse in the dep array, it breaks
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const saveResponseCallback = useCallback(saveResponse, []);
@@ -187,14 +188,9 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     saveResponseCallback({ value: responseText, field, relationID }).catch(
       console.error
     );
-  }, [
-    responseText,
-    field,
-    doneGenerating,
-    saveResponseCallback,
-    value,
-    relationID,
-  ]);
+    // Again, I don't think this is right.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doneGenerating, field, relationID, responseText, saveResponseCallback]);
 
   const handleSaveButtonClick = () => {
     const newResponseText = responseTextRef.current?.textContent ?? null;

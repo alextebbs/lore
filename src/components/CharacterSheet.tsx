@@ -1,7 +1,7 @@
 "use client";
 
 import type { Character } from "~/utils/types";
-import { useState } from "react";
+import { use, useState } from "react";
 import { FaDiceD20 } from "react-icons/fa";
 import { BiLink } from "react-icons/bi";
 import { CharacterSheetItem } from "./CharacterSheetItem";
@@ -10,6 +10,7 @@ import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "./LoadingSpinner";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(relativeTime); // use plugin
 
@@ -38,6 +39,13 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   const session = useSession();
 
+  const router = useRouter();
+
+  const handleShareButtonClick = async () => {
+    setShowingClipboardText(true);
+    await navigator.clipboard.writeText(window.location.href);
+  };
+
   const saveResponse = async (options: SaveResponseOptions) => {
     setIsSaving(true);
 
@@ -63,8 +71,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
       body: JSON.stringify(payload),
     });
 
-    console.log(`SAVED: FIELD: ${field}, VALUE: ${value}`);
-
     const data = (await response.json()) as { update: Character };
 
     setCharacterState(data.update);
@@ -72,23 +78,15 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     setIsSaving(false);
   };
 
-  const handleShareButtonClick = async () => {
-    setShowingClipboardText(true);
-    await navigator.clipboard.writeText(window.location.href);
-  };
+  const handleRerollClick = async () => {
+    const response = await fetch(
+      `/api/character/reroll/?id=${characterState.id}`
+    );
 
-  const handleRerollClick = () => {
-    setCharacterState((prev) => ({
-      ...prev,
-      name: null,
-      roleplayTips: null,
-      species: null,
-      age: null,
-      demeanor: null,
-      physicalDescription: null,
-      backstory: null,
-      secret: null,
-    }));
+    // const character = (await response.json()) as Character;
+
+    // setCharacterState(character);
+    router.refresh();
   };
 
   return (

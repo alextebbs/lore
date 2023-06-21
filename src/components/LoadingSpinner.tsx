@@ -27,7 +27,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
               attributeName="opacity"
               dur="0.75s"
               values="1;.2"
-              fill="freeze"
+              repeatCount="indefinite"
             />
           </circle>
           <circle cx="14" cy="12" r="3" opacity=".4" fill="#FFF">
@@ -36,7 +36,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
               attributeName="opacity"
               dur="0.75s"
               values="1;.2"
-              fill="freeze"
+              repeatCount="indefinite"
             />
           </circle>
           <circle cx="24" cy="12" r="3" opacity=".3" fill="#FFF">
@@ -46,7 +46,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
               attributeName="opacity"
               dur="0.75s"
               values="1;.2"
-              fill="freeze"
+              repeatCount="indefinite"
             />
           </circle>
         </svg>

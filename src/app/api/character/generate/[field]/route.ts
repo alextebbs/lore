@@ -78,10 +78,15 @@ export async function GET(
   //   PROMPT: ${prompt}
   // `);
 
-  const response = await getOpenAIResponse({
-    prompt,
-    stream: searchParams.has("stream"),
-  });
+  try {
+    const response = await getOpenAIResponse({
+      prompt,
+      stream: searchParams.has("stream"),
+    });
 
-  return new Response(response);
+    return new Response(response);
+  } catch (err: unknown) {
+    console.error(err);
+    return new Response("Could not generate field", { status: 500 });
+  }
 }

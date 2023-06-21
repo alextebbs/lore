@@ -1,12 +1,9 @@
 import { PrismaClient } from "@prisma/client/edge";
-import { getAuthSession } from "~/utils/auth";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
   const prisma = new PrismaClient();
-
-  const session = await getAuthSession();
 
   console.time("reroll");
 
