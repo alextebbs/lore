@@ -7,6 +7,11 @@ import { BiLink } from "react-icons/bi";
 import { CharacterSheetItem } from "./CharacterSheetItem";
 import { CharacterSheetImage } from "./CharacterSheetImage";
 import { useSession } from "next-auth/react";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { LoadingSpinner } from "./LoadingSpinner";
+
+dayjs.extend(relativeTime); // use plugin
 
 interface CharacterSheetProps {
   character: Character;
@@ -22,7 +27,11 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const { character } = props;
 
   const [characterState, setCharacterState] = useState<Character>(character);
-  const [lastSavedDate, setLastSavedDate] = useState<Date>(character.updatedAt);
+  const [lastSavedDate, setLastSavedDate] = useState<Date>(
+    new Date(character.updatedAt)
+  );
+
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   const [showingClipboardText, setShowingClipboardText] =
     useState<boolean>(false);
@@ -30,6 +39,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const session = useSession();
 
   const saveResponse = async (options: SaveResponseOptions) => {
+    setIsSaving(true);
+
     const { field, value, relationID } = options;
 
     const payload = {
@@ -57,7 +68,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     const data = (await response.json()) as { update: Character };
 
     setCharacterState(data.update);
-    setLastSavedDate(data.update.updatedAt);
+    setLastSavedDate(new Date(data.update.updatedAt));
+    setIsSaving(false);
   };
 
   const handleShareButtonClick = async () => {
@@ -106,9 +118,19 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         >
           Copied link
         </div>
-        <div className="ml-auto inline-flex px-4 py-2 uppercase tracking-[0.15em]">
-          Saved: {lastSavedDate.toString()}
-        </div>
+        {isSaving ? (
+          <div className="ml-auto px-4">
+            <LoadingSpinner text="Saving" spinner={true} />
+          </div>
+        ) : (
+          <div className="ml-auto inline-flex px-4 py-2 uppercase tracking-[0.15em]">
+            Saved:{" "}
+            {new Date().getTime() - lastSavedDate.getTime() >
+            1000 * 60 * 60 * 24
+              ? dayjs(lastSavedDate).format("MM/DD/YY @ h:mm A")
+              : dayjs(lastSavedDate).fromNow()}
+          </div>
+        )}
       </div>
       <div className="flex flex-col-reverse sm:flex-row">
         <div className="flex-grow">

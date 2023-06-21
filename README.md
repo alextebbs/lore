@@ -37,6 +37,7 @@ Some features:
 - Relational stuff is still messed up
   - Friends/Enemies is giving 6 of each. The database relation isn't set right
   - Relational items are still a bit wacky in prompt generator
+  - Goals can technically be edited before they are generated
 
 ### Low
 
