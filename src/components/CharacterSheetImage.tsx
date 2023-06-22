@@ -15,22 +15,18 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
 ) => {
   const { character, saveResponse } = props;
 
-  const startedGenerating = useRef<boolean>(false);
-
-  // if I put saveResponse in the dep array, it breaks
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const saveResponseCallback = useCallback(saveResponse, []);
+  const isGenerating = useRef<boolean>(false);
 
   useEffect(() => {
-    if (startedGenerating.current || character.imageURL) return;
+    (async () => {
+      if (isGenerating.current || character.imageURL) return;
 
-    const getImageURL = async () => {
       if (!character.eyeColor || !character.hairColor || !character.species) {
         return;
       }
 
       // This is mostly to get around StrictMode stuff
-      startedGenerating.current = true;
+      isGenerating.current = true;
 
       const response = await fetch(
         `/api/character/image?eyeColor=${character.eyeColor}&hairColor=${character.hairColor}&species=${character.species}`
@@ -40,19 +36,11 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
 
       const imageURL = (await response.json()) as string;
 
-      saveResponseCallback({ value: imageURL, field: "imageURL" }).catch(
-        console.error
-      );
-    };
+      await saveResponse({ value: imageURL, field: "imageURL" });
 
-    getImageURL().catch(console.error);
-  }, [
-    character.eyeColor,
-    character.hairColor,
-    character.imageURL,
-    character.species,
-    saveResponseCallback,
-  ]);
+      isGenerating.current = false;
+    })().catch(console.error);
+  }, [character, saveResponse]);
 
   return (
     <div className="border-b border-stone-800">
@@ -97,7 +85,7 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
           alt={`Portrait of ${character.name || `your character`}`}
         />
       ) : (
-        <div className="flex h-[255px] flex-col items-center justify-center">
+        <div className="flex h-[254px] flex-col items-center justify-center">
           <div className="h-[48px] w-[48px]">
             <Canvas
               gl={{ antialias: true }}

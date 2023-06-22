@@ -18,15 +18,6 @@ Some features:
 
 - Mobile UI (sidebar needs to toggle)
 
-- Character generation needs to be different
-
-  - Should be handled by CharacterSheet, not CharacterSheetItem.
-  - Rerolling shouldn't be an API route, it should just happen client-side
-  - Save buttons should not be visible until generation is fully complete and
-    your user is associated with the character.
-  - "Saving" the character should only happen once, at the end of character
-    generation.
-
 - Make Auth actually protect characters that aren't yours
 
   - You shouldn't be able to edit a character that isn't yours
@@ -39,17 +30,26 @@ Some features:
 ### Mid
 
 - Sort out prompts, add examples, tune them
-- Reroll doesn't do anything
+
+  - Sometimes it gets jacked and starts generating the whole character when
+    I just ask for the name (rarely).
+  - Sometimes it adds punctuation where I don't want it to.
+  - Consider adding "Occupation" to the character
+  - Consider adding a very short summary to the character?
+  - It's default generations kind of suck. It gives the same names over and
+    over again. Don't know how I would influence or fix this.
+
 - Character name should fill in in the sidebar when character is being generated
+
 - Relational stuff is still messed up
+
   - Friends/Enemies is giving 6 of each. The database relation isn't set right
   - Relational items are still a bit wacky in prompt generator
-  - Relational items can be edited before they are generated
 
 ### Low
 
 - You should be able to fork a character to make it become yours
-- Use this? https://vercel.com/blog/introducing-the-vercel-ai-sdk
 - Its slow (its less slow now)
 - Images need to actually get stored somewhere, unfortunately
-- Add the ability to edit originalPrompt
+- I'm using a mix of query parameters and POST body to move data around from
+  the frontend to the API. Should I care? Does it matter?

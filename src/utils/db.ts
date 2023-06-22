@@ -1,9 +1,7 @@
-// This file caches prisma for local development and has some database util
-// functions.
+// This file caches prisma for local development.
 
 import { PrismaClient } from "@prisma/client/edge";
 import "server-only";
-import { getAuthSession } from "./auth";
 
 declare global {
   // eslint-disable-next-line no-var, no-unused-vars
@@ -23,16 +21,3 @@ if (process.env.NODE_ENV === "production") {
 }
 
 export const db = prisma;
-
-export async function verifyCurrentUserHasAccessToItem(itemId: string) {
-  const session = await getAuthSession();
-
-  const count = await db.character.count({
-    where: {
-      id: itemId,
-      userId: session?.user.id,
-    },
-  });
-
-  return count > 0;
-}

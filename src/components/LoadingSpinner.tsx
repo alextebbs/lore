@@ -1,54 +1,44 @@
 interface LoadingSpinnerProps {
   text?: string;
   spinner?: boolean;
+  showText?: boolean;
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   text = "Loading",
   spinner = false,
+  showText = true,
 }) => {
   return (
-    <div className="jusify-center flex items-center text-xs uppercase tracking-[0.15em]">
-      <div className="mr-2">
-        {text}
+    <div className="jusify-center flex items-center text-xs uppercase tracking-[0.15em] text-stone-400">
+      <div className="mr-2 font-body">
+        {showText && text}
         {!spinner && "..."}
       </div>
       {spinner && (
         <svg
-          width="28"
-          height="24"
-          viewBox="0 0 28 24"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <circle cx="4" cy="12" r="3" opacity="1" fill="#FFF">
-            <animate
-              id="spinner_qYjJ"
-              begin="0;spinner_t4KZ.end-0.25s"
-              attributeName="opacity"
+          <path
+            d="M12,1A11,11,0,1,0,23,12,11,11,0,0,0,12,1Zm0,19a8,8,0,1,1,8-8A8,8,0,0,1,12,20Z"
+            opacity=".25"
+            fill="rgba(255,255,255,0.5)"
+          />
+          <path
+            fill="rgba(255,255,255,0.5)"
+            d="M12,4a8,8,0,0,1,7.89,6.7A1.53,1.53,0,0,0,21.38,12h0a1.5,1.5,0,0,0,1.48-1.75,11,11,0,0,0-21.72,0A1.5,1.5,0,0,0,2.62,12h0a1.53,1.53,0,0,0,1.49-1.3A8,8,0,0,1,12,4Z"
+          >
+            <animateTransform
+              attributeName="transform"
+              type="rotate"
               dur="0.75s"
-              values="1;.2"
+              values="0 12 12;360 12 12"
               repeatCount="indefinite"
             />
-          </circle>
-          <circle cx="14" cy="12" r="3" opacity=".4" fill="#FFF">
-            <animate
-              begin="spinner_qYjJ.begin+0.15s"
-              attributeName="opacity"
-              dur="0.75s"
-              values="1;.2"
-              repeatCount="indefinite"
-            />
-          </circle>
-          <circle cx="24" cy="12" r="3" opacity=".3" fill="#FFF">
-            <animate
-              id="spinner_t4KZ"
-              begin="spinner_qYjJ.begin+0.3s"
-              attributeName="opacity"
-              dur="0.75s"
-              values="1;.2"
-              repeatCount="indefinite"
-            />
-          </circle>
+          </path>
         </svg>
       )}
     </div>

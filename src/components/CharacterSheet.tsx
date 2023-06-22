@@ -10,8 +10,8 @@ import { useSession } from "next-auth/react";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { useRouter } from "next/navigation";
-import { usePathname } from "next/navigation";
+import { isCharacterComplete } from "~/utils/checkIfNull";
+import { cn } from "~/utils/cn";
 
 dayjs.extend(relativeTime); // use plugin
 
@@ -33,7 +33,10 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     new Date(character.updatedAt)
   );
 
+  const characterIsComplete = isCharacterComplete(characterState);
+
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [isRerolling, setIsRerolling] = useState<boolean>(false);
 
   const [showingClipboardText, setShowingClipboardText] =
     useState<boolean>(false);
@@ -77,10 +80,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     setIsSaving(false);
   };
 
-  const pathname = usePathname();
-  const router = useRouter();
-
   const handleRerollClick = async () => {
+    setIsRerolling(true);
     const response = await fetch(
       `/api/character/reroll/?id=${characterState.id}`
     );
@@ -88,18 +89,35 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     const character = (await response.json()) as Character;
 
     setCharacterState(character);
+    setIsRerolling(false);
   };
 
+  console.log(character);
+
   return (
-    <div className="mx-auto h-max min-h-screen w-full max-w-5xl flex-grow border-l border-r border-stone-800">
+    <div className="mx-auto flex h-max min-h-screen w-full max-w-5xl flex-grow flex-col border-l border-r border-stone-800">
       <div className="z-10 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
         {session && (
           <button
             onClick={handleRerollClick}
-            className="inline-flex rounded px-4 py-2  uppercase tracking-[0.15em] hover:bg-stone-900 hover:text-red-600"
+            disabled={!characterIsComplete || isRerolling}
+            className={cn(
+              "relative inline-flex rounded px-4 py-2 uppercase tracking-[0.15em]",
+              characterIsComplete && "hover:bg-stone-900 hover:text-red-600",
+              !characterIsComplete && "text-stone-800"
+            )}
           >
             Reroll
-            <FaDiceD20 className="ml-2 text-base" />
+            {isRerolling ? (
+              <>
+                <div className="absolute right-3 top-2">
+                  <LoadingSpinner showText={false} spinner={true} />
+                </div>
+                <FaDiceD20 className="ml-2 text-base opacity-0" />
+              </>
+            ) : (
+              <FaDiceD20 className="ml-2 text-base" />
+            )}
           </button>
         )}
         <button
@@ -136,14 +154,13 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <div className="flex flex-col justify-end sm:min-h-[255px]">
             {characterState.originStatement && (
               <div className="mb-auto p-4 text-xs text-stone-600">
-                Prompt: {characterState.originStatement || "none"}.
+                &ldquo;The character is {characterState.originStatement}.&rdquo;
               </div>
             )}
 
             <CharacterSheetItem
               field="name"
               label="Name"
-              stream={true}
               requirements={["species"]}
               style="header"
               character={characterState}
@@ -159,12 +176,11 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           />
         </div>
       </div>
-      <div className="flex flex-col-reverse sm:flex-row">
+      <div className="flex flex-grow flex-col-reverse sm:flex-row">
         <div className="flex-grow pb-[120px]">
           <CharacterSheetItem
             field="roleplayTips"
             label="Roleplaying Tips"
-            stream={true}
             requirements={["physicalDescription", "demeanor"]}
             character={characterState}
             value={characterState.roleplayTips}
@@ -173,7 +189,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="physicalDescription"
             label="Appearance"
-            stream={true}
             requirements={["name", "species", "age"]}
             character={characterState}
             value={characterState.physicalDescription}
@@ -182,7 +197,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="demeanor"
             label="Behavior"
-            stream={true}
             requirements={["name", "species", "age"]}
             character={characterState}
             value={characterState.demeanor}
@@ -191,7 +205,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="backstory"
             label="Backstory"
-            stream={true}
             requirements={[
               "name",
               "species",
@@ -206,19 +219,17 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="secret"
             label="Secret"
-            stream={true}
             requirements={["name", "species", "age", "backstory"]}
             character={characterState}
             value={characterState.secret}
             saveResponse={saveResponse}
           />
 
-          {character.goals.map((item, index) => (
+          {characterState.goals.map((item, index) => (
             <CharacterSheetItem
               key={item.id}
               field="goals"
               label={`Goal ${index + 1}`}
-              stream={true}
               requirements={["backstory", "secret", "name"]}
               character={characterState}
               value={item.description}
@@ -233,7 +244,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               key={item.id}
               field="goals"
               label={`Friend ${index + 1}`}
-              stream={true}
               requirements={["backstory", "secret", "name"]}
               character={characterState}
               value={item.description}
@@ -246,7 +256,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               key={item.id}
               field="goals"
               label={`Enemy ${index + 1}`}
-              stream={true}
               requirements={["backstory", "secret", "name"]}
               character={characterState}
               value={item.description}
@@ -255,11 +264,10 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           ))} */}
         </div>
-        <div className="shrink-0 border-l border-stone-800 sm:w-[255px]">
+        <div className="sm:min-h-[calc(100vh - 255px - 49px)] shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetItem
             field="species"
             label="Species"
-            stream={true}
             requirements={[]}
             character={characterState}
             value={characterState.species}
@@ -270,7 +278,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="age"
             label="Age"
-            stream={false}
             requirements={["species"]}
             character={characterState}
             value={characterState.age}
@@ -281,7 +288,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="height"
             label="Height"
-            stream={false}
             requirements={["physicalDescription"]}
             value={characterState.height}
             allowRegeneration={false}
@@ -292,7 +298,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="weight"
             label="Weight"
-            stream={false}
             requirements={["physicalDescription"]}
             character={characterState}
             value={characterState.weight}
@@ -303,7 +308,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="eyeColor"
             label="Eye Color"
-            stream={false}
             requirements={["physicalDescription"]}
             character={characterState}
             value={characterState.eyeColor}
@@ -314,7 +318,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="hairColor"
             label="Hair Color"
-            stream={false}
             requirements={["physicalDescription"]}
             character={characterState}
             value={characterState.hairColor}

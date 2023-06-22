@@ -1,4 +1,5 @@
-import { db, verifyCurrentUserHasAccessToItem } from "~/utils/db";
+import { getAuthSession } from "~/utils/auth";
+import { db } from "~/utils/db";
 
 export async function DELETE(request: Request) {
   try {
@@ -21,4 +22,17 @@ export async function DELETE(request: Request) {
   } catch (err) {
     return new Response(null, { status: 500 }); // Internal Server Error
   }
+}
+
+async function verifyCurrentUserHasAccessToItem(itemId: string) {
+  const session = await getAuthSession();
+
+  const count = await db.character.count({
+    where: {
+      id: itemId,
+      userId: session?.user.id,
+    },
+  });
+
+  return count > 0;
 }

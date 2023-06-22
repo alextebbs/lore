@@ -1,8 +1,8 @@
-import { getOpenAIResponse } from "~/utils/OpenAIWrapper";
-import { PrismaClient } from "@prisma/client/edge";
 import { type Character } from "~/utils/types";
-
+import { OpenAIStream, StreamingTextResponse } from "ai";
 import { PromptGenerator } from "~/utils/PromptGenerator";
+import { openai } from "~/utils/ai";
+import { db } from "~/utils/db";
 
 export const runtime = "edge";
 
@@ -14,9 +14,7 @@ export async function GET(
 
   const { field } = params;
 
-  const prisma = new PrismaClient();
-
-  let character = await prisma.character.findUnique({
+  let character = await db.character.findUnique({
     where: { id: searchParams.get("id") as string },
     include: {
       friends: true,
@@ -24,8 +22,6 @@ export async function GET(
       goals: true,
     },
   });
-
-  console.log(character?.goals);
 
   if (!character) {
     return new Response("Character not found.", { status: 404 });
@@ -79,12 +75,27 @@ export async function GET(
   // `);
 
   try {
-    const response = await getOpenAIResponse({
-      prompt,
-      stream: searchParams.has("stream"),
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      stream: true,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+      max_tokens: 200,
+      temperature: 1, // you want absolute certainty for spell check
+      top_p: 1,
+      frequency_penalty: 1,
+      presence_penalty: 1,
     });
 
-    return new Response(response);
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+    const stream = OpenAIStream(response);
+
+    return new StreamingTextResponse(stream);
   } catch (err: unknown) {
     console.error(err);
     return new Response("Could not generate field", { status: 500 });

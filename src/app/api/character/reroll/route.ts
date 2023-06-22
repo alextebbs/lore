@@ -1,4 +1,5 @@
-import { db, verifyCurrentUserHasAccessToItem } from "~/utils/db";
+import { getAuthSession } from "~/utils/auth";
+import { db } from "~/utils/db";
 
 export async function GET(request: Request) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: Request) {
 
     console.time("reroll");
 
-    await db.character.update({
+    const character = await db.character.update({
       where: {
         id: searchParams.get("id") as string,
         // userId: session?.user.id,
@@ -52,8 +53,21 @@ export async function GET(request: Request) {
 
     console.timeEnd("reroll");
 
-    return new Response(null, { status: 204 }); // No Content
+    return new Response(JSON.stringify(character));
   } catch (err) {
     return new Response(null, { status: 500 }); // Internal Server Error
   }
+}
+
+async function verifyCurrentUserHasAccessToItem(itemId: string) {
+  const session = await getAuthSession();
+
+  const count = await db.character.count({
+    where: {
+      id: itemId,
+      userId: session?.user.id,
+    },
+  });
+
+  return count > 0;
 }

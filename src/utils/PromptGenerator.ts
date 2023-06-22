@@ -239,7 +239,9 @@ export class PromptGenerator {
     return outdent`
       ${this.generateKnownCharacterInfo(character)}
 
-      Now, generate a ${regenPrompt ? "new" : ""} name for the character. 
+      Now, generate a ${
+        regenPrompt ? "new and" : ""
+      } unique name for the character. 
 
       Return the name as 1-3 words. Use no periods in your response.
 

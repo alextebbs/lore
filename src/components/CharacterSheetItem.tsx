@@ -5,14 +5,12 @@ import type { Character } from "~/utils/types";
 
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
-import { useSession } from "next-auth/react";
-import { start } from "repl";
+import { cn } from "~/utils/cn";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
   label: string;
   value: string | null | undefined;
-  stream: boolean;
   allowRegeneration?: boolean;
   requirements?: (keyof Character)[];
   character: Character;
@@ -29,7 +27,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     value,
     field,
     label,
-    stream,
     requirements,
     style = "normal",
     character,
@@ -39,37 +36,31 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     saveResponse,
   } = props;
 
-  const startedGenerating = useRef<boolean>(false);
-
-  const [responseText, setResponseText] = useState<string | null | undefined>(
-    value
-  );
-
-  const [doneGenerating, setDoneGenerating] = useState<boolean>(
-    character[field] !== null
-  );
+  const [responseText, setResponseText] = useState<string | null>(null);
 
   const [editing, setEditing] = useState<boolean>(false);
 
-  const responseTextRef = useRef<HTMLDivElement>(null);
+  const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
+
+  const isEditable = value && !isRegenerating;
+
+  const valueTextRef = useRef<HTMLDivElement>(null);
 
   const handleEditButtonClick = () => {
     setEditing(true);
 
     // Focus the response text with the caret at the end:
     // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
-
     setTimeout(() => {
-      if (!responseTextRef.current || !responseTextRef.current.childNodes[0])
-        return;
+      if (!valueTextRef.current || !valueTextRef.current.childNodes[0]) return;
 
-      responseTextRef.current.focus();
+      valueTextRef.current.focus();
 
-      const textLength = responseTextRef.current.innerText.length;
+      const textLength = valueTextRef.current.innerText.length;
       const range = document.createRange();
       const selection = window.getSelection();
 
-      range.setStart(responseTextRef.current.childNodes[0], textLength);
+      range.setStart(valueTextRef.current.childNodes[0], textLength);
       range.collapse(true);
 
       selection?.removeAllRanges();
@@ -83,6 +74,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     e.preventDefault();
 
     setEditing(false);
+    setIsRegenerating(true);
 
     const form = e.target as HTMLFormElement;
 
@@ -97,10 +89,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       prompt: elements.prompt.value,
     });
 
-    if (stream) {
-      params.append("stream", "");
-    }
-
     if (elements.useExistingData.checked) {
       params.append("useExistingData", "");
     }
@@ -111,12 +99,13 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
     const url = `/api/character/generate/${field}/?${params.toString()}`;
 
-    await getResponse(url);
+    await getAndSaveResponse(url);
+
+    setIsRegenerating(false);
   };
 
   // Generic function to get a response from the API.
-  const getResponse = async (url: string) => {
-    setDoneGenerating(false);
+  const getAndSaveResponse = async (url: string) => {
     setResponseText("");
 
     const response = await fetch(url);
@@ -130,102 +119,96 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     const reader = data.getReader();
     const decoder = new TextDecoder();
     let done = false;
+    let result = "";
 
     while (!done) {
       const { value, done: doneReading } = await reader.read();
       done = doneReading;
       const chunkValue = decoder.decode(value);
-      setResponseText((prev) => (prev ? prev + chunkValue : chunkValue));
+      result += chunkValue;
+      setResponseText(result);
     }
 
-    setDoneGenerating(true);
+    await saveResponse({ value: result, field, relationID });
+    setResponseText(null);
   };
 
-  // Generate this field if it is null when the effect runs.
+  // QUESTION:
+  // I'm using this isGenerating ref to prevent the useEffect from running
+  // twice on initial render due to StrictMode. This seems like a hack.
+  // What is the better way to do this? If I remove this ref and the checks
+  // for it, everything starts to wack out because this useEffect runs twice.
+  // Does the first running of the useEffect under StrictMode need to be
+  // "cleaned up" somehow to make the second running of it not cause issues?
+  const isGenerating = useRef<boolean>(false);
+
   useEffect(() => {
-    const generateResponse = async () => {
-      // If we already have a value or we are currently generating one, don't.
-      if (value || startedGenerating.current) return;
+    if (value || isGenerating.current) {
+      return;
+    }
 
-      // If we need to await something else to generate this, wait.
-      for (const requirement of requirements ?? []) {
-        if (!character[requirement]) return;
-      }
+    for (const requirement of requirements ?? []) {
+      if (!character[requirement]) return;
+    }
 
-      // If this is a relation field, we need to let the other relations generate first.
-      if (relationIdx) {
-        const count = (
-          character[field] as Array<{ description: string }>
-        ).filter((item) => item.description).length;
+    // If this is a relation field, let the other relations generate first.
+    if (relationIdx) {
+      const count = (character[field] as Array<{ description: string }>).filter(
+        (item) => item.description
+      ).length;
 
-        if (count < relationIdx) return;
-      }
+      if (count < relationIdx) return;
+    }
 
-      // This is mostly to get around StrictMode stuff
-      startedGenerating.current = true;
-
-      await getResponse(
-        `/api/character/generate/${field}/?id=${character.id}${
-          stream ? "&stream" : ""
-        }`
+    (async () => {
+      isGenerating.current = true;
+      await getAndSaveResponse(
+        `/api/character/generate/${field}/?id=${character.id}`
       );
-    };
+      isGenerating.current = false;
+    })().catch(console.error);
 
-    generateResponse().catch(console.error);
-  }, [character, field, relationIdx, requirements, stream]);
-
-  // if I put saveResponse in the dep array, it breaks
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const saveResponseCallback = useCallback(saveResponse, []);
-
-  // Watch for changes to the response text and save them if we are doneGenerating
-  useEffect(() => {
-    // Dont try this if we already had a value or if are still generating the response
-    if (value || !doneGenerating || !responseText) return;
-
-    saveResponseCallback({ value: responseText, field, relationID }).catch(
-      console.error
-    );
-    // Again, I don't think this is right.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [doneGenerating, field, relationID, responseText, saveResponseCallback]);
+  }, [character, value]);
 
-  const handleSaveButtonClick = () => {
-    const newResponseText = responseTextRef.current?.textContent ?? null;
+  const handleSaveButtonClick = async () => {
+    setEditing(false);
+
+    const newResponseText = valueTextRef.current?.textContent ?? null;
 
     if (!newResponseText) return;
 
     if (newResponseText !== responseText) {
-      saveResponse({ value: newResponseText, field, relationID }).catch(
-        console.error
-      );
+      await saveResponse({ value: newResponseText, field, relationID });
+      setResponseText(null);
     }
-
-    setEditing(false);
   };
 
   return (
     <div>
-      {editing && (
+      {editing && isEditable && (
         <div
           onClick={handleSaveButtonClick}
-          className="fixed bottom-0 left-0 right-0 top-0 z-10"
+          className="fixed bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-90 transition-all"
         ></div>
       )}
       <div
-        onClick={() => (!editing ? handleEditButtonClick() : null)}
-        className={`group border-b p-6 
-        ${style == "condensed" ? "py-3 pt-2" : "py-5"}
-        ${
-          editing
-            ? `relative z-20 border-transparent bg-black shadow-[0_0_0_9999px_rgba(0,0,0,0.9)] transition-all`
-            : `cursor-pointer border-stone-800 hover:bg-stone-900`
-        }`}
+        onClick={() =>
+          !editing && isEditable ? handleEditButtonClick() : null
+        }
+        className={cn(
+          "group border-b p-6",
+          style === "condensed" && "py-3 pt-2",
+          style !== "condensed" && "py-5",
+          !editing && "border-stone-800",
+          isEditable && !editing && "cursor-pointer hover:bg-stone-900",
+          editing && "relative z-20 border-transparent bg-black transition-all"
+        )}
       >
         <div className="mb-1 flex h-7 items-center text-xs text-red-600">
           <span className="uppercase tracking-[0.25em]">{label}</span>
 
-          {doneGenerating &&
+          {isEditable &&
             (!editing ? (
               <button
                 onClick={handleEditButtonClick}
@@ -243,9 +226,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
               >
                 <MdCheck />
                 <span
-                  className={`inline-block pl-2 transition-all ${
-                    !editing ? `opacity-0 group-hover:opacity-100` : ``
-                  }`}
+                  className={cn(
+                    "inline-block pl-2 transition-all",
+                    !editing && "opacity-0 group-hover:opacity-100"
+                  )}
                 >
                   Save
                 </span>
@@ -255,24 +239,27 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
         <>
           <div className="whitespace-pre-line text-sm">
-            {responseText ? (
-              <div
-                ref={responseTextRef}
-                contentEditable={editing && doneGenerating}
-                suppressContentEditableWarning
-                className={`
-                  transition-colors focus:outline-none focus:ring-0 
-                  ${
-                    style == "header" ? `font-heading text-3xl sm:text-5xl` : ``
-                  }
-                  ${style == "condensed" ? `text-lg` : ``}
-                `}
-              >
-                {responseText}
-              </div>
-            ) : (
-              <LoadingSpinner />
-            )}
+            <div
+              className={cn(
+                style === "header" && `font-heading text-3xl sm:text-5xl`,
+                style === "condensed" && `text-lg`
+              )}
+            >
+              {isEditable ? (
+                <div
+                  ref={valueTextRef}
+                  contentEditable={editing}
+                  suppressContentEditableWarning
+                  className="focus:outline-none focus:ring-0"
+                >
+                  {value}
+                </div>
+              ) : responseText ? (
+                <div className="text-stone-400">{responseText}</div>
+              ) : (
+                <LoadingSpinner />
+              )}
+            </div>
           </div>
 
           {editing && (
@@ -288,7 +275,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 when you&apos;re done.
               </div>
 
-              {doneGenerating && allowRegeneration && (
+              {isEditable && allowRegeneration && (
                 <div className="mt-4 border-t border-stone-800 pt-4">
                   <p>Or, try rerolling this field with new instructions.</p>
 
