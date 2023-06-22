@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdModeEditOutline, MdCheck } from "react-icons/md";
 import { FaDiceD20 } from "react-icons/fa";
 import type { Character } from "~/utils/types";
@@ -6,6 +6,7 @@ import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { cn } from "~/utils/cn";
+import { useSession } from "next-auth/react";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -184,6 +185,9 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     }
   };
 
+  const session = useSession();
+  const user = session?.data?.user;
+
   return (
     <div>
       {editing && isEditable && (
@@ -194,14 +198,14 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       )}
       <div
         onClick={() =>
-          !editing && isEditable ? handleEditButtonClick() : null
+          !editing && isEditable && user ? handleEditButtonClick() : null
         }
         className={cn(
           "group border-b p-6",
           style === "condensed" && "py-3 pt-2",
           style !== "condensed" && "py-5",
           !editing && "border-stone-800",
-          isEditable && !editing && "cursor-pointer hover:bg-stone-900",
+          isEditable && !editing && user && "cursor-pointer hover:bg-stone-900",
           editing && "relative z-20 border-transparent bg-black transition-all"
         )}
       >
@@ -209,6 +213,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
           <span className="uppercase tracking-[0.25em]">{label}</span>
 
           {isEditable &&
+            user &&
             (!editing ? (
               <button
                 onClick={handleEditButtonClick}
@@ -245,17 +250,23 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 style === "condensed" && `text-lg`
               )}
             >
-              {isEditable ? (
-                <div
-                  ref={valueTextRef}
-                  contentEditable={editing}
-                  suppressContentEditableWarning
-                  className="focus:outline-none focus:ring-0"
-                >
-                  {value}
-                </div>
-              ) : responseText ? (
-                <div className="text-stone-400">{responseText}</div>
+              {user ? (
+                isEditable ? (
+                  <div
+                    ref={valueTextRef}
+                    contentEditable={editing}
+                    suppressContentEditableWarning
+                    className="focus:outline-none focus:ring-0"
+                  >
+                    {value}
+                  </div>
+                ) : responseText ? (
+                  <div className="text-stone-400">{responseText}</div>
+                ) : (
+                  <LoadingSpinner />
+                )
+              ) : value ? (
+                <>{value}</>
               ) : (
                 <LoadingSpinner />
               )}

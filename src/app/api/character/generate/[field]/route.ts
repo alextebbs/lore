@@ -85,8 +85,8 @@ export async function GET(
           content: prompt,
         },
       ],
-      max_tokens: 200,
-      temperature: 1, // you want absolute certainty for spell check
+      max_tokens: 2048,
+      temperature: 1,
       top_p: 1,
       frequency_penalty: 1,
       presence_penalty: 1,

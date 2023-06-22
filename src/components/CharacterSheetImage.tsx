@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { Character } from "~/utils/types";
 import type { SaveResponseOptions } from "./CharacterSheet";
 import { Canvas } from "@react-three/fiber";
 import { Dice } from "./Dice";
 import Image from "next/image";
+import { FaDiceD20 } from "react-icons/fa";
+import { useSession } from "next-auth/react";
 
 interface CharacterSheetImageProps {
   character: Character;
@@ -42,8 +44,11 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
     })().catch(console.error);
   }, [character, saveResponse]);
 
+  const session = useSession();
+  const user = session?.data?.user;
+
   return (
-    <div className="border-b border-stone-800">
+    <div className="group border-b border-stone-800">
       <svg className="hidden" imageRendering="optimizeSpeed">
         {/* https://github.com/tomren1/dither-with-css  */}
         <filter
@@ -76,14 +81,21 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
         </filter>
       </svg>
       {character.imageURL ? (
-        <Image
-          src={character.imageURL}
-          width={510}
-          height={510}
-          className="w-full"
-          style={{ filter: "url(#dither)" }}
-          alt={`Portrait of ${character.name || `your character`}`}
-        />
+        <div className="relative">
+          <Image
+            src={character.imageURL}
+            width={510}
+            height={510}
+            className="w-full"
+            style={{ filter: "url(#dither)" }}
+            alt={`Portrait of ${character.name || `your character`}`}
+          />
+          {user && (
+            <button className="absolute bottom-0 left-0 right-0 hidden justify-center rounded bg-black/75 px-4 py-3 text-xs uppercase tracking-[0.15em] hover:text-red-600 group-hover:inline-flex">
+              Reroll Image <FaDiceD20 className="ml-2 text-base" />
+            </button>
+          )}
+        </div>
       ) : (
         <div className="flex h-[254px] flex-col items-center justify-center">
           <div className="h-[48px] w-[48px]">

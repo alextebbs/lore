@@ -12,6 +12,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { isCharacterComplete } from "~/utils/checkIfNull";
 import { cn } from "~/utils/cn";
+import { createContext } from "vm";
 
 dayjs.extend(relativeTime); // use plugin
 
@@ -40,8 +41,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
   const [showingClipboardText, setShowingClipboardText] =
     useState<boolean>(false);
-
-  const session = useSession();
 
   const handleShareButtonClick = async () => {
     setShowingClipboardText(true);
@@ -92,12 +91,13 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     setIsRerolling(false);
   };
 
-  console.log(character);
+  const session = useSession();
+  const user = session?.data?.user;
 
   return (
     <div className="mx-auto flex h-max min-h-screen w-full max-w-5xl flex-grow flex-col border-l border-r border-stone-800">
       <div className="z-10 flex items-center border-b border-stone-800 bg-stone-950 p-2 text-xs text-stone-500 sm:sticky sm:top-0">
-        {session && (
+        {user && (
           <button
             onClick={handleRerollClick}
             disabled={!characterIsComplete || isRerolling}
@@ -141,7 +141,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           </div>
         ) : (
           <div className="ml-auto inline-flex px-4 py-2 uppercase tracking-[0.15em]">
-            Saved:{" "}
+            {user ? "Saved:" : "Last updated:"}{" "}
             {new Date().getTime() - lastSavedDate.getTime() >
             1000 * 60 * 60 * 24
               ? dayjs(lastSavedDate).format("MM/DD/YY @ h:mm A")
@@ -240,29 +240,29 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           ))}
 
           {/* {character.friends.map((item, index) => (
-            <CharacterSheetItem
-              key={item.id}
-              field="goals"
-              label={`Friend ${index + 1}`}
-              requirements={["backstory", "secret", "name"]}
-              character={characterState}
-              value={item.description}
-              saveResponse={saveResponse}
-              relationID={item.id}
-            />
-          ))}
-          {character.enemies.map((item, index) => (
-            <CharacterSheetItem
-              key={item.id}
-              field="goals"
-              label={`Enemy ${index + 1}`}
-              requirements={["backstory", "secret", "name"]}
-              character={characterState}
-              value={item.description}
-              saveResponse={saveResponse}
-              relationID={item.id}
-            />
-          ))} */}
+              <CharacterSheetItem
+                key={item.id}
+                field="goals"
+                label={`Friend ${index + 1}`}
+                requirements={["backstory", "secret", "name"]}
+                character={characterState}
+                value={item.description}
+                saveResponse={saveResponse}
+                relationID={item.id}
+              />
+            ))}
+            {character.enemies.map((item, index) => (
+              <CharacterSheetItem
+                key={item.id}
+                field="goals"
+                label={`Enemy ${index + 1}`}
+                requirements={["backstory", "secret", "name"]}
+                character={characterState}
+                value={item.description}
+                saveResponse={saveResponse}
+                relationID={item.id}
+              />
+            ))} */}
         </div>
         <div className="sm:min-h-[calc(100vh - 255px - 49px)] shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetItem
