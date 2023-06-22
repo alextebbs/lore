@@ -22,7 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   const router = useRouter();
 
   const handleDeleteCharacter = async (id: string) => {
-    await fetch(`/api/character/delete?id=${id}`);
+    await fetch(`/api/character/delete?id=${id}`, { method: "DELETE" });
 
     if (currentCharacterID === id) {
       router.push(`/`);
@@ -32,7 +32,7 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   };
 
   return (
-    <div className="fixed flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 lg:static lg:w-80 lg:translate-x-0">
+    <div className="fixed flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 lg:static lg:w-72 lg:translate-x-0">
       <Link href={`/`}>
         <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
           Mythweaver

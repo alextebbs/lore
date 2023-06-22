@@ -24,8 +24,8 @@ model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
-  expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
 
   @@index([userId])
 }
@@ -62,13 +62,13 @@ datasource db {
 }
 
 model Character {
-  id                  String                  @id @default(cuid())
-  createdAt           DateTime                @default(now())
-  updatedAt           DateTime                @updatedAt
+  id                  String   @id @default(cuid())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
   userId              String?
-  user                User?                   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  finishedGeneration  Boolean                 @default(false)
-  originStatement     String?                 @db.Text
+  user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  finishedGeneration  Boolean  @default(false)
+  originStatement     String?  @db.Text
   name                String?
   age                 String?
   species             String?
@@ -76,29 +76,32 @@ model Character {
   weight              String?
   eyeColor            String?
   hairColor           String?
-  backstory           String?                 @db.Text
-  physicalDescription String?                 @db.Text
-  demeanor            String?                 @db.Text
-  secret              String?                 @db.Text
-  roleplayTips        String?                 @db.Text
-  imageURL            String?                 @db.Text
+  backstory           String?  @db.Text
+  physicalDescription String?  @db.Text
+  demeanor            String?  @db.Text
+  secret              String?  @db.Text
+  roleplayTips        String?  @db.Text
+  imageURL            String?  @db.Text
   goals               Goal[]
-  friends             CharacterRelationship[] @relation(name: "Friend", map: "character_friends_fk")
-  enemies             CharacterRelationship[] @relation(name: "Enemy", map: "character_enemies_fk")
+
+  friends SideCharacter[] @relation(name: "Friend", map: "character_friends_fk")
+  enemies SideCharacter[] @relation(name: "Enemy", map: "character_enemies_fk")
 
   @@index([userId])
 }
 
-model CharacterRelationship {
+model SideCharacter {
   id          String     @id @default(cuid())
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  characterId String
-  friend      Character? @relation(fields: [characterId], references: [id], map: "character_friends_fk", name: "Friend", onDelete: Cascade)
-  enemy       Character? @relation(fields: [characterId], references: [id], map: "character_enemies_fk", name: "Enemy", onDelete: Cascade)
+  friendId    String
+  friend      Character? @relation(fields: [friendId], references: [id], map: "character_friends_fk", name: "Friend", onDelete: Cascade)
+  enemyId     String
+  enemy       Character? @relation(fields: [enemyId], references: [id], map: "character_enemies_fk", name: "Enemy", onDelete: Cascade)
   description String?    @db.Text
 
-  @@index([characterId])
+  @@index([enemyId])
+  @@index([friendId])
 }
 
 model Goal {

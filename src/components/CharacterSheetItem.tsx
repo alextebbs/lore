@@ -111,8 +111,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
     const url = `/api/character/generate/${field}/?${params.toString()}`;
 
-    console.log(url);
-
     await getResponse(url);
   };
 
@@ -143,7 +141,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     setDoneGenerating(true);
   };
 
-  // Generate this field if it is null when the character loads.
+  // Generate this field if it is null when the effect runs.
   useEffect(() => {
     const generateResponse = async () => {
       // If we already have a value or we are currently generating one, don't.
@@ -174,7 +172,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     };
 
     generateResponse().catch(console.error);
-  }, [character, field, relationIdx, requirements, stream, value]);
+  }, [character, field, relationIdx, requirements, stream]);
 
   // if I put saveResponse in the dep array, it breaks
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -241,7 +239,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
             ) : (
               <button
                 onClick={handleSaveButtonClick}
-                className="ml-1 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
+                className="ml-2 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
               >
                 <MdCheck />
                 <span

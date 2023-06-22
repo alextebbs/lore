@@ -1,24 +1,24 @@
-import { PrismaClient } from "@prisma/client/edge";
-import { getAuthSession } from "~/utils/auth";
+import { db, verifyCurrentUserHasAccessToItem } from "~/utils/db";
 
-export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+export async function DELETE(request: Request) {
+  try {
+    console.time("delete");
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
 
-  const prisma = new PrismaClient();
+    if (!id) return new Response(null, { status: 400 }); // Bad Request
 
-  const session = await getAuthSession();
+    if (!(await verifyCurrentUserHasAccessToItem(id))) {
+      return new Response(null, { status: 403 }); // Forbidden
+    }
 
-  console.time("delete");
-  // QUESTION: I really only want to delete one character here. I'm using
-  // deleteMany because the regular delete will only let me find characters by
-  // their id, not their id and their userId. Is there a better way to do this?
-  const response = await prisma.character.deleteMany({
-    where: {
-      id: searchParams.get("id") as string,
-      userId: session?.user.id,
-    },
-  });
-  console.timeEnd("delete");
+    await db.character.delete({
+      where: { id },
+    });
+    console.timeEnd("delete");
 
-  return new Response(JSON.stringify(response));
+    return new Response(null, { status: 204 }); // No Content
+  } catch (err) {
+    return new Response(null, { status: 500 }); // Internal Server Error
+  }
 }

@@ -6,6 +6,8 @@ export async function GET(request: Request) {
 
   const session = await getAuthSession();
 
+  console.log(session);
+
   const prompt = searchParams.get("prompt");
 
   // Create character in DB as an empty shell character

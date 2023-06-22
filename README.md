@@ -1,6 +1,6 @@
 # Mythweaver
 
-Check it out: https://lore-orpin.vercel.app/
+(Check it out)[https://lore-orpin.vercel.app/]
 
 This is an NPC Generator using OpenAI to create fictional characters for use in
 tabletop roleplaying games. I built this as a way to teach myself Next.js and
@@ -16,33 +16,40 @@ Some features:
 
 ### High
 
+- Mobile UI (sidebar needs to toggle)
+
+- Character generation needs to be different
+
+  - Should be handled by CharacterSheet, not CharacterSheetItem.
+  - Rerolling shouldn't be an API route, it should just happen client-side
+  - Save buttons should not be visible until generation is fully complete and
+    your user is associated with the character.
+  - "Saving" the character should only happen once, at the end of character
+    generation.
+
 - Make Auth actually protect characters that aren't yours
 
   - You shouldn't be able to edit a character that isn't yours
-  - You shouldn't be able to reroll a character that isn't yours
-
-- Mobile UI (sidebar needs to toggle)
 
 - You should be able to create a character without a login, and then associate
   that character with your login (no idea how to do this)
+
   - Maybe any character you've created could be "claimed"?
 
 ### Mid
 
+- Sort out prompts, add examples, tune them
 - Reroll doesn't do anything
 - Character name should fill in in the sidebar when character is being generated
-- Use this? https://vercel.com/blog/introducing-the-vercel-ai-sdk
-- Sort out prompts, add examples, tune them
-
 - Relational stuff is still messed up
   - Friends/Enemies is giving 6 of each. The database relation isn't set right
   - Relational items are still a bit wacky in prompt generator
-  - Goals can technically be edited before they are generated
+  - Relational items can be edited before they are generated
 
 ### Low
 
+- You should be able to fork a character to make it become yours
+- Use this? https://vercel.com/blog/introducing-the-vercel-ai-sdk
 - Its slow (its less slow now)
 - Images need to actually get stored somewhere, unfortunately
-- Consider a more robust dithering effect on photo?
-- You should be able to fork a character to make it become yours
 - Add the ability to edit originalPrompt

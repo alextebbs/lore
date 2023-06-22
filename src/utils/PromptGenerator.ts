@@ -5,8 +5,8 @@ import { type Character } from "~/utils/types";
 export class PromptGenerator {
   generateKnownCharacterInfo(character: Character) {
     return outdent`
-      You are going to help create a character for use in a fantasy roleplaying
-      campaign setting. You should seek to create characters that are creative,
+      You are going to help create a character for use in a TTRPG campaign
+      setting. You should seek to create characters that are creative,
       distinct, and dynamic. 
 
       Use the following style notes when writing your response.

@@ -1,7 +1,7 @@
 "use client";
 
 import type { Character } from "~/utils/types";
-import { use, useState } from "react";
+import { useState } from "react";
 import { FaDiceD20 } from "react-icons/fa";
 import { BiLink } from "react-icons/bi";
 import { CharacterSheetItem } from "./CharacterSheetItem";
@@ -11,6 +11,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 dayjs.extend(relativeTime); // use plugin
 
@@ -38,8 +39,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     useState<boolean>(false);
 
   const session = useSession();
-
-  const router = useRouter();
 
   const handleShareButtonClick = async () => {
     setShowingClipboardText(true);
@@ -78,15 +77,17 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     setIsSaving(false);
   };
 
+  const pathname = usePathname();
+  const router = useRouter();
+
   const handleRerollClick = async () => {
     const response = await fetch(
       `/api/character/reroll/?id=${characterState.id}`
     );
 
-    // const character = (await response.json()) as Character;
+    const character = (await response.json()) as Character;
 
-    // setCharacterState(character);
-    router.refresh();
+    setCharacterState(character);
   };
 
   return (
