@@ -66,6 +66,7 @@ model Character {
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
   userId              String?
+  cookieId            String?
   user                User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   finishedGeneration  Boolean  @default(false)
   originStatement     String?  @db.Text
@@ -82,7 +83,8 @@ model Character {
   secret              String?  @db.Text
   roleplayTips        String?  @db.Text
   imageURL            String?  @db.Text
-  goals               Goal[]
+
+  goals Goal[]
 
   friends SideCharacter[] @relation(name: "Friend", map: "character_friends_fk")
   enemies SideCharacter[] @relation(name: "Enemy", map: "character_enemies_fk")

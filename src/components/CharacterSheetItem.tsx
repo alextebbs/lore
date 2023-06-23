@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { MdModeEditOutline, MdCheck } from "react-icons/md";
 import { FaDiceD20 } from "react-icons/fa";
 import type { Character } from "~/utils/types";
@@ -39,7 +39,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
   const [responseText, setResponseText] = useState<string | null>(null);
 
-  const [editing, setEditing] = useState<boolean>(false);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const [isRegenerating, setIsRegenerating] = useState<boolean>(false);
 
@@ -48,7 +48,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const valueTextRef = useRef<HTMLDivElement>(null);
 
   const handleEditButtonClick = () => {
-    setEditing(true);
+    setIsEditing(true);
 
     // Focus the response text with the caret at the end:
     // https://stackoverflow.com/questions/72129403/reactjs-how-to-autofocus-an-element-with-contenteditable-attribute-true-in-rea
@@ -74,7 +74,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   ) => {
     e.preventDefault();
 
-    setEditing(false);
+    setIsEditing(false);
     setIsRegenerating(true);
 
     const form = e.target as HTMLFormElement;
@@ -173,7 +173,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   }, [character, value]);
 
   const handleSaveButtonClick = async () => {
-    setEditing(false);
+    setIsEditing(false);
 
     const newResponseText = valueTextRef.current?.textContent ?? null;
 
@@ -190,7 +190,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
   return (
     <div>
-      {editing && isEditable && (
+      {isEditing && isEditable && (
         <div
           onClick={handleSaveButtonClick}
           className="fixed bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-90 transition-all"
@@ -198,15 +198,19 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       )}
       <div
         onClick={() =>
-          !editing && isEditable && user ? handleEditButtonClick() : null
+          !isEditing && isEditable && user ? handleEditButtonClick() : null
         }
         className={cn(
           "group border-b p-6",
           style === "condensed" && "py-3 pt-2",
           style !== "condensed" && "py-5",
-          !editing && "border-stone-800",
-          isEditable && !editing && user && "cursor-pointer hover:bg-stone-900",
-          editing && "relative z-20 border-transparent bg-black transition-all"
+          !isEditing && "border-stone-800",
+          isEditable &&
+            !isEditing &&
+            user &&
+            "cursor-pointer hover:bg-stone-900",
+          isEditing &&
+            "relative z-20 border-transparent bg-black transition-all"
         )}
       >
         <div className="mb-1 flex h-7 items-center text-xs text-red-600">
@@ -214,7 +218,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
           {isEditable &&
             user &&
-            (!editing ? (
+            (!isEditing ? (
               <button
                 onClick={handleEditButtonClick}
                 className="ml-2 flex cursor-pointer items-center justify-center rounded border border-transparent p-1 pl-2 pr-3 hover:border-red-600"
@@ -233,7 +237,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 <span
                   className={cn(
                     "inline-block pl-2 transition-all",
-                    !editing && "opacity-0 group-hover:opacity-100"
+                    !isEditing && "opacity-0 group-hover:opacity-100"
                   )}
                 >
                   Save
@@ -254,7 +258,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 isEditable ? (
                   <div
                     ref={valueTextRef}
-                    contentEditable={editing}
+                    contentEditable={isEditing}
                     suppressContentEditableWarning
                     className="focus:outline-none focus:ring-0"
                   >
@@ -267,13 +271,15 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                 )
               ) : value ? (
                 <>{value}</>
+              ) : responseText ? (
+                <div className="text-stone-400">{responseText}</div>
               ) : (
                 <LoadingSpinner />
               )}
             </div>
           </div>
 
-          {editing && (
+          {isEditing && (
             <div className="absolute top-[100%] w-[100%] text-xs text-stone-400">
               <div>
                 Edit the text above,{" "}

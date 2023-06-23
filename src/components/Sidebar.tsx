@@ -32,23 +32,26 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
   };
 
   return (
-    <div className="fixed flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 lg:static lg:w-72 lg:translate-x-0">
-      <Link href={`/`}>
-        <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
-          Mythweaver
-        </div>
-      </Link>
+    <div className="relative flex h-screen -translate-x-full flex-col overflow-auto border-r border-stone-800 bg-black lg:static lg:w-72 lg:translate-x-0">
+      <div className="sticky top-0 z-10 bg-black">
+        <Link href={`/`}>
+          <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
+            Mythweaver
+          </div>
+        </Link>
+
+        <Link href={`/`}>
+          <div
+            className={`flex border-b border-b-stone-900 p-4 text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
+          >
+            <GiScrollQuill className="mr-3 text-xl" /> New character
+          </div>
+        </Link>
+      </div>
 
       <div className="flex-grow">
         {userCharacters && (
           <>
-            <Link href={`/`}>
-              <div
-                className={`flex border-b border-b-stone-900 p-4 text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
-              >
-                <GiScrollQuill className="mr-3 text-xl" /> New character
-              </div>
-            </Link>
             {userCharacters?.map((character) => (
               <div key={character.id} className="group relative">
                 <Link href={`/character/${character.id}`}>

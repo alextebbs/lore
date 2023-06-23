@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { type Character } from "~/utils/types";
-
 import { db } from "~/utils/db";
 import { getAuthSession } from "~/utils/auth";
+import { nanoid } from "nanoid";
+import { cookies } from "next/headers";
 
 export async function POST(
   request: Request,

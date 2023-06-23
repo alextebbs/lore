@@ -14,6 +14,7 @@ const EXAMPLES = [
   "the last of a long line of sorcerers",
   "a devout worshipper of a forgotten god",
   "a former slave of a powerful warlord",
+  "a githyanki rockstar from an alternate dimension",
   "an introverted ranger from a frostbitten realm",
   "a diviner who is terrified of the future",
   "a charismatic bard who is secretly a foreign spy",

@@ -27,13 +27,14 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 
-  // This is the default
+  // Not using this because it's not the default if you have an adapter.
   // session: {
   //   strategy: "jwt",
   // },
 
   callbacks: {
-    session({ session, user }) {
+    session({ session, user, token }) {
+      console.log(token);
       return {
         ...session,
         user: user,

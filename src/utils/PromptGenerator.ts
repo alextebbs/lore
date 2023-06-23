@@ -73,8 +73,7 @@ export class PromptGenerator {
       ${this.generateKnownCharacterInfo(character)}
 
       Now, generate a ${regenPrompt ? "new" : ""} species or the character.
-      Choose from the following options. If the species has a subspecies, select
-      a subspecies as well.
+      Pick a random option from the following list.
 
       - Human
       - Elf
@@ -111,7 +110,7 @@ export class PromptGenerator {
       - Grung
       - Locathah
 
-      Return the species as a single word. Use no punctuation in your response.
+      Return only a single word. Use no punctuation in your response.
 
       ${
         regenPrompt
@@ -243,7 +242,8 @@ export class PromptGenerator {
         regenPrompt ? "new and" : ""
       } unique name for the character. 
 
-      Return the name as 1-3 words. Use no periods in your response.
+      Return only the name as 1-3 words. Use no periods or punctuation in your
+      response. Do not describe the character in any way. Only return a name.
 
       ${
         regenPrompt
