@@ -12,6 +12,18 @@ Some features:
 - Characters can be edited, deleted, or shared via their permalink.
 - Fields on the character sheet can be regenerated.
 
+The Stack
+
+- [NextJS 13 App Router](https://nextjs.org/docs/app)
+- [NextAuth](https://next-auth.js.org/)
+- [Prisma](https://www.prisma.io/docs)
+- [Planetscale](https://planetscale.com/)
+- [OpenAI Completions](https://platform.openai.com/docs/api-reference/completions)
+- [DALL-E](https://platform.openai.com/docs/api-reference/images)
+- [Vercel AI SDK](https://sdk.vercel.ai/docs)
+- [Tailwind](https://tailwindcss.com/docs/installation)
+- [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction)
+
 ## TODO
 
 ### High
