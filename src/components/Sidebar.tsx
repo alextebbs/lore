@@ -5,6 +5,7 @@ import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { GiScrollQuill } from "react-icons/gi";
+import { BsGoogle } from "react-icons/bs";
 import { MdClose } from "react-icons/md";
 
 interface SidebarProps {
@@ -85,10 +86,13 @@ export const Sidebar: React.FC<SidebarProps> = (props) => {
           <>
             <div className="flex h-[100%] items-center justify-center p-4 text-center text-sm uppercase">
               <button
-                onClick={() => signIn()}
-                className="uppercase text-stone-300 hover:text-red-600"
+                onClick={() => signIn("google")}
+                className="flex flex-col items-center text-center uppercase text-stone-300 hover:text-red-600"
               >
-                <span className="text-red-600">Sign in</span> to save your stuff
+                <div className="mb-2 flex items-center text-red-600">
+                  <BsGoogle className="mr-2" /> Sign in
+                </div>
+                <div className="text-xs">to save your stuff</div>
               </button>
             </div>
           </>

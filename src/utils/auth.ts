@@ -4,6 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { db } from "~/utils/db";
 import { env } from "~/env.mjs";
 import { type Adapter } from "next-auth/adapters";
+import { cookies } from "next/headers";
 
 // QUESTION:
 // is this the right thing to do here? I think I need to extend the User and
@@ -20,6 +21,7 @@ declare module "next-auth" {
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(db) as Adapter,
+
   providers: [
     GoogleProvider({
       clientId: env.GOOGLE_ID,
@@ -33,12 +35,34 @@ export const authOptions: NextAuthOptions = {
   // },
 
   callbacks: {
-    session({ session, user, token }) {
-      console.log(token);
+    session({ session, user }) {
       return {
         ...session,
         user: user,
       };
+    },
+  },
+
+  events: {
+    signIn: async (message) => {
+      // When a user signs in, associate unowned characters that are associated
+      // with their cookieId with their userId.
+
+      const cookieId = cookies().get("lore.cookie")?.value;
+
+      if (!cookieId) return;
+
+      const yourNewCharacters = await db.character.updateMany({
+        where: {
+          cookieId,
+          userId: null,
+        },
+        data: {
+          userId: message.user.id,
+        },
+      });
+
+      console.log(yourNewCharacters);
     },
   },
 };

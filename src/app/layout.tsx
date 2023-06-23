@@ -7,7 +7,6 @@ import { cn } from "~/utils/cn";
 import { db } from "~/utils/db";
 
 import "~/styles/globals.css";
-import { cookies } from "next/headers";
 
 const plex = IBM_Plex_Mono({
   weight: ["400", "700"],
@@ -27,14 +26,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const session = await getAuthSession();
-
-  // QUESTION: Sort of unsure why this renders so much. Not sure if I'm doing
-  // something wrong or if thats how it's meant to work.
-  // console.log("RENDERING");
-
-  const cookieStore = cookies();
-
-  console.log(cookieStore.get("name"));
 
   let userCharacters: Character[] | null = null;
 

@@ -18,18 +18,16 @@ Some features:
 
 - Mobile UI (sidebar needs to toggle)
 
-- Make Auth actually protect characters that aren't yours
+- [x] Make Auth actually protect characters that aren't yours
 
-  - You shouldn't be able to edit a character that isn't yours
+  - [x] You shouldn't be able to edit a character that isn't yours
 
-- You should be able to create a character without a login, and then associate
-  that character with your login (no idea how to do this)
-
-  - Maybe any character you've created could be "claimed"?
+- [x] You should be able to create a character without a login, and then associate
+      that character with your login (no idea how to do this) edit: its done
 
 ### Mid
 
-- Sort out prompts, add examples, tune them
+- [] Sort out prompts, add examples, tune them
 
   - Sometimes it gets jacked and starts generating the whole character when
     I just ask for the name (rarely).
@@ -39,17 +37,16 @@ Some features:
   - It's default generations kind of suck. It gives the same names over and
     over again. Don't know how I would influence or fix this.
 
-- Character name should fill in in the sidebar when character is being generated
+- [] Character name should fill in in the sidebar when character is being generated
 
-- Relational stuff is still messed up
-
-  - Friends/Enemies is giving 6 of each. The database relation isn't set right
-  - Relational items are still a bit wacky in prompt generator
+- [] Relational stuff is still messed up
+  - [] Friends/Enemies is giving 6 of each. The database relation isn't set right
+  - [] Relational items are still a bit wacky in prompt generator
 
 ### Low
 
-- You should be able to fork a character to make it become yours
-- Its slow (its less slow now)
-- Images need to actually get stored somewhere, unfortunately
-- I'm using a mix of query parameters and POST body to move data around from
+- [] You should be able to fork a character to make it become yours
+- [] Its slow (its less slow now)
+- [] Images need to actually get stored somewhere, unfortunately
+- [] I'm using a mix of query parameters and POST body to move data around from
   the frontend to the API. Should I care? Does it matter?

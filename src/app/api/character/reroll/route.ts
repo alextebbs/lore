@@ -1,5 +1,5 @@
-import { getAuthSession } from "~/utils/auth";
 import { db } from "~/utils/db";
+import { verifyHasAccess } from "~/utils/verify";
 
 export async function GET(request: Request) {
   try {
@@ -8,7 +8,7 @@ export async function GET(request: Request) {
 
     if (!id) return new Response(null, { status: 400 }); // Bad Request
 
-    if (!(await verifyCurrentUserHasAccessToItem(id))) {
+    if (!(await verifyHasAccess(id))) {
       return new Response(null, { status: 403 }); // Forbidden
     }
 
@@ -57,17 +57,4 @@ export async function GET(request: Request) {
   } catch (err) {
     return new Response(null, { status: 500 }); // Internal Server Error
   }
-}
-
-async function verifyCurrentUserHasAccessToItem(itemId: string) {
-  const session = await getAuthSession();
-
-  const count = await db.character.count({
-    where: {
-      id: itemId,
-      userId: session?.user.id,
-    },
-  });
-
-  return count > 0;
 }

@@ -13,15 +13,15 @@ export async function GET(request: Request) {
   const cookieId = nanoid();
 
   if (!cookies().get("lore.cookie")) {
-    cookies().set({ name: "lore-cookie", value: cookieId });
+    cookies().set({ name: "lore.cookie", value: cookieId });
   }
 
   // Create character in DB as an empty shell character
   const character = await db.character.create({
     data: {
+      cookieId,
       originStatement: prompt,
       userId: session?.user.id,
-      cookieId,
       friends: {
         create: [
           { description: null },

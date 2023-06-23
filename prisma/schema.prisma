@@ -96,9 +96,9 @@ model SideCharacter {
   id          String     @id @default(cuid())
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  friendId    String
+  friendId    String?
   friend      Character? @relation(fields: [friendId], references: [id], map: "character_friends_fk", name: "Friend", onDelete: Cascade)
-  enemyId     String
+  enemyId     String?
   enemy       Character? @relation(fields: [enemyId], references: [id], map: "character_enemies_fk", name: "Enemy", onDelete: Cascade)
   description String?    @db.Text
 

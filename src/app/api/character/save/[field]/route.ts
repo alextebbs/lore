@@ -1,37 +1,43 @@
 import { NextResponse } from "next/server";
 import { type Character } from "~/utils/types";
 import { db } from "~/utils/db";
-import { getAuthSession } from "~/utils/auth";
-import { nanoid } from "nanoid";
-import { cookies } from "next/headers";
+import { verifyHasAccess } from "~/utils/verify";
 
 export async function POST(
   request: Request,
   { params }: { params: { field: keyof Character } }
 ) {
-  const res = (await request.json()) as Character;
+  try {
+    const res = (await request.json()) as Character;
 
-  // console.log("SAVING", res);
+    const id = res.id;
 
-  const session = await getAuthSession();
+    if (!id) return new Response(null, { status: 400 }); // Bad Request
 
-  const update = await db.character
-    .update({
-      where: {
-        id: res.id,
-      },
-      data: {
-        [params.field]: res[params.field],
-      },
-      include: {
-        friends: true,
-        enemies: true,
-        goals: true,
-      },
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+    if (!(await verifyHasAccess(id))) {
+      return new Response(null, { status: 403 }); // Forbidden
+    }
 
-  return NextResponse.json({ update });
+    const update = await db.character
+      .update({
+        where: {
+          id: res.id,
+        },
+        data: {
+          [params.field]: res[params.field],
+        },
+        include: {
+          friends: true,
+          enemies: true,
+          goals: true,
+        },
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+
+    return NextResponse.json({ update });
+  } catch (err) {
+    return new Response(null, { status: 500 }); // Internal Server Error
+  }
 }
