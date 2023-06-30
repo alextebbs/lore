@@ -31,7 +31,7 @@ The Stack
 
 ### High
 
-- [] It's slow :(
+- [] DB is slow. (it's faster once i remove prisma data proxy)
 
   - [] I need to better understand how caching and cache invalidation works.
 
@@ -59,11 +59,12 @@ The Stack
 - [] Character name should fill in in the sidebar when character is being generated
 
 - [] Relational stuff is still messed up
-  - [] Friends/Enemies is giving 6 of each. The database relation isn't set right
   - [] Relational items are still a bit wacky in prompt generator
 
 ### Low
 
+- [] Could be cool to do opengraph images:
+  https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#generate-images-using-code-js-ts-tsx
 - [] You should be able to fork a character to make it become yours
 - [] I'm using a mix of query parameters and POST body data to move data around from
   the frontend to the API. Should I care? Does it matter?

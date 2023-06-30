@@ -1,11 +1,10 @@
 import type { Character } from "@prisma/client";
-import { signIn } from "next-auth/react";
 import Link from "next/link";
 import { GiScrollQuill } from "react-icons/gi";
-import { BsGoogle } from "react-icons/bs";
 import { SidebarCharacterList } from "./SidebarCharacterList";
 import { getAuthSession } from "~/utils/auth";
 import { db } from "~/utils/db";
+import { SignIn } from "./SignIn";
 
 export const Sidebar = async () => {
   const session = await getAuthSession();
@@ -28,7 +27,7 @@ export const Sidebar = async () => {
       <div>
         <Link href={`/`}>
           <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
-            Mythweaver
+            Mythchanter
           </div>
         </Link>
 
@@ -47,19 +46,7 @@ export const Sidebar = async () => {
             <SidebarCharacterList userCharacters={userCharacters} />
           </div>
         ) : (
-          <>
-            <div className="flex h-[100%] items-center justify-center p-4 text-center text-sm uppercase">
-              <button
-                onClick={() => signIn("google")}
-                className="flex flex-col items-center text-center uppercase text-stone-300 hover:text-red-600"
-              >
-                <div className="mb-2 flex items-center text-red-600">
-                  <BsGoogle className="mr-2" /> Sign in
-                </div>
-                <div className="text-xs">to save your stuff</div>
-              </button>
-            </div>
-          </>
+          <SignIn />
         )}
       </div>
     </>
