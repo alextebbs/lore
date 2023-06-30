@@ -2,11 +2,10 @@ import { type Character } from "~/utils/types";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { PromptGenerator } from "~/utils/PromptGenerator";
 import { openai } from "~/utils/ai";
-import { db } from "~/utils/db";
 
 export const runtime = "edge";
 
-export async function GET(
+export async function POST(
   request: Request,
   { params }: { params: { field: keyof Character } }
 ) {
@@ -14,17 +13,10 @@ export async function GET(
 
   const { field } = params;
 
-  let character = await db.character.findUnique({
-    where: { id: searchParams.get("id") as string },
-    include: {
-      friends: true,
-      enemies: true,
-      goals: true,
-    },
-  });
+  let character = (await request.json()) as Character;
 
   if (!character) {
-    return new Response("Character not found.", { status: 404 });
+    return new Response("No character provided.", { status: 400 });
   }
 
   // Depending on if this is a "regeneration" or not, we need to manipulate the

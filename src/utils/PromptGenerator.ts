@@ -151,9 +151,10 @@ export class PromptGenerator {
 
       Now, generate a ${regenPrompt ? "new" : ""} height for the character. 
 
-      Return the height as a number in inches and feet. Use no punctuation in your response.
+      Return the height as two numbers in inches and feet. Use no punctuation or
+      words in your response.
 
-      Examples: 6'2", 5'3in"
+      Examples: 6'2", 5'3", 4'11", 5'10"
 
       ${
         regenPrompt
@@ -174,7 +175,8 @@ export class PromptGenerator {
 
       Now, generate a ${regenPrompt ? "new" : ""} weight for the character. 
 
-      Return the height as a number in pounds. Use no punctuation in your response.
+      Return the height as a number in pounds. Use no punctuation or words in
+      your response.
 
       Examples: 120lbs, 200lbs
 

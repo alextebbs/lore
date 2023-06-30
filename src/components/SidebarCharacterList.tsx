@@ -39,13 +39,11 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
                   : `text-stone-400 hover:text-red-600`
               } `}
             >
-              {character.name || "Unnamed character"}
+              {character.name || "Creating..."}
 
-              {character.age && character.species && (
-                <div className="font-body text-sm text-stone-600">
-                  {character.age} year old {character.species}
-                </div>
-              )}
+              <div className="font-body text-sm text-stone-600">
+                {character.age || "??"} year old {character.species || "????"}
+              </div>
             </div>
           </Link>
           <button

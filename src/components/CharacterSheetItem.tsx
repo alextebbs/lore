@@ -109,7 +109,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const getAndSaveResponse = async (url: string) => {
     setResponseText("");
 
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "POST",
+      body: JSON.stringify(character),
+    });
 
     if (!response.ok) throw new Error(response.statusText);
 
@@ -193,7 +196,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       {isEditing && isEditable && (
         <div
           onClick={handleSaveButtonClick}
-          className="fixed bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-90 transition-all"
+          className="absolute inset-0 z-10 bg-black bg-opacity-90 transition-all"
         ></div>
       )}
       <div

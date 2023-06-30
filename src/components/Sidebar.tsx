@@ -15,6 +15,7 @@ export const Sidebar = async () => {
   if (session?.user) {
     try {
       userCharacters = await db.character.findMany({
+        orderBy: [{ createdAt: "desc" }],
         where: { userId: session.user.id },
       });
     } catch (error: unknown) {

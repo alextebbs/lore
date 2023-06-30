@@ -1,6 +1,7 @@
 // This file caches prisma for local development.
+// https://www.prisma.io/docs/guides/other/troubleshooting-orm/help-articles/nextjs-prisma-client-dev-practices
 
-import { PrismaClient } from "@prisma/client/edge";
+import { PrismaClient } from "@prisma/client";
 import "server-only";
 
 declare global {

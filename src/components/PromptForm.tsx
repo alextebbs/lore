@@ -94,7 +94,7 @@ export const PromptForm: React.FC = () => {
   return (
     <main
       className={cn(
-        "flex flex-col sm:justify-center",
+        "flex h-screen flex-col sm:justify-center",
         isLoading && "justify-center"
       )}
     >

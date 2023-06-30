@@ -1,7 +1,6 @@
 import { IBM_Plex_Mono } from "next/font/google";
 import Providers from "~/components/Providers";
 import { Sidebar } from "~/components/Sidebar";
-import { cn } from "~/utils/cn";
 
 import "~/styles/globals.css";
 import { LayoutWithSidebar } from "~/components/LayoutWithSidebar";
@@ -15,7 +14,7 @@ const plex = IBM_Plex_Mono({
 
 export const metadata = {
   title: "Mythweaver",
-  description: "Generate character's for TTRPG's",
+  description: "Generate characters for your TTRPG",
 };
 
 export default function RootLayout({
@@ -24,8 +23,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className={cn(plex.className)}>
+    <html lang="en" className={`${plex.variable}`}>
+      <body>
         <Providers>
           <LayoutWithSidebar sidebar={<Sidebar />}>
             {children}

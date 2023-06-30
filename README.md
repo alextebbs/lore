@@ -35,6 +35,7 @@ The Stack
 
   - [] I need to better understand how caching and cache invalidation works.
 
+- [x] ~~Mobile UI (sidebar needs to toggle)~~
 - [x] ~~Make Auth actually protect characters that aren't yours~~
 
   - [x] ~~You shouldn't be able to edit a character that isn't yours~~

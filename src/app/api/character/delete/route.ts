@@ -1,3 +1,5 @@
+import { revalidatePath } from "next/cache";
+import { NextResponse } from "next/server";
 import { db } from "~/utils/db";
 import { verifyHasAccess } from "~/utils/verify";
 
@@ -19,7 +21,13 @@ export async function DELETE(request: Request) {
 
     console.timeEnd("delete");
 
-    return new Response(null, { status: 204 }); // No Content
+    revalidatePath("/");
+
+    // return new Response(null, { status: 204 }); // No Content
+    return NextResponse.json(
+      { revalidated: true, now: Date.now() },
+      { status: 204 }
+    );
   } catch (err) {
     return new Response(null, { status: 500 }); // Internal Server Error
   }
