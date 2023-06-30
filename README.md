@@ -31,8 +31,9 @@ The Stack
 
 ### High
 
-- [] Mobile UI (sidebar needs to toggle)
 - [] It's slow :(
+
+  - [] I need to better understand how caching and cache invalidation works.
 
 - [x] ~~Make Auth actually protect characters that aren't yours~~
 
@@ -53,6 +54,7 @@ The Stack
   - It's default generations kind of suck sometimes. It gives the same names
     over and over again. Don't know how I would influence or fix this.
 
+- [] Images need to actually get stored somewhere, unfortunately
 - [] Character name should fill in in the sidebar when character is being generated
 
 - [] Relational stuff is still messed up
@@ -62,6 +64,5 @@ The Stack
 ### Low
 
 - [] You should be able to fork a character to make it become yours
-- [] Images need to actually get stored somewhere, unfortunately
-- [] I'm using a mix of query parameters and POST body to move data around from
+- [] I'm using a mix of query parameters and POST body data to move data around from
   the frontend to the API. Should I care? Does it matter?
