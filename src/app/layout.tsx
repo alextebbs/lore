@@ -13,7 +13,7 @@ const plex = IBM_Plex_Mono({
 });
 
 export const metadata = {
-  title: "Mythweaver",
+  title: "Mythroller",
   description: "Generate characters for your TTRPG",
 };
 

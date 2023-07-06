@@ -1,8 +1,8 @@
-# Mythweaver
+# Mythroller
 
 (Live demo)[https://lore-orpin.vercel.app/]
 
-Mythweaver is an NPC generator using OpenAI to create fictional characters for
+Mythroller is an NPC generator using OpenAI to create fictional characters for
 use in tabletop roleplaying games.
 
 I built this as a way to teach myself Next.JS and how to architect a more
@@ -63,6 +63,7 @@ The Stack
 
 ### Low
 
+- [] Could move prompt generation to the client side?
 - [] Could be cool to do opengraph images:
   https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image#generate-images-using-code-js-ts-tsx
 - [] You should be able to fork a character to make it become yours

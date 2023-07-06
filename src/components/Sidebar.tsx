@@ -30,7 +30,7 @@ export const Sidebar = async () => {
       <div>
         <Link href={`/`}>
           <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
-            Mythweave
+            Mythroller
           </div>
         </Link>
 
