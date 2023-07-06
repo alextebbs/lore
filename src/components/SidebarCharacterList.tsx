@@ -6,7 +6,7 @@ import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { MdClose } from "react-icons/md";
 
 interface SidebarCharacterListProps {
-  userCharacters: Character[];
+  userCharacters: Pick<Character, "age" | "name" | "species" | "id">[];
 }
 
 export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
@@ -24,7 +24,11 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
   const handleDeleteCharacter = async (id: string) => {
     await fetch(`/api/character/delete?id=${id}`, { method: "DELETE" });
 
-    if (currentCharacterID === id) router.push(`/`);
+    if (currentCharacterID === id) {
+      router.push(`/`);
+    } else {
+      router.refresh();
+    }
   };
 
   return (
@@ -36,7 +40,7 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
               className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
                 currentCharacterID == character.id
                   ? `bg-stone-900 text-stone-100`
-                  : `text-stone-400 hover:text-red-600`
+                  : `text-stone-400 hover:bg-stone-950 hover:text-red-600`
               } `}
             >
               {character.name || "Creating..."}

@@ -13,7 +13,7 @@ export const SignIn = () => {
         <div className="mb-2 flex items-center text-red-600">
           <BsGoogle className="mr-2" /> Sign in
         </div>
-        <div className="text-xs">to save your stuff</div>
+        <div className="text-xs">to save and edit</div>
       </button>
     </div>
   );

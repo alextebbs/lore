@@ -9,13 +9,16 @@ import { SignIn } from "./SignIn";
 export const Sidebar = async () => {
   const session = await getAuthSession();
 
-  let userCharacters: Character[] | null = null;
+  let userCharacters:
+    | Pick<Character, "age" | "name" | "species" | "id">[]
+    | undefined = undefined;
 
   if (session?.user) {
     try {
       userCharacters = await db.character.findMany({
         orderBy: [{ createdAt: "desc" }],
         where: { userId: session.user.id },
+        select: { age: true, name: true, species: true, id: true },
       });
     } catch (error: unknown) {
       console.error(error);
@@ -27,13 +30,13 @@ export const Sidebar = async () => {
       <div>
         <Link href={`/`}>
           <div className="flex border-b border-stone-900 p-4 font-heading text-3xl lowercase text-stone-600 hover:text-red-600">
-            Mythchanter
+            Mythweave
           </div>
         </Link>
 
         <Link href={`/`}>
           <div
-            className={`flex border-b border-b-stone-900 p-4 text-sm uppercase tracking-[0.15em] text-red-600 hover:bg-stone-900`}
+            className={`flex border-b border-b-stone-900 p-4 text-sm uppercase tracking-[0.15em] text-stone-300 hover:bg-stone-950 hover:text-red-600`}
           >
             <GiScrollQuill className="mr-3 text-xl" /> New character
           </div>
