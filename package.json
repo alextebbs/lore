@@ -21,6 +21,7 @@
     "@t3-oss/env-nextjs": "^0.2.1",
     "@tanstack/react-query": "^4.28.0",
     "ai": "^2.1.7",
+    "cloudinary": "^1.37.3",
     "clsx": "^1.2.1",
     "dalle-node": "^1.0.8",
     "dayjs": "^1.11.8",

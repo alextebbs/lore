@@ -52,7 +52,7 @@ export const authOptions: NextAuthOptions = {
 
       if (!cookieId) return;
 
-      const yourNewCharacters = await db.character.updateMany({
+      await db.character.updateMany({
         where: {
           cookieId,
           userId: null,
@@ -61,8 +61,6 @@ export const authOptions: NextAuthOptions = {
           userId: message.user.id,
         },
       });
-
-      console.log(yourNewCharacters);
     },
   },
 };

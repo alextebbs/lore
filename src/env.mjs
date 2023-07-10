@@ -12,6 +12,9 @@ export const env = createEnv({
     NODE_ENV: z.enum(["development", "test", "production"]),
     GOOGLE_ID: z.string(),
     GOOGLE_SECRET: z.string(),
+    CLOUDINARY_CLOUD_NAME: z.string(),
+    CLOUDINARY_API_KEY: z.string(),
+    CLOUDINARY_API_SECRET: z.string(),
   },
 
   /**
@@ -33,5 +36,8 @@ export const env = createEnv({
     NODE_ENV: process.env.NODE_ENV,
     GOOGLE_ID: process.env.GOOGLE_ID,
     GOOGLE_SECRET: process.env.GOOGLE_SECRET,
+    CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+    CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+    CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
   },
 });

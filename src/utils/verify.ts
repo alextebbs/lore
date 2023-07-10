@@ -27,10 +27,6 @@ export const verifyHasAccess = async (id: string) => {
       },
     });
 
-    console.log(
-      "Allowed to save because your cookie matches this character cookie"
-    );
-
     return count > 0;
   }
 

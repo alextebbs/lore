@@ -1,7 +1,7 @@
 "use client";
 
 import type { Character } from "~/utils/types";
-import { useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { FaDiceD20 } from "react-icons/fa";
 import { BiLink } from "react-icons/bi";
 import { CharacterSheetItem } from "./CharacterSheetItem";
@@ -12,6 +12,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { isCharacterComplete } from "~/utils/checkIfNull";
 import { cn } from "~/utils/cn";
+import { SidebarContext } from "./Providers";
+import { useRouter } from "next/navigation";
 
 dayjs.extend(relativeTime); // use plugin
 
@@ -23,15 +25,28 @@ export interface SaveResponseOptions {
   field: keyof Character;
   value: string;
   relationID?: string;
+  managesSidebarCtx?: boolean;
 }
 
 export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const { character } = props;
 
   const [characterState, setCharacterState] = useState<Character>(character);
+  const { setSidebarCharacter } = useContext(SidebarContext);
   const [lastSavedDate, setLastSavedDate] = useState<Date>(
     new Date(character.updatedAt)
   );
+
+  const router = useRouter();
+
+  useEffect(() => {
+    setSidebarCharacter({
+      name: character.name,
+      age: character.age,
+      species: character.species,
+      id: character.id,
+    });
+  }, [character, setSidebarCharacter]);
 
   const characterIsComplete = isCharacterComplete(characterState);
 
@@ -49,7 +64,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
   const saveResponse = async (options: SaveResponseOptions) => {
     setIsSaving(true);
 
-    const { field, value, relationID } = options;
+    const { field, value, relationID, managesSidebarCtx } = options;
 
     const payload = {
       id: character.id,
@@ -73,6 +88,16 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
 
     const data = (await response.json()) as { update: Character };
 
+    if (managesSidebarCtx) {
+      router.refresh();
+      setSidebarCharacter((prev) => {
+        return {
+          ...prev,
+          [field]: data.update[field],
+        };
+      });
+    }
+
     setCharacterState(data.update);
     setLastSavedDate(new Date(data.update.updatedAt));
     setIsSaving(false);
@@ -87,6 +112,12 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
     const character = (await response.json()) as Character;
 
     setCharacterState(character);
+    setSidebarCharacter({
+      name: character.name,
+      age: character.age,
+      species: character.species,
+      id: character.id,
+    });
     setIsRerolling(false);
   };
 
@@ -167,6 +198,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               character={characterState}
               value={characterState.name}
               saveResponse={saveResponse}
+              managesSidebarCharacterContext={true}
             />
           </div>
         </div>
@@ -226,7 +258,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             saveResponse={saveResponse}
           />
 
-          {characterState.goals.map((item, index) => (
+          {/* {characterState.goals.map((item, index) => (
             <CharacterSheetItem
               key={item.id}
               field="goals"
@@ -240,30 +272,33 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           ))}
 
-          {/* {character.friends.map((item, index) => (
-              <CharacterSheetItem
-                key={item.id}
-                field="goals"
-                label={`Friend ${index + 1}`}
-                requirements={["backstory", "secret", "name"]}
-                character={characterState}
-                value={item.description}
-                saveResponse={saveResponse}
-                relationID={item.id}
-              />
-            ))}
-            {character.enemies.map((item, index) => (
-              <CharacterSheetItem
-                key={item.id}
-                field="goals"
-                label={`Enemy ${index + 1}`}
-                requirements={["backstory", "secret", "name"]}
-                character={characterState}
-                value={item.description}
-                saveResponse={saveResponse}
-                relationID={item.id}
-              />
-            ))} */}
+          {characterState.friends.map((item, index) => (
+            <CharacterSheetItem
+              key={item.id}
+              field="friends"
+              label={`Friend ${index + 1}`}
+              requirements={["backstory", "secret", "name"]}
+              character={characterState}
+              value={item.description}
+              saveResponse={saveResponse}
+              relationID={item.id}
+              relationIdx={index}
+            />
+          ))}
+
+          {characterState.enemies.map((item, index) => (
+            <CharacterSheetItem
+              key={item.id}
+              field="enemies"
+              label={`Enemy ${index + 1}`}
+              requirements={["backstory", "secret", "name"]}
+              character={characterState}
+              value={item.description}
+              saveResponse={saveResponse}
+              relationID={item.id}
+              relationIdx={index}
+            />
+          ))} */}
         </div>
         <div className="sm:min-h-[calc(100vh - 255px - 49px)] shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetItem

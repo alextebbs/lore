@@ -26,15 +26,7 @@ export const LayoutWithSidebar: React.FC<LayoutWithSidebarProps> = (props) => {
           `lg:static lg:translate-x-0`
         )}
       >
-        <Suspense
-          fallback={
-            <div className="p-4">
-              <LoadingSpinner />
-            </div>
-          }
-        >
-          {sidebar}
-        </Suspense>
+        {sidebar}
         <button
           onClick={() => setMenuIsActive(!menuIsActive)}
           className="group absolute left-full z-20 flex h-[49px] w-28 items-center justify-center lg:hidden"

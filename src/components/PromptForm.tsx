@@ -85,6 +85,7 @@ export const PromptForm: React.FC = () => {
     try {
       const response = await fetch(url);
       const character = (await response.json()) as Character;
+      router.refresh();
       router.push(`/character/${character.id}`);
     } catch (err) {
       console.error(err);

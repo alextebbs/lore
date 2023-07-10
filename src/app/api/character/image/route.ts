@@ -1,4 +1,5 @@
 import { env } from "~/env.mjs";
+import { v2 as cloudinary } from "cloudinary";
 
 interface DalleImageGenerationResponse {
   created: number;
@@ -8,6 +9,12 @@ interface DalleImageGenerationResponse {
 interface DalleImage {
   url: string;
 }
+
+cloudinary.config({
+  cloud_name: env.CLOUDINARY_CLOUD_NAME,
+  api_key: env.CLOUDINARY_API_KEY,
+  api_secret: env.CLOUDINARY_API_SECRET,
+});
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -38,7 +45,9 @@ export async function GET(request: Request) {
     return new Response("Failed to generate", { status: 500 });
   }
 
+  const result = await cloudinary.uploader.upload(json.data[0].url);
+
   return new Response(
-    JSON.stringify(json.data[0]?.url ?? "Failed to generate")
+    JSON.stringify(result.secure_url ?? "Failed to generate")
   );
 }

@@ -17,6 +17,8 @@ export const metadata = {
   description: "Generate characters for your TTRPG",
 };
 
+// export const revalidate = 0;
+
 export default function RootLayout({
   children,
 }: {

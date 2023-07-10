@@ -22,8 +22,8 @@ const fieldsToCheck: (keyof Character)[] = [
 
 const relationFieldsToCheck: (keyof Character)[] = [
   "goals",
-  // "friends",
-  // "enemies",
+  "friends",
+  "enemies",
 ];
 
 export function isCharacterComplete(character: Character) {

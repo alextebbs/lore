@@ -62,6 +62,16 @@ export class PromptGenerator {
               .join("\n")
           : ``
       }
+      ${
+        character.goals
+          ? character.goals
+              .map(
+                (goal, index) =>
+                  `Character's goal #${index}: ${goal.description || ``}.`
+              )
+              .join("\n")
+          : ``
+      }
     `;
   }
 
@@ -383,7 +393,19 @@ export class PromptGenerator {
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might threaten this relationship.
 
-      Output this relationship as a single paragraph of no more than 40 words.
+      Output this relationship as a single sentence of no more than 20 words.
+
+      Examples:
+      - A mysterious and secretive guild of thieves called the Shadow's Embrace;
+      Heskan forged an alliance by saving their leader from a deadly trap, but
+      the recent discovery of a shared artifact may strain their trust.
+      - A group of dwarven miners who have been working in the mountains for
+      generations; they have long-standing business with Heskan's family,
+      but there has been some tension over the ownership of a newly discovered vein
+      within the mine.
+      - Miro Alabaster - a human wizard who has been Heskan's mentor for many
+      years; but recently Miro has been acting strangely, and Heskan is worried
+      that he may be in danger.
 
       Follow the following style notes:
         - Use an extremely terse and direct style of writing.
@@ -410,6 +432,11 @@ export class PromptGenerator {
       Describe how the character made this relationship, why they are friendly,
       and one recent event or interaction that might lead to a resolution of
       their grudges.
+
+      Examples:
+      - The Bloodfang Pack, a group of ruthless werewolves who see Caelum as a threat to their dominance.
+      - The corporations of Eys Jogunheim, a group of artificers who use immoral practices in their inventions.
+      - Lyra Vollaryn, the secondborn daughter of the Vollaryn family, who is jealous of Caelum's lineage.
 
       Output this relationship as a single paragraph of no more than 40 words.
 

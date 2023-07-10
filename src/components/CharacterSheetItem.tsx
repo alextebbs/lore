@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { MdModeEditOutline, MdCheck } from "react-icons/md";
 import { FaDiceD20 } from "react-icons/fa";
 import type { Character } from "~/utils/types";
@@ -7,6 +7,8 @@ import type { SaveResponseOptions } from "./CharacterSheet";
 import { LoadingSpinner } from "./LoadingSpinner";
 import { cn } from "~/utils/cn";
 import { useSession } from "next-auth/react";
+import { SidebarContext } from "./Providers";
+import { useRouter } from "next/navigation";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -19,6 +21,7 @@ interface CharacterSheetItemProps {
   relationID?: string;
   relationIdx?: number;
   style?: "condensed" | "normal" | "header";
+  managesSidebarCharacterContext?: boolean;
 }
 
 export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
@@ -35,6 +38,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     relationID,
     relationIdx,
     saveResponse,
+    managesSidebarCharacterContext: managesSidebarCtx = false,
   } = props;
 
   const [responseText, setResponseText] = useState<string | null>(null);
@@ -46,6 +50,10 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const isEditable = value && !isRegenerating;
 
   const valueTextRef = useRef<HTMLDivElement>(null);
+
+  const router = useRouter();
+
+  const { setSidebarCharacter } = useContext(SidebarContext);
 
   const handleEditButtonClick = () => {
     setIsEditing(true);
@@ -133,7 +141,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
       setResponseText(result);
     }
 
-    await saveResponse({ value: result, field, relationID });
+    await saveResponse({ value: result, field, relationID, managesSidebarCtx });
     setResponseText(null);
   };
 
@@ -183,8 +191,26 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
     if (!newResponseText) return;
 
     if (newResponseText !== responseText) {
-      await saveResponse({ value: newResponseText, field, relationID });
+      await saveResponse({
+        value: newResponseText,
+        field,
+        relationID,
+        managesSidebarCtx,
+      });
       setResponseText(null);
+    }
+  };
+
+  const handleManageSidebarContext = (
+    e: React.SyntheticEvent<HTMLDivElement>
+  ) => {
+    if (managesSidebarCtx) {
+      setSidebarCharacter((prev) => {
+        return {
+          ...prev,
+          [field]: (e.target as HTMLDivElement).textContent,
+        };
+      });
     }
   };
 
@@ -262,6 +288,7 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                   <div
                     ref={valueTextRef}
                     contentEditable={isEditing}
+                    onInput={handleManageSidebarContext}
                     suppressContentEditableWarning
                     className="focus:outline-none focus:ring-0"
                   >

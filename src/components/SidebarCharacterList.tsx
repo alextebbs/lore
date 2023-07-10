@@ -4,6 +4,9 @@ import type { Character } from "@prisma/client";
 import Link from "next/link";
 import { useRouter, useSelectedLayoutSegments } from "next/navigation";
 import { MdClose } from "react-icons/md";
+import { SidebarContext } from "./Providers";
+import { Suspense, useContext } from "react";
+import { cn } from "~/utils/cn";
 
 interface SidebarCharacterListProps {
   userCharacters: Pick<Character, "age" | "name" | "species" | "id">[];
@@ -16,15 +19,16 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
 
   const segments = useSelectedLayoutSegments();
 
-  const currentCharacterID =
-    segments[0] === "character" ? segments[1] : undefined;
+  const routeID = segments[0] === "character" ? segments[1] : undefined;
 
   const router = useRouter();
+
+  const { sidebarCharacter } = useContext(SidebarContext);
 
   const handleDeleteCharacter = async (id: string) => {
     await fetch(`/api/character/delete?id=${id}`, { method: "DELETE" });
 
-    if (currentCharacterID === id) {
+    if (routeID === id) {
       router.push(`/`);
     } else {
       router.refresh();
@@ -33,31 +37,66 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
 
   return (
     <>
-      {userCharacters.map((character) => (
-        <div key={character.id} className="group relative">
-          <Link href={`/character/${character.id}`}>
-            <div
-              className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
-                currentCharacterID == character.id
-                  ? `bg-stone-900 text-stone-100`
-                  : `text-stone-400 hover:bg-stone-950 hover:text-red-600`
-              } `}
-            >
-              {character.name || "Creating..."}
+      {userCharacters.map((character) => {
+        const isCurrentCharacter = routeID === character.id;
+        const contextCorrect =
+          routeID === sidebarCharacter.id && isCurrentCharacter;
 
-              <div className="font-body text-sm text-stone-600">
-                {character.age || "??"} year old {character.species || "????"}
+        console.log(contextCorrect);
+        console.log(sidebarCharacter.id, routeID, isCurrentCharacter);
+
+        return (
+          <div key={character.id} className="group relative">
+            <Link href={`/character/${character.id}`}>
+              <div
+                className={cn(
+                  `border-b border-b-stone-900 p-4 font-heading text-2xl`,
+                  isCurrentCharacter && `bg-stone-900 text-red-600`,
+                  !isCurrentCharacter &&
+                    `text-stone-200 hover:bg-stone-950 hover:text-red-600`
+                )}
+              >
+                {contextCorrect ? (
+                  <>
+                    {sidebarCharacter.name || "..."}
+                    <div className="font-body text-sm text-stone-600">
+                      {sidebarCharacter.age || "??"} year old{" "}
+                      {sidebarCharacter.species || "?????"}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {character.name || "..."}
+                    <div className="font-body text-sm text-stone-600">
+                      {character.age || "??"} year old{" "}
+                      {character.species || "?????"}
+                    </div>
+                  </>
+                )}
               </div>
-            </div>
-          </Link>
-          <button
-            onClick={() => handleDeleteCharacter(character.id)}
-            className="absolute right-0 top-0 hidden p-2 text-xl text-stone-600 hover:text-red-600 group-hover:block"
-          >
-            <MdClose />
-          </button>
-        </div>
-      ))}
+            </Link>
+            <button
+              onClick={() => handleDeleteCharacter(character.id)}
+              className="absolute right-0 top-0 hidden p-2 text-xl text-stone-600 hover:text-red-600 group-hover:block"
+            >
+              <MdClose />
+            </button>
+          </div>
+        );
+      })}
     </>
   );
 };
+
+// <div className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
+//     isCurrentCharacter
+//       ? `bg-stone-900 text-stone-100`
+//       : `text-stone-400 hover:bg-stone-950 hover:text-red-600`
+//   } `}
+// >
+//   {character.name || "Creating..."}
+
+//   <div className="font-body text-sm text-stone-600">
+//     {character.age || "??"} year old {character.species || "????"}
+//   </div>
+// </div>
