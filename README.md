@@ -1,6 +1,6 @@
 # Mythroller
 
-(Live demo)[https://lore-orpin.vercel.app/]
+[mythroller.com](https://mythroller.com/)
 
 Mythroller is an NPC generator using OpenAI to create fictional characters for
 use in tabletop roleplaying games.

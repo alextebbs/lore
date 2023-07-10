@@ -5,6 +5,8 @@ import { SidebarCharacterList } from "./SidebarCharacterList";
 import { getAuthSession } from "~/utils/auth";
 import { db } from "~/utils/db";
 import { SignIn } from "./SignIn";
+import { SignOut } from "./SignOut";
+import { BsGithub } from "react-icons/bs";
 
 export const Sidebar = async () => {
   const session = await getAuthSession();
@@ -51,6 +53,18 @@ export const Sidebar = async () => {
         ) : (
           <SignIn />
         )}
+      </div>
+
+      <div className="flex border-t border-stone-900 p-4 text-xs uppercase tracking-[0.15em] text-stone-500">
+        {userCharacters && <SignOut />}
+
+        <Link
+          href="https://github.com/alextebbs/lore"
+          className="ml-auto flex hover:text-red-600"
+        >
+          <BsGithub className="relative top-0.5 mr-2 text-sm" />
+          Github
+        </Link>
       </div>
     </>
   );
