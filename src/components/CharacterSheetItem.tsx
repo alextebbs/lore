@@ -9,6 +9,7 @@ import { cn } from "~/utils/cn";
 import { useSession } from "next-auth/react";
 import { SidebarContext } from "./Providers";
 import { useRouter } from "next/navigation";
+import { CheckboxSwitch } from "./CheckboxSwitch";
 
 interface CharacterSheetItemProps {
   field: keyof Character;
@@ -328,28 +329,32 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
 
                   <form
                     onSubmit={handleRegenerateFormSubmit}
-                    className="flex pt-4"
+                    className="flex flex-col pt-4"
                   >
-                    <div className="relative mr-2 flex-grow">
+                    <div className="mb-4 flex-grow">
                       <input
                         name="prompt"
                         placeholder="Instructions for regeneration"
                         className="w-full rounded border bg-black bg-transparent px-4 py-2"
                       />
-                      <div className="absolute right-3 top-[50%] -translate-y-1/2">
-                        <label className="flex items-center">
-                          <span className="pr-2">Use existing text?</span>
-                          <input name="useExistingData" type="checkbox" />
-                        </label>
-                      </div>
                     </div>
-                    <button
-                      className="flex items-center rounded border border-red-600 pl-3 pr-4 uppercase tracking-[0.15em] text-red-600 transition-colors hover:bg-red-600 hover:text-white"
-                      type="submit"
-                    >
-                      <FaDiceD20 className="mr-2" />
-                      Reroll
-                    </button>
+                    <div className="flex items-center justify-end">
+                      <div className="mr-6">
+                        <CheckboxSwitch
+                          onLabel="Rewrite existing content"
+                          offLabel="Use existing content"
+                          name="useExistingData"
+                        />
+                      </div>
+
+                      <button
+                        className="flex items-center rounded border border-red-600 py-2 pl-3 pr-4 uppercase tracking-[0.15em] text-red-600 transition-colors hover:bg-red-600 hover:text-white"
+                        type="submit"
+                      >
+                        <FaDiceD20 className="mr-2" />
+                        Reroll
+                      </button>
+                    </div>
                   </form>
                 </div>
               )}

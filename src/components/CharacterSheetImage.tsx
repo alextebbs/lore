@@ -47,6 +47,11 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
   const session = useSession();
   const user = session?.data?.user;
 
+  const handleReroll = async () => {
+    await saveResponse({ value: null, field: "imageURL" });
+    console.log("foo");
+  };
+
   return (
     <div className="group border-b border-stone-800">
       <svg className="hidden" imageRendering="optimizeSpeed">
@@ -91,7 +96,10 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
             alt={`Portrait of ${character.name || `your character`}`}
           />
           {user && (
-            <button className="absolute bottom-0 left-0 right-0 hidden justify-center rounded bg-black/75 px-4 py-3 text-xs uppercase tracking-[0.15em] hover:text-red-600 group-hover:inline-flex">
+            <button
+              onClick={handleReroll}
+              className="absolute bottom-0 left-0 right-0 hidden justify-center rounded bg-black/75 px-4 py-3 text-xs uppercase tracking-[0.15em] hover:text-red-600 group-hover:inline-flex"
+            >
               Reroll Image <FaDiceD20 className="ml-2 text-base" />
             </button>
           )}

@@ -23,7 +23,7 @@ interface CharacterSheetProps {
 
 export interface SaveResponseOptions {
   field: keyof Character;
-  value: string;
+  value: string | null;
   relationID?: string;
   managesSidebarCtx?: boolean;
 }
@@ -210,7 +210,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
         </div>
       </div>
       <div className="flex flex-grow flex-col-reverse sm:flex-row">
-        <div className="flex-grow pb-[120px]">
+        <div className="flex-grow pb-[220px]">
           <CharacterSheetItem
             field="roleplayTips"
             label="Roleplaying Tips"
