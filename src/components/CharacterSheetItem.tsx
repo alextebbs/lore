@@ -341,8 +341,8 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
                     <div className="flex items-center justify-end">
                       <div className="mr-6">
                         <CheckboxSwitch
-                          onLabel="Rewrite existing content"
-                          offLabel="Use existing content"
+                          offLabel="Ignore existing content"
+                          onLabel="Use existing content"
                           name="useExistingData"
                         />
                       </div>
