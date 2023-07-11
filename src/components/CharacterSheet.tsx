@@ -258,7 +258,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             saveResponse={saveResponse}
           />
 
-          {/* {characterState.goals.map((item, index) => (
+          {characterState.goals.map((item, index) => (
             <CharacterSheetItem
               key={item.id}
               field="goals"
@@ -272,6 +272,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             />
           ))}
 
+          {/* 
           {characterState.friends.map((item, index) => (
             <CharacterSheetItem
               key={item.id}
@@ -298,7 +299,8 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               relationID={item.id}
               relationIdx={index}
             />
-          ))} */}
+          ))} 
+          */}
         </div>
         <div className="sm:min-h-[calc(100vh - 255px - 49px)] shrink-0 border-l border-stone-800 sm:w-[255px]">
           <CharacterSheetItem
