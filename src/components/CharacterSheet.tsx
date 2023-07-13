@@ -212,14 +212,6 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
       <div className="flex flex-grow flex-col-reverse sm:flex-row">
         <div className="flex-grow pb-[220px]">
           <CharacterSheetItem
-            field="roleplayTips"
-            label="Roleplaying Tips"
-            requirements={["physicalDescription", "demeanor"]}
-            character={characterState}
-            value={characterState.roleplayTips}
-            saveResponse={saveResponse}
-          />
-          <CharacterSheetItem
             field="physicalDescription"
             label="Appearance"
             requirements={["name", "species", "age"]}
@@ -236,15 +228,17 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
             saveResponse={saveResponse}
           />
           <CharacterSheetItem
+            field="roleplayTips"
+            label="Roleplaying Tips"
+            requirements={["physicalDescription", "demeanor"]}
+            character={characterState}
+            value={characterState.roleplayTips}
+            saveResponse={saveResponse}
+          />
+          <CharacterSheetItem
             field="backstory"
             label="Backstory"
-            requirements={[
-              "name",
-              "species",
-              "age",
-              "physicalDescription",
-              "demeanor",
-            ]}
+            requirements={["physicalDescription", "demeanor"]}
             character={characterState}
             value={characterState.backstory}
             saveResponse={saveResponse}
@@ -252,7 +246,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
           <CharacterSheetItem
             field="secret"
             label="Secret"
-            requirements={["name", "species", "age", "backstory"]}
+            requirements={["backstory"]}
             character={characterState}
             value={characterState.secret}
             saveResponse={saveResponse}
@@ -263,7 +257,7 @@ export const CharacterSheet: React.FC<CharacterSheetProps> = (props) => {
               key={item.id}
               field="goals"
               label={`Goal ${index + 1}`}
-              requirements={["backstory", "secret", "name"]}
+              requirements={["backstory", "secret"]}
               character={characterState}
               value={item.description}
               saveResponse={saveResponse}

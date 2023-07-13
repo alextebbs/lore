@@ -30,7 +30,7 @@ export const Dice: React.FC<DiceProps> = (props) => {
       <mesh>
         <icosahedronGeometry args={[20, 0]} />
         <meshBasicMaterial color={isHovered ? `black` : `black`} />
-        <Wireframe thickness={0.075} stroke={isHovered ? "red" : "#ff0000"} />
+        <Wireframe thickness={0.075} stroke={"red"} />
       </mesh>
       {/* <mesh>
         <icosahedronGeometry args={[20, 0]} />

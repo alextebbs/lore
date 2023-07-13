@@ -5,7 +5,7 @@ interface LoadingSpinnerProps {
 }
 
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  text = "Loading",
+  text = "Generating",
   spinner = false,
   showText = true,
 }) => {
