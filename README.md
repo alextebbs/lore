@@ -12,8 +12,8 @@ Some neat features:
 
 - You can log in to save characters, your characters are stored in a DB.
 - Characters can be edited, deleted, rerolled, or shared.
-- You can create a character without logging in, and then log in to edit that
-  character.
+- You can create a character without logging in, and that character will be
+  associated with your account after you log in.
 
 The Stack
 
@@ -31,10 +31,6 @@ The Stack
 ## TODO
 
 ### High
-
-- [ ] DB is slow. (it's faster once i remove prisma data proxy)
-
-  - [ ] I need to better understand how caching and cache invalidation works.
 
 - [x] ~~Mobile UI (sidebar needs to toggle)~~
 - [x] ~~Make Auth actually protect characters that aren't yours~~
@@ -57,12 +53,7 @@ The Stack
 
 - [x] ~~Images need to actually get stored somewhere, unfortunately~~
 - [x] Character name should fill in in the sidebar when character is being generated
-
-  - This sort of works now after reviewing this [SO question](https://stackoverflow.com/questions/75124513/update-server-component-after-data-has-been-changed-by-client-component-in-next)
-  - Ideally editing the name would edit the name in the sidebar as well
-
-- [ ] Relational stuff is still messed up
-  - [ ] Relational items are still a bit wacky in prompt generator
+  - This works now after reviewing this [SO question](https://stackoverflow.com/questions/75124513/update-server-component-after-data-has-been-changed-by-client-component-in-next)
 
 ### Low
 

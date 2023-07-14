@@ -23,6 +23,7 @@ const blankCharacter: SidebarCurrentCharacter = {
 
 export const SidebarContext = createContext({
   sidebarCharacter: blankCharacter,
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   setSidebarCharacter: (() => {}) as React.Dispatch<
     React.SetStateAction<SidebarCurrentCharacter>
   >,
