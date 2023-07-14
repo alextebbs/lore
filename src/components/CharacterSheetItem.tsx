@@ -8,7 +8,6 @@ import { LoadingSpinner } from "./LoadingSpinner";
 import { cn } from "~/utils/cn";
 import { useSession } from "next-auth/react";
 import { SidebarContext } from "./Providers";
-import { useRouter } from "next/navigation";
 import { CheckboxSwitch } from "./CheckboxSwitch";
 
 interface CharacterSheetItemProps {
@@ -51,8 +50,6 @@ export const CharacterSheetItem: React.FC<CharacterSheetItemProps> = (
   const isEditable = value && !isRegenerating;
 
   const valueTextRef = useRef<HTMLDivElement>(null);
-
-  const router = useRouter();
 
   const { setSidebarCharacter } = useContext(SidebarContext);
 

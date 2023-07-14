@@ -15,7 +15,7 @@ import { cn } from "~/utils/cn";
 import { SidebarContext } from "./Providers";
 import { useRouter } from "next/navigation";
 
-dayjs.extend(relativeTime); // use plugin
+dayjs.extend(relativeTime);
 
 interface CharacterSheetProps {
   character: Character;

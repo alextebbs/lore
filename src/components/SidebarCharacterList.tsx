@@ -84,16 +84,3 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
     </>
   );
 };
-
-// <div className={`border-b border-b-stone-900 p-4 font-heading text-2xl ${
-//     isCurrentCharacter
-//       ? `bg-stone-900 text-stone-100`
-//       : `text-stone-400 hover:bg-stone-950 hover:text-red-600`
-//   } `}
-// >
-//   {character.name || "Creating..."}
-
-//   <div className="font-body text-sm text-stone-600">
-//     {character.age || "??"} year old {character.species || "????"}
-//   </div>
-// </div>

@@ -3,9 +3,8 @@
 import { BsLayoutSidebar } from "react-icons/bs";
 import { TbChevronLeft, TbChevronRight } from "react-icons/tb";
 
-import { Suspense, useState } from "react";
+import { useState } from "react";
 import { cn } from "~/utils/cn";
-import { LoadingSpinner } from "./LoadingSpinner";
 
 interface LayoutWithSidebarProps {
   children: React.ReactNode;
