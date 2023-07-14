@@ -5,7 +5,6 @@ import { verifyHasAccess } from "~/utils/verify";
 
 export async function DELETE(request: Request) {
   try {
-    console.time("delete");
     const { searchParams } = new URL(request.url);
     const id = searchParams.get("id");
 
@@ -18,8 +17,6 @@ export async function DELETE(request: Request) {
     await db.character.delete({
       where: { id },
     });
-
-    console.timeEnd("delete");
 
     revalidatePath("/");
 

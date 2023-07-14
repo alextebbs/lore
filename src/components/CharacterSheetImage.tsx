@@ -49,7 +49,6 @@ export const CharacterSheetImage: React.FC<CharacterSheetImageProps> = (
 
   const handleReroll = async () => {
     await saveResponse({ value: null, field: "imageURL" });
-    console.log("foo");
   };
 
   return (

@@ -42,9 +42,6 @@ export const SidebarCharacterList: React.FC<SidebarCharacterListProps> = (
         const contextCorrect =
           routeID === sidebarCharacter.id && isCurrentCharacter;
 
-        console.log(contextCorrect);
-        console.log(sidebarCharacter.id, routeID, isCurrentCharacter);
-
         return (
           <div key={character.id} className="group relative">
             <Link href={`/character/${character.id}`}>
