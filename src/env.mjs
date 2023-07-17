@@ -15,6 +15,7 @@ export const env = createEnv({
     CLOUDINARY_CLOUD_NAME: z.string(),
     CLOUDINARY_API_KEY: z.string(),
     CLOUDINARY_API_SECRET: z.string(),
+    GA_MEASUREMENT_ID: z.string(),
   },
 
   /**
@@ -39,5 +40,6 @@ export const env = createEnv({
     CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
     CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+    GA_MEASUREMENT_ID: process.env.GA_MEASUREMENT_ID,
   },
 });
