@@ -17,10 +17,15 @@ type Server struct {
 	// DB is nil until the store is wired in; health reports it as
 	// "unconfigured" rather than failing.
 	DB Pinger
+	// Static serves the built SPA at "/"; nil in tests.
+	Static http.Handler
 }
 
 func (s *Server) Router() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", s.handleHealth)
+	if s.Static != nil {
+		mux.Handle("/", s.Static)
+	}
 	return mux
 }

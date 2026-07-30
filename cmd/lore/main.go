@@ -13,6 +13,7 @@ import (
 	"github.com/alextebbs/lore/internal/api"
 	"github.com/alextebbs/lore/internal/config"
 	"github.com/alextebbs/lore/internal/store"
+	"github.com/alextebbs/lore/web"
 )
 
 func main() {
@@ -27,7 +28,7 @@ func run() error {
 	defer stop()
 
 	cfg := config.Load()
-	srv := &api.Server{}
+	srv := &api.Server{Static: web.Handler()}
 
 	if cfg.DatabaseURL != "" {
 		if err := store.Migrate(ctx, cfg.DatabaseURL); err != nil {
