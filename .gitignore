@@ -4,3 +4,12 @@
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# Dependencies & build output
+node_modules/
+web/dist/
+/lore
+
+# Env
+.env
+.env.local

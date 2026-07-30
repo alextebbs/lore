@@ -1,6 +1,50 @@
 # Project Instructions for AI Agents
 
-This file provides instructions and context for AI coding agents working on this project.
+Lore is an AI-native TTRPG worldbuilding app. Read `SPEC.md` first — it is
+the product spec and it is **canon**.
+
+## Canon rule (applies to docs, not just app content)
+
+The repo runs on the app's own tenets. `SPEC.md` and accepted ADRs in
+`docs/adr/` are canon: do not modify them without explicit instruction from
+the user. If your work conflicts with canon, stop and flag the conflict —
+never silently resolve it. Everything you author starts as a proposal the
+user promotes.
+
+## Where knowledge lives
+
+- `SPEC.md` — what we're building (canon, human-owned)
+- `docs/ARCHITECTURE.md` — system shape: packages, request flow, data flow
+- `docs/DOMAIN.md` — glossary; use these words in code and docs
+- `docs/CONVENTIONS.md` — how code is written here
+- `docs/TOOLS.md` — the tool-layer contract (= API spec = MCP surface)
+- `docs/adr/` — why decisions were made; check before proposing changes
+  that touch a settled decision
+
+## Where work lives: beads
+
+All task tracking is in beads (see managed block below) — no ROADMAP.md, no
+plans/ directory, no markdown checklists. The issue graph is the roadmap:
+epics are milestones, dependencies encode build order.
+
+### Workflow
+
+1. **Pick work** from `bd ready` (or what the user assigns).
+2. **Plan before code.** For an epic: write the design into the epic's
+   design field and create child tasks (`bd create --parent <epic>`) with
+   dependencies between them. Then ask the user to review. Do not start
+   implementing an epic whose design the user has not approved.
+3. **Track honestly.** Mark in_progress when you start; close only when
+   acceptance criteria are verified (tests run, behavior demonstrated),
+   and record how it was verified in the notes.
+4. **File discoveries immediately.** Found a bug, gap, or follow-up
+   mid-task? `bd create` it with `--deps discovered-from:<current-id>` and
+   keep going. Never hold work-to-be-done in your head or in comments.
+5. **Docs ship with code.** A diff that changes behavior updates
+   `docs/TOOLS.md` / `ARCHITECTURE.md` / `DOMAIN.md` in the same commit. A
+   diff that makes a new architectural decision adds an ADR (proposed;
+   the user accepts it).
+6. **Commit per task**, referencing the bead id in the message.
 
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:6cd5cc61 -->
 ## Beads Issue Tracker
@@ -57,21 +101,26 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 - If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
 
-
 ## Build & Test
 
-_Add your build and test commands here_
+Nothing is "done" because the code is written. Each task's acceptance
+criteria say how to verify; run them. Defaults once the scaffolds exist:
 
 ```bash
-# Example:
-# npm install
-# npm test
+go test ./...          # backend
+npm test               # frontend (in web/)
+npm run build          # frontend build must stay green
 ```
+
+For tool-layer work, exercise the tool through the MCP endpoint, not just
+unit tests.
 
 ## Architecture Overview
 
-_Add a brief overview of your project architecture_
+See `docs/ARCHITECTURE.md`. One Go binary serves the JSON API, the MCP
+endpoint, the agent loop, and the built SPA. Postgres (+ pgvector + FTS) is
+the only datastore.
 
 ## Conventions & Patterns
 
-_Add your project-specific conventions here_
+See `docs/CONVENTIONS.md` and use the vocabulary in `docs/DOMAIN.md`.
