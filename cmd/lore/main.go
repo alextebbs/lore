@@ -12,6 +12,7 @@ import (
 
 	"github.com/alextebbs/lore/internal/api"
 	"github.com/alextebbs/lore/internal/config"
+	"github.com/alextebbs/lore/internal/store"
 )
 
 func main() {
@@ -27,6 +28,21 @@ func run() error {
 
 	cfg := config.Load()
 	srv := &api.Server{}
+
+	if cfg.DatabaseURL != "" {
+		if err := store.Migrate(ctx, cfg.DatabaseURL); err != nil {
+			return err
+		}
+		st, err := store.Open(ctx, cfg.DatabaseURL)
+		if err != nil {
+			return err
+		}
+		defer st.Close()
+		srv.DB = st.Pool
+		slog.Info("database connected, migrations applied")
+	} else {
+		slog.Warn("DATABASE_URL not set; running without a database")
+	}
 
 	httpSrv := &http.Server{
 		Addr:    ":" + cfg.Port,
