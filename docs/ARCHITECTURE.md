@@ -1,7 +1,9 @@
 # Architecture
 
-> Status: intended architecture — no code exists yet. Update this document
-> in the same commit as any change that makes it true or false.
+> Status: living document. The M0 scaffold (server, store, embedded SPA,
+> CI, Dockerfile) exists; deeper packages appear as their epics land.
+> Update this document in the same commit as any change that makes it
+> true or false.
 
 ## Shape
 
