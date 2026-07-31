@@ -145,7 +145,16 @@ function WorldPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-semibold">{world.data?.world.name}</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">{world.data?.world.name}</h2>
+        <a
+          href={`/api/worlds/${worldId}/export`}
+          className="text-xs text-neutral-500 hover:text-neutral-300"
+          title="Download Obsidian-style vault (zip)"
+        >
+          ⇩ export vault
+        </a>
+      </div>
 
       {[...grouped.entries()].map(([typeName, list]) => (
         <section key={typeName}>
@@ -572,6 +581,13 @@ function EntryPage() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <a
+            href={`/api/entries/${e.id}/export`}
+            className="rounded-lg border border-neutral-700 px-2 py-1 text-sm text-neutral-500 hover:text-neutral-300"
+            title="Export as Markdown"
+          >
+            ⇩
+          </a>
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (

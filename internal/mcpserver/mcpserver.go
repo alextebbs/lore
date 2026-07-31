@@ -11,6 +11,7 @@ import (
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
+	"github.com/alextebbs/lore/internal/export"
 	"github.com/alextebbs/lore/internal/tools"
 )
 
@@ -295,6 +296,25 @@ func New(t *tools.Tools) *mcp.Server {
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in traverseIn) (*mcp.CallToolResult, tools.Graph, error) {
 		out, err := t.Traverse(ctx, in.EntryID, in.Depth)
 		return nil, out, err
+	})
+
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "export_entry",
+		Description: "Export one entry as clean vault Markdown (frontmatter, [[wikilinks]], draft markers stripped).",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in entryID) (*mcp.CallToolResult, any, error) {
+		e, err := t.GetEntry(ctx, in.EntryID)
+		if err != nil {
+			return nil, nil, err
+		}
+		return nil, map[string]string{"markdown": export.RenderEntry(e)}, nil
+	})
+
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "export_world",
+		Description: "Export a whole world as an Obsidian-style vault: a list of {path, content} Markdown files, folders per type.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, []export.File, error) {
+		files, err := export.BuildVault(ctx, t, in.WorldID)
+		return nil, files, err
 	})
 
 	return s

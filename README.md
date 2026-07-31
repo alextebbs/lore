@@ -47,3 +47,9 @@ claude mcp add --transport http lore http://localhost:8080/mcp \
 
 `MCP_TOKEN` is optional in local dev (unset = open). AI clients author
 in draft; humans promote to canon in the UI or via the API.
+
+## In-app assistant
+
+The chat assistant (✦ button on world/entry pages) needs
+`ANTHROPIC_API_KEY` in `.env`. Optional: `VOYAGE_API_KEY` enables
+semantic retrieval (embeddings); without it search runs lexical+graph.

@@ -3,11 +3,13 @@ package api
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"strconv"
 	"strings"
 
+	"github.com/alextebbs/lore/internal/export"
 	"github.com/alextebbs/lore/internal/tools"
 )
 
@@ -31,6 +33,44 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("DELETE /api/edges/{id}", s.deleteEdge)
 	mux.HandleFunc("GET /api/entries/{id}/graph", s.getGraph)
 	mux.HandleFunc("GET /api/worlds/{id}/search", s.search)
+	mux.HandleFunc("GET /api/entries/{id}/export", s.exportEntry)
+	mux.HandleFunc("GET /api/worlds/{id}/export", s.exportWorld)
+}
+
+func (s *Server) exportEntry(w http.ResponseWriter, r *http.Request) {
+	e, err := s.Tools.GetEntry(r.Context(), r.PathValue("id"))
+	if err != nil {
+		respond(w, nil, err)
+		return
+	}
+	md := export.RenderEntry(e)
+	w.Header().Set("Content-Type", "text/markdown; charset=utf-8")
+	w.Header().Set("Content-Disposition",
+		fmt.Sprintf("attachment; filename=%q", export.SafeFilename(e.Title)+".md"))
+	w.Write([]byte(md))
+}
+
+func (s *Server) exportWorld(w http.ResponseWriter, r *http.Request) {
+	worldID := r.PathValue("id")
+	world, err := s.Tools.GetWorld(r.Context(), worldID)
+	if err != nil {
+		respond(w, nil, err)
+		return
+	}
+	files, err := export.BuildVault(r.Context(), s.Tools, worldID)
+	if err != nil {
+		respond(w, nil, err)
+		return
+	}
+	blob, err := export.Zip(files)
+	if err != nil {
+		respond(w, nil, err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/zip")
+	w.Header().Set("Content-Disposition",
+		fmt.Sprintf("attachment; filename=%q", export.SafeFilename(world.Name)+"-vault.zip"))
+	w.Write(blob)
 }
 
 func (s *Server) listWorlds(w http.ResponseWriter, r *http.Request) {

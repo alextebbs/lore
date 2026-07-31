@@ -34,6 +34,16 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | create_edge |
 | DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | delete_edge |
 | Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | traverse |
+| FindRelevant (hybrid scorer — THE search path) | GET /api/worlds/{id}/search?q=&near=&canon_only= | find_relevant |
+| Serializations (card/digest) | GET /api/entries/{id}?detail=card\|digest | get_entry(detail) |
+| GetContextTray (pins+current+auto, ladder) | GET /api/worlds/{id}/tray?current=&q= | get_context_tray |
+| PinEntry / UnpinEntry | POST/DELETE /api/worlds/{id}/tray/pins | pin_entry / unpin_entry |
+| ExportEntry (clean vault markdown) | GET /api/entries/{id}/export | export_entry |
+| ExportWorld (Obsidian vault) | GET /api/worlds/{id}/export (zip) | export_world (file list) |
+
+UI-only (SPEC tenet 2 exception — orchestration, not capability): the
+chat harness (conversations/messages/evict endpoints) drives the agent
+loop over the tools above; API/MCP consumers bring their own loop.
 
 ## Query
 
