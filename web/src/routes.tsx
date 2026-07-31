@@ -815,8 +815,10 @@ function EntryPage() {
 
   const schemaFields =
     world.data?.types.find((t) => t.id === e.type_id)?.fields ?? [];
+  // Relation fields live in the relations panel, not the fields grid.
+  const nonRelation = schemaFields.filter((f) => f.kind !== "relation");
   const fieldNames = [
-    ...schemaFields.map((f) => f.name),
+    ...nonRelation.map((f) => f.name),
     ...Object.keys(e.fields).filter(
       (n) => !schemaFields.some((f) => f.name === n),
     ),
