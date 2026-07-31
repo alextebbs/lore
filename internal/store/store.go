@@ -60,3 +60,16 @@ func Migrate(ctx context.Context, databaseURL string) error {
 func (s *Store) Close() {
 	s.Pool.Close()
 }
+
+// Tx runs fn inside a transaction with transactional Queries.
+func (s *Store) Tx(ctx context.Context, fn func(q *db.Queries) error) error {
+	tx, err := s.Pool.Begin(ctx)
+	if err != nil {
+		return fmt.Errorf("beginning tx: %w", err)
+	}
+	defer tx.Rollback(ctx)
+	if err := fn(s.Queries.WithTx(tx)); err != nil {
+		return err
+	}
+	return tx.Commit(ctx)
+}

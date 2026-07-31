@@ -3,3 +3,53 @@
 //   sqlc v1.29.0
 
 package db
+
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
+type Entry struct {
+	ID        pgtype.UUID
+	WorldID   pgtype.UUID
+	TypeID    pgtype.UUID
+	Title     string
+	Fields    []byte
+	Body      []byte
+	Status    string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
+}
+
+type EntryType struct {
+	ID        pgtype.UUID
+	WorldID   pgtype.UUID
+	Name      string
+	ParentID  pgtype.UUID
+	Fields    []byte
+	Builtin   bool
+	CreatedAt pgtype.Timestamptz
+}
+
+type Revision struct {
+	ID        pgtype.UUID
+	EntryID   pgtype.UUID
+	Author    string
+	Title     string
+	Fields    []byte
+	Body      []byte
+	Status    string
+	CreatedAt pgtype.Timestamptz
+}
+
+type User struct {
+	ID        pgtype.UUID
+	Email     string
+	CreatedAt pgtype.Timestamptz
+}
+
+type World struct {
+	ID        pgtype.UUID
+	OwnerID   pgtype.UUID
+	Name      string
+	CreatedAt pgtype.Timestamptz
+}

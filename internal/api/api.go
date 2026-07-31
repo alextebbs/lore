@@ -6,6 +6,8 @@ package api
 import (
 	"context"
 	"net/http"
+
+	"github.com/alextebbs/lore/internal/tools"
 )
 
 // Pinger reports storage connectivity. *pgxpool.Pool satisfies it.
@@ -19,11 +21,17 @@ type Server struct {
 	DB Pinger
 	// Static serves the built SPA at "/"; nil in tests.
 	Static http.Handler
+	// Tools is the capability layer; content routes register only when
+	// it's wired (i.e., a database is configured).
+	Tools *tools.Tools
 }
 
 func (s *Server) Router() http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /api/health", s.handleHealth)
+	if s.Tools != nil {
+		s.registerContent(mux)
+	}
 	if s.Static != nil {
 		mux.Handle("/", s.Static)
 	}

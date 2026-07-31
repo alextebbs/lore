@@ -1,7 +1,7 @@
 # fly.toml — one app serves everything (ADR 0009).
 # First deploy: fly launch --copy-config --no-deploy, attach Postgres so
 # DATABASE_URL is set as a secret, then fly deploy.
-app = "lore-worldbuilding"
+app = "mythroller"
 primary_region = "sjc"
 
 [build]
