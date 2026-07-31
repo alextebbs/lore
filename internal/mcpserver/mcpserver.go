@@ -20,9 +20,16 @@ import (
 const instructions = `Lore is a TTRPG worldbuilding tool. Content has draft/canon status:
 your writes always land as DRAFT; a human promotes them to canon. Rich
 text is Markdown where {~draft}...{/~} marks draft spans (your authored
-text is auto-marked). Call list_worlds first to orient, get_world for a
-world's entry types, and traverse to explore relations around an entry.
-Only call mark_canon or restore_revision when the user explicitly asks.`
+text is auto-marked). [[Entry Title]] anywhere in body or rich-text
+fields links entries and auto-creates "mentioned in" relations. Worlds
+carry settings (vibe, style_prompt, authoring policies) and a meta World
+entry describing the setting — read both before writing, and match the
+world's voice. Canon is protected: if a world's ai_can_edit_canon is
+false, editing canon requires canon_override=true, which you may set
+ONLY on explicit user instruction — and even when the world allows it,
+treat canon edits with care and prefer proposing drafts. Only call
+mark_canon, restore_revision, or delete_world when the user explicitly
+asks.`
 
 // entryView is the MCP-facing entry shape: markdown at the boundary
 // (ADR 0001) — the structured body_doc stays internal, which also keeps
@@ -158,7 +165,8 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID string         `json:"entry_id" jsonschema:"the entry's id"`
 		Title   *string        `json:"title,omitempty" jsonschema:"new title (optional)"`
 		Fields  map[string]any `json:"fields,omitempty" jsonschema:"field values to set; null value deletes a field"`
-		BodyMD  *string        `json:"body_md,omitempty" jsonschema:"full replacement body markdown; your text will be marked draft"`
+		BodyMD  *string        `json:"body_md,omitempty" jsonschema:"full replacement body markdown; your text will be marked draft. Use [[Entry Title]] to link entries"`
+		CanonOverride bool     `json:"canon_override,omitempty" jsonschema:"permit touching canon content — set ONLY when the user explicitly ordered this edit"`
 	}
 	type updateEntryOut struct {
 		Entry    entryView `json:"entry"`
@@ -170,6 +178,7 @@ func New(t *tools.Tools) *mcp.Server {
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in updateEntryIn) (*mcp.CallToolResult, updateEntryOut, error) {
 		out, warnings, err := t.UpdateEntry(ctx, in.EntryID, tools.EntryPatch{
 			Title: in.Title, Fields: in.Fields, BodyMD: in.BodyMD,
+			CanonOverride: in.CanonOverride,
 		}, tools.AuthorAI)
 		return nil, updateEntryOut{Entry: view(out), Warnings: warnings}, err
 	})
@@ -344,6 +353,38 @@ func New(t *tools.Tools) *mcp.Server {
 		}
 		out, err := t.ImportWorld(ctx, dump, in.Name)
 		return nil, out, err
+	})
+
+	type settingsIn struct {
+		WorldID  string              `json:"world_id" jsonschema:"the world's id"`
+		Settings tools.WorldSettings `json:"settings" jsonschema:"vibe (world context), style_prompt (writer priming), humans_author_as (draft|canon), ai_can_edit_canon"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "update_world_settings",
+		Description: "Replace a world's settings: vibe/context prompt, writing-style primer, and authoring policies (humans_author_as, ai_can_edit_canon).",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in settingsIn) (*mcp.CallToolResult, tools.World, error) {
+		out, err := t.UpdateWorldSettings(ctx, in.WorldID, in.Settings)
+		return nil, out, err
+	})
+
+	type deleteEntryIn struct {
+		EntryID       string `json:"entry_id" jsonschema:"the entry's id"`
+		CanonOverride bool   `json:"canon_override,omitempty" jsonschema:"permit deleting canon — ONLY on explicit user instruction"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "delete_entry",
+		Description: "Delete an entry and its relations. You may freely delete DRAFT entries; canon needs the world's permission or explicit user instruction.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in deleteEntryIn) (*mcp.CallToolResult, any, error) {
+		err := t.DeleteEntry(ctx, in.EntryID, tools.AuthorAI, in.CanonOverride)
+		return nil, map[string]bool{"deleted": err == nil}, err
+	})
+
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "delete_world",
+		Description: "HUMAN-GATED: permanently delete a world and everything in it. Call ONLY when the user explicitly instructs it, naming the world.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, any, error) {
+		err := t.DeleteWorld(ctx, in.WorldID)
+		return nil, map[string]bool{"deleted": err == nil}, err
 	})
 
 	mcp.AddTool(s, &mcp.Tool{

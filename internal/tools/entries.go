@@ -27,7 +27,11 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 		return Entry{}, notFound(err)
 	}
 
-	status := StatusCanon
+	settings, err := t.GetWorldSettings(ctx, worldID)
+	if err != nil {
+		return Entry{}, err
+	}
+	status := settings.humanStatus()
 	if author == AuthorAI {
 		status = StatusDraft
 	}
@@ -46,7 +50,10 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 		if err := recordRevision(ctx, q, row, author); err != nil {
 			return err
 		}
-		return t.refreshDerived(ctx, q, row, et.Name)
+		if err := t.refreshDerived(ctx, q, row, et.Name); err != nil {
+			return err
+		}
+		return t.syncMentions(ctx, q, row, author)
 	})
 	if err != nil {
 		return Entry{}, err
@@ -61,6 +68,9 @@ type EntryPatch struct {
 	Fields  map[string]any `json:"fields"` // value nil deletes the field
 	BodyMD  *string        `json:"body_md"`
 	BodyDoc *richtext.Node `json:"body_doc"`
+	// CanonOverride lets an AI author touch canon content — set only on
+	// explicit user instruction (tenet 5).
+	CanonOverride bool `json:"canon_override"`
 }
 
 // UpdateEntry applies a patch. Fields touched by a human become canon;
@@ -80,6 +90,12 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		return Entry{}, nil, err
 	}
 
+	settings := WorldSettings{}
+	if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
+		settings = parseSettings(w.Settings)
+	}
+	aiMayTouchCanon := settings.AICanEditCanon || patch.CanonOverride
+
 	title := row.Title
 	if patch.Title != nil && *patch.Title != "" {
 		title = *patch.Title
@@ -89,12 +105,26 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 	if err := json.Unmarshal(row.Fields, &fields); err != nil {
 		return Entry{}, nil, fmt.Errorf("bad fields on entry: %w", err)
 	}
-	touchedStatus := StatusCanon
+	touchedStatus := settings.humanStatus()
 	if author == AuthorAI {
 		touchedStatus = StatusDraft
 	}
+	if author == AuthorAI && !aiMayTouchCanon {
+		var protected []string
+		for name, value := range patch.Fields {
+			if fv, ok := fields[name]; ok && fv.Status == StatusCanon && value != nil {
+				protected = append(protected, name)
+			}
+		}
+		if len(protected) > 0 {
+			return Entry{}, nil, fmt.Errorf("canon fields %v are protected: ask the user to permit the edit (canon_override) or promote a different draft", protected)
+		}
+	}
 	for name, value := range patch.Fields {
 		if value == nil {
+			if fv, ok := fields[name]; ok && fv.Status == StatusCanon && author == AuthorAI && !aiMayTouchCanon {
+				return Entry{}, nil, fmt.Errorf("canon field %q cannot be deleted by AI without user permission", name)
+			}
 			delete(fields, name)
 			continue
 		}
@@ -103,6 +133,13 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 
 	body := row.Body
 	if patch.BodyDoc != nil || patch.BodyMD != nil {
+		if author == AuthorAI && !aiMayTouchCanon {
+			if existing, err := richtext.ParseDoc(row.Body); err == nil {
+				if st := richtext.BodyState(existing); st == "canon" || st == "mixed" {
+					return Entry{}, nil, fmt.Errorf("the body contains canon text and is protected: ask the user to permit the edit (canon_override)")
+				}
+			}
+		}
 		var doc richtext.Node
 		if patch.BodyDoc != nil {
 			doc = *patch.BodyDoc
@@ -141,7 +178,10 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		if err := recordRevision(ctx, q, updated, author); err != nil {
 			return err
 		}
-		return t.refreshDerived(ctx, q, updated, et.Name)
+		if err := t.refreshDerived(ctx, q, updated, et.Name); err != nil {
+			return err
+		}
+		return t.syncMentions(ctx, q, updated, author)
 	})
 	if err != nil {
 		return Entry{}, nil, err
@@ -240,6 +280,30 @@ func (t *Tools) MarkCanon(ctx context.Context, id string, scope CanonScope) (Ent
 		return Entry{}, err
 	}
 	return t.entryFull(ctx, updated, et.Name)
+}
+
+// DeleteEntry removes an entry (edges cascade). AI may delete drafts
+// freely (tenet 5); deleting canon needs the world to allow it or an
+// explicit user override.
+func (t *Tools) DeleteEntry(ctx context.Context, id string, author Author, canonOverride bool) error {
+	eid, err := parseID(id)
+	if err != nil {
+		return err
+	}
+	row, err := t.store.Queries.GetEntry(ctx, eid)
+	if err != nil {
+		return notFound(err)
+	}
+	if author == AuthorAI && row.Status != StatusDraft {
+		settings := WorldSettings{}
+		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
+			settings = parseSettings(w.Settings)
+		}
+		if !settings.AICanEditCanon && !canonOverride {
+			return fmt.Errorf("entry %q is %s and protected: only drafts may be deleted by AI without user permission", row.Title, row.Status)
+		}
+	}
+	return t.store.Queries.DeleteEntry(ctx, eid)
 }
 
 // RevisionDetail is a full snapshot for the history viewer.

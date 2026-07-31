@@ -35,9 +35,19 @@ Rules:
   come from get_world.
 - When creating several related entries, create them all, then wire edges.
 - Be concrete and evocative but concise. Match the world's established tone.
+- Use [[Entry Title]] inside bodies and rich-text fields to link entries —
+  links become "mentioned in" relations automatically.
 - The CONTEXT section below contains the user's context tray: pinned entries,
   the page they're viewing, and auto-retrieved entries. Treat it as the
-  working set; fetch more with tools when needed.`
+  working set; fetch more with tools when needed.
+
+Writing style (unless the world's own style prompt says otherwise): write
+like a professional TTRPG sourcebook — second person for scene-setting
+where apt, concrete sensory detail, proper nouns that imply history,
+stat-agnostic prose. Vary sentence rhythm and structure between entries;
+never reuse a phrasing template across entries. Avoid list-like fragments,
+em-dash tricolons, and other tics; every entry should read as if written
+by a different staff writer sharing one house style.`
 
 // Event is one step of the loop, streamed to the UI as it happens.
 type Event struct {
@@ -95,6 +105,29 @@ func (a *Agent) Run(ctx context.Context, worldID, currentEntryID, userMessage st
 	if err != nil {
 		return nil, err
 	}
+	// World-level priming: vibe, style, authoring policy, meta entry.
+	var priming strings.Builder
+	if world.Settings.Vibe != "" {
+		fmt.Fprintf(&priming, "WORLD VIBE: %s\n", world.Settings.Vibe)
+	}
+	if world.Settings.StylePrompt != "" {
+		fmt.Fprintf(&priming, "WORLD STYLE PROMPT: %s\n", world.Settings.StylePrompt)
+	}
+	if world.Settings.AICanEditCanon {
+		priming.WriteString("POLICY: this world permits AI edits to canon — still treat canon with caution and prefer drafts unless the user directs otherwise.\n")
+	} else {
+		priming.WriteString("POLICY: canon is locked; pass canon_override only on explicit user instruction.\n")
+	}
+	if entries, err := a.tools.ListEntries(ctx, worldID); err == nil {
+		for _, e := range entries {
+			if e.TypeName == "World" {
+				if full, err := a.tools.GetEntry(ctx, e.ID); err == nil && full.BodyMD != "" {
+					fmt.Fprintf(&priming, "\nWORLD OVERVIEW (%s):\n%s\n", full.Title, full.BodyMD)
+				}
+				break
+			}
+		}
+	}
 	typeLines := make([]string, 0, len(types))
 	for _, et := range types {
 		fields := make([]string, 0, len(et.Fields))
@@ -109,8 +142,8 @@ func (a *Agent) Run(ctx context.Context, worldID, currentEntryID, userMessage st
 	}
 
 	var contextSB strings.Builder
-	fmt.Fprintf(&contextSB, "WORLD: %s [id: %s]\n\nENTRY TYPES:\n%s\n\nCONTEXT TRAY:\n",
-		world.Name, world.ID, strings.Join(typeLines, "\n"))
+	fmt.Fprintf(&contextSB, "WORLD: %s [id: %s]\n%s\nENTRY TYPES:\n%s\n\nCONTEXT TRAY:\n",
+		world.Name, world.ID, priming.String(), strings.Join(typeLines, "\n"))
 	for _, item := range tray.Items {
 		fmt.Fprintf(&contextSB, "\n--- [%s, %s] ---\n%s\n", item.Source, item.Level, item.Text)
 	}

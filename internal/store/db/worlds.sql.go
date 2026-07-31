@@ -51,7 +51,7 @@ func (q *Queries) CreateEntryType(ctx context.Context, arg CreateEntryTypeParams
 const createWorld = `-- name: CreateWorld :one
 INSERT INTO worlds (id, owner_id, name)
 VALUES ($1, $2, $3)
-RETURNING id, owner_id, name, created_at
+RETURNING id, owner_id, name, created_at, settings
 `
 
 type CreateWorldParams struct {
@@ -68,8 +68,34 @@ func (q *Queries) CreateWorld(ctx context.Context, arg CreateWorldParams) (World
 		&i.OwnerID,
 		&i.Name,
 		&i.CreatedAt,
+		&i.Settings,
 	)
 	return i, err
+}
+
+const deleteWorld = `-- name: DeleteWorld :exec
+DELETE FROM worlds WHERE id = $1
+`
+
+func (q *Queries) DeleteWorld(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWorld, id)
+	return err
+}
+
+const getEntryByTitle = `-- name: GetEntryByTitle :one
+SELECT id FROM entries WHERE world_id = $1 AND lower(title) = lower($2) LIMIT 1
+`
+
+type GetEntryByTitleParams struct {
+	WorldID pgtype.UUID
+	Lower   string
+}
+
+func (q *Queries) GetEntryByTitle(ctx context.Context, arg GetEntryByTitleParams) (pgtype.UUID, error) {
+	row := q.db.QueryRow(ctx, getEntryByTitle, arg.WorldID, arg.Lower)
+	var id pgtype.UUID
+	err := row.Scan(&id)
+	return id, err
 }
 
 const getEntryType = `-- name: GetEntryType :one
@@ -92,7 +118,7 @@ func (q *Queries) GetEntryType(ctx context.Context, id pgtype.UUID) (EntryType, 
 }
 
 const getWorld = `-- name: GetWorld :one
-SELECT id, owner_id, name, created_at FROM worlds WHERE id = $1
+SELECT id, owner_id, name, created_at, settings FROM worlds WHERE id = $1
 `
 
 func (q *Queries) GetWorld(ctx context.Context, id pgtype.UUID) (World, error) {
@@ -103,6 +129,7 @@ func (q *Queries) GetWorld(ctx context.Context, id pgtype.UUID) (World, error) {
 		&i.OwnerID,
 		&i.Name,
 		&i.CreatedAt,
+		&i.Settings,
 	)
 	return i, err
 }
@@ -140,7 +167,7 @@ func (q *Queries) ListEntryTypes(ctx context.Context, worldID pgtype.UUID) ([]En
 }
 
 const listWorlds = `-- name: ListWorlds :many
-SELECT id, owner_id, name, created_at FROM worlds WHERE owner_id = $1 ORDER BY created_at
+SELECT id, owner_id, name, created_at, settings FROM worlds WHERE owner_id = $1 ORDER BY created_at
 `
 
 func (q *Queries) ListWorlds(ctx context.Context, ownerID pgtype.UUID) ([]World, error) {
@@ -157,6 +184,7 @@ func (q *Queries) ListWorlds(ctx context.Context, ownerID pgtype.UUID) ([]World,
 			&i.OwnerID,
 			&i.Name,
 			&i.CreatedAt,
+			&i.Settings,
 		); err != nil {
 			return nil, err
 		}
@@ -166,4 +194,26 @@ func (q *Queries) ListWorlds(ctx context.Context, ownerID pgtype.UUID) ([]World,
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateWorldSettings = `-- name: UpdateWorldSettings :one
+UPDATE worlds SET settings = $2 WHERE id = $1 RETURNING id, owner_id, name, created_at, settings
+`
+
+type UpdateWorldSettingsParams struct {
+	ID       pgtype.UUID
+	Settings []byte
+}
+
+func (q *Queries) UpdateWorldSettings(ctx context.Context, arg UpdateWorldSettingsParams) (World, error) {
+	row := q.db.QueryRow(ctx, updateWorldSettings, arg.ID, arg.Settings)
+	var i World
+	err := row.Scan(
+		&i.ID,
+		&i.OwnerID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.Settings,
+	)
+	return i, err
 }

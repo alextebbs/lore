@@ -28,7 +28,7 @@ const rootRoute = createRootRoute({
           Lore
         </Link>
       </header>
-      <main className="mx-auto max-w-3xl p-6">
+      <main className="mx-auto max-w-6xl p-6">
         <Outlet />
       </main>
     </div>
@@ -114,6 +114,168 @@ const indexRoute = createRoute({
   component: WorldsPage,
 });
 
+// ---------- World sidebar (Notion-style) ----------
+
+function WorldSidebar({
+  worldId,
+  currentEntryId,
+}: {
+  worldId: string;
+  currentEntryId?: string;
+}) {
+  const entries = useQuery({
+    queryKey: ["entries", worldId],
+    queryFn: () => api.listEntries(worldId),
+  });
+  const grouped = new Map<string, EntrySummary[]>();
+  for (const e of entries.data ?? []) {
+    grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
+  }
+  const typeNames = [...grouped.keys()].sort((a, b) =>
+    a === "World" ? -1 : b === "World" ? 1 : a.localeCompare(b),
+  );
+  return (
+    <nav className="sticky top-6 h-[calc(100vh-6rem)] w-56 shrink-0 overflow-y-auto pr-3 text-sm">
+      <Link
+        to="/w/$worldId"
+        params={{ worldId }}
+        className="mb-3 block font-semibold text-neutral-200 hover:text-white"
+      >
+        ⌂ Overview
+      </Link>
+      {typeNames.map((typeName) => (
+        <div key={typeName} className="mb-3">
+          <div className="mb-1 text-xs uppercase tracking-wide text-neutral-600">
+            {typeName}
+          </div>
+          <ul>
+            {grouped.get(typeName)!.map((e) => (
+              <li key={e.id}>
+                <Link
+                  to="/e/$entryId"
+                  params={{ entryId: e.id }}
+                  className={`block truncate rounded px-2 py-0.5 ${
+                    e.id === currentEntryId
+                      ? "bg-neutral-800 text-white"
+                      : "text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                  }`}
+                  title={e.title}
+                >
+                  {e.title}
+                  {e.status !== "canon" && (
+                    <span className="ml-1 text-amber-500">•</span>
+                  )}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function WorldSettingsPanel({ worldId }: { worldId: string }) {
+  const qc = useQueryClient();
+  const world = useQuery({
+    queryKey: ["world", worldId],
+    queryFn: () => api.getWorld(worldId),
+  });
+  const s = world.data?.world.settings ?? {};
+  const [vibe, setVibe] = useState<string | null>(null);
+  const [style, setStyle] = useState<string | null>(null);
+  const [authorAs, setAuthorAs] = useState<string | null>(null);
+  const [aiCanon, setAiCanon] = useState<boolean | null>(null);
+  const save = useMutation({
+    mutationFn: () =>
+      api.updateWorldSettings(worldId, {
+        vibe: vibe ?? s.vibe ?? "",
+        style_prompt: style ?? s.style_prompt ?? "",
+        humans_author_as: (authorAs ?? s.humans_author_as ?? "canon") as
+          | "draft"
+          | "canon",
+        ai_can_edit_canon: aiCanon ?? s.ai_can_edit_canon ?? false,
+      }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["world", worldId] }),
+  });
+  return (
+    <details className="rounded-lg border border-neutral-800 p-3 text-sm">
+      <summary className="cursor-pointer text-neutral-400">
+        World settings
+      </summary>
+      <div className="mt-3 space-y-3">
+        <label className="block">
+          <span className="text-xs uppercase tracking-wide text-neutral-500">
+            Vibe — global context for the AI ("It's Elden Ring", …)
+          </span>
+          <textarea
+            defaultValue={s.vibe ?? ""}
+            onChange={(e) => setVibe(e.target.value)}
+            rows={2}
+            className="mt-1 w-full rounded border border-neutral-800 bg-neutral-900 p-2"
+          />
+        </label>
+        <label className="block">
+          <span className="text-xs uppercase tracking-wide text-neutral-500">
+            Style prompt — primes AI writing (e.g. WoTC sourcebook voice)
+          </span>
+          <textarea
+            defaultValue={s.style_prompt ?? ""}
+            onChange={(e) => setStyle(e.target.value)}
+            rows={2}
+            className="mt-1 w-full rounded border border-neutral-800 bg-neutral-900 p-2"
+          />
+        </label>
+        <div className="flex items-center gap-6">
+          <label className="flex items-center gap-2">
+            <span className="text-xs uppercase text-neutral-500">
+              Humans author as
+            </span>
+            <select
+              defaultValue={s.humans_author_as ?? "canon"}
+              onChange={(e) => setAuthorAs(e.target.value)}
+              className="rounded border border-neutral-800 bg-neutral-900 px-2 py-1"
+            >
+              <option value="canon">canon</option>
+              <option value="draft">draft</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              defaultChecked={s.ai_can_edit_canon ?? false}
+              onChange={(e) => setAiCanon(e.target.checked)}
+            />
+            <span className="text-xs uppercase text-neutral-500">
+              AI can modify/delete canon
+            </span>
+          </label>
+        </div>
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => save.mutate()}
+            disabled={save.isPending}
+            className="rounded bg-neutral-100 px-3 py-1 text-neutral-900"
+          >
+            Save settings
+          </button>
+          <button
+            onClick={async () => {
+              if (confirm("Delete this world and everything in it?")) {
+                await api.deleteWorld(worldId);
+                window.location.href = "/";
+              }
+            }}
+            className="text-xs text-red-500 hover:text-red-300"
+          >
+            delete world
+          </button>
+        </div>
+      </div>
+    </details>
+  );
+}
+
 // ---------- World home ----------
 
 function WorldPage() {
@@ -144,7 +306,9 @@ function WorldPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex gap-6">
+      <WorldSidebar worldId={worldId} />
+      <div className="min-w-0 flex-1 space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{world.data?.world.name}</h2>
         <a
@@ -214,7 +378,9 @@ function WorldPage() {
         </button>
       </form>
 
+      <WorldSettingsPanel worldId={worldId} />
       <ChatPanel worldId={worldId} />
+      </div>
     </div>
   );
 }
@@ -503,6 +669,7 @@ function RevisionRow({
 function EntryPage() {
   const { entryId } = entryRoute.useParams();
   const qc = useQueryClient();
+  const navigate = useNavigate();
   const entry = useQuery({
     queryKey: ["entry", entryId],
     queryFn: () => api.getEntry(entryId),
@@ -518,7 +685,7 @@ function EntryPage() {
   });
 
   const [title, setTitle] = useState("");
-  const [fields, setFields] = useState<Record<string, string>>({});
+  const [fields, setFields] = useState<Record<string, string | string[]>>({});
   const [bodyDoc, setBodyDoc] = useState<DocNode>(emptyDoc);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
@@ -528,8 +695,12 @@ function EntryPage() {
     if (!e) return;
     setTitle(e.title);
     setBodyDoc(e.body_doc);
-    const f: Record<string, string> = {};
-    for (const [k, v] of Object.entries(e.fields)) f[k] = String(v.value ?? "");
+    const f: Record<string, string | string[]> = {};
+    for (const [k, v] of Object.entries(e.fields)) {
+      f[k] = Array.isArray(v.value)
+        ? (v.value as unknown[]).map(String)
+        : String(v.value ?? "");
+    }
     setFields(f);
   }, [entry.data]);
 
@@ -566,7 +737,9 @@ function EntryPage() {
   ];
 
   return (
-    <div className="space-y-5">
+    <div className="flex gap-6">
+      <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
+      <div className="min-w-0 flex-1 space-y-5">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
@@ -588,6 +761,18 @@ function EntryPage() {
           >
             ⇩
           </a>
+          <button
+            title="Delete entry"
+            onClick={async () => {
+              if (confirm(`Delete "${e.title}"?`)) {
+                await api.deleteEntry(e.id);
+                navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
+              }
+            }}
+            className="rounded-lg border border-neutral-800 px-2 py-1 text-sm text-neutral-600 hover:border-red-900 hover:text-red-400"
+          >
+            🗑
+          </button>
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
@@ -610,25 +795,91 @@ function EntryPage() {
       <div className="grid grid-cols-2 gap-3">
         {fieldNames.map((name) => {
           const fv = e.fields[name] as FieldValue | undefined;
+          const kind = schemaFields.find((f) => f.name === name)?.kind ?? "string";
+          const label = (
+            <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
+              {name}
+              {fv && fv.status === "draft" ? (
+                <button
+                  type="button"
+                  title="Promote this field to canon"
+                  onClick={() => canonize.mutate({ fields: [name] })}
+                  className="rounded-full border border-amber-800 bg-amber-950 px-2 py-0.5 text-xs text-amber-300 hover:border-emerald-700 hover:text-emerald-300"
+                >
+                  draft — click to canonize
+                </button>
+              ) : (
+                fv && <StatusBadge status={fv.status} />
+              )}
+            </span>
+          );
+          if (kind === "richtext_list") {
+            const items = Array.isArray(fields[name])
+              ? (fields[name] as string[])
+              : fields[name]
+                ? [String(fields[name])]
+                : [];
+            return (
+              <div key={name} className="col-span-2">
+                {label}
+                {items.map((item, idx) => (
+                  <div key={idx} className="mb-1 flex gap-1">
+                    <textarea
+                      value={item}
+                      rows={2}
+                      placeholder="Rich text — [[Entry Title]] links entries"
+                      onChange={(ev) => {
+                        const next = [...items];
+                        next[idx] = ev.target.value;
+                        setFields({ ...fields, [name]: next });
+                      }}
+                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setFields({
+                          ...fields,
+                          [name]: items.filter((_, i) => i !== idx),
+                        })
+                      }
+                      className="text-neutral-600 hover:text-red-400"
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => setFields({ ...fields, [name]: [...items, ""] })}
+                  className="rounded border border-dashed border-neutral-700 px-2 py-0.5 text-xs text-neutral-500 hover:text-neutral-300"
+                >
+                  + add
+                </button>
+              </div>
+            );
+          }
+          if (kind === "richtext") {
+            return (
+              <label key={name} className="col-span-2 block">
+                {label}
+                <textarea
+                  value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
+                  rows={3}
+                  placeholder="Rich text — [[Entry Title]] links entries"
+                  onChange={(ev) =>
+                    setFields({ ...fields, [name]: ev.target.value })
+                  }
+                  className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+                />
+              </label>
+            );
+          }
           return (
             <label key={name} className="block">
-              <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
-                {name}
-                {fv && fv.status === "draft" ? (
-                  <button
-                    type="button"
-                    title="Promote this field to canon"
-                    onClick={() => canonize.mutate({ fields: [name] })}
-                    className="rounded-full border border-amber-800 bg-amber-950 px-2 py-0.5 text-xs text-amber-300 hover:border-emerald-700 hover:text-emerald-300"
-                  >
-                    draft — click to canonize
-                  </button>
-                ) : (
-                  fv && <StatusBadge status={fv.status} />
-                )}
-              </span>
+              {label}
               <input
-                value={fields[name] ?? ""}
+                value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
                 onChange={(ev) =>
                   setFields({ ...fields, [name]: ev.target.value })
                 }
@@ -697,6 +948,7 @@ function EntryPage() {
       )}
 
       <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
+      </div>
     </div>
   );
 }

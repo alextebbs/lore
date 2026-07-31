@@ -18,13 +18,16 @@ type EntryRef struct {
 	Status   string `json:"status"`
 }
 
-// Edge is one outgoing relation instance.
+// Edge is one relation instance as seen from an entry. Relationships
+// present bidirectionally: Incoming marks edges stored on the other
+// entry but merged into this entry's matching section.
 type Edge struct {
 	ID         string   `json:"id"`
 	Field      string   `json:"field"`
 	To         EntryRef `json:"to"`
 	Annotation string   `json:"annotation,omitempty"`
 	Status     string   `json:"status"`
+	Incoming   bool     `json:"incoming,omitempty"`
 }
 
 // RelationSection groups an entry's outgoing edges under its relation
@@ -138,7 +141,8 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 
 	var row db.Edge
 	err = t.store.Tx(ctx, func(q *db.Queries) error {
-		// Cardinality one: a new edge replaces the old one.
+		// Cardinality one: a new edge replaces the old one. AI cannot
+		// silently replace a canon edge (tenet 5).
 		if def != nil && def.Relation != nil && !def.Relation.Many {
 			existing, err := q.ListEdgesFrom(ctx, fid)
 			if err != nil {
@@ -146,6 +150,15 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 			}
 			for _, e := range existing {
 				if e.Field == field {
+					if author == AuthorAI && e.Status == StatusCanon {
+						settings := WorldSettings{}
+						if w, err := q.GetWorld(ctx, from.WorldID); err == nil {
+							settings = parseSettings(w.Settings)
+						}
+						if !settings.AICanEditCanon {
+							return fmt.Errorf("field %q holds a canon relation to %s; replacing it needs user permission", field, e.ToTitle)
+						}
+					}
 					if err := q.DeleteEdge(ctx, e.ID); err != nil {
 						return err
 					}
@@ -190,7 +203,13 @@ func (t *Tools) DeleteEdge(ctx context.Context, id string, author Author) error 
 		return notFound(err)
 	}
 	if author == AuthorAI && row.Status == StatusCanon {
-		return fmt.Errorf("canon edge cannot be deleted by AI; a human must do it")
+		settings := WorldSettings{}
+		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
+			settings = parseSettings(w.Settings)
+		}
+		if !settings.AICanEditCanon {
+			return fmt.Errorf("canon edge cannot be deleted by AI without user permission")
+		}
 	}
 	if err := t.store.Queries.DeleteEdge(ctx, eid); err != nil {
 		return err
@@ -243,12 +262,30 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 	if err != nil {
 		return nil, nil, err
 	}
-	// Inverse labels come from the pointing entry's field config; cache
-	// effective fields per source type.
+	// Bidirectional presentation: incoming edges whose field this
+	// entry's own schema also declares merge into that section — a
+	// family edge reads identically from both ends. Everything else
+	// lands in a reverse section under the pointing field's inverse
+	// label ("People from here", "Mentioned in").
+	sectionIndex := map[string]int{}
+	for i, sec := range sections {
+		sectionIndex[sec.Field] = i
+	}
 	fieldsByType := map[string][]FieldDef{}
 	var reverse []ReverseSection
 	revIndex := map[string]int{}
 	for _, e := range incoming {
+		if i, ok := sectionIndex[e.Field]; ok && fieldDefFor(fields, e.Field) != nil {
+			sections[i].Edges = append(sections[i].Edges, Edge{
+				ID: idStr(e.ID), Field: e.Field, Annotation: e.Annotation,
+				Status: e.Status, Incoming: true,
+				To: EntryRef{
+					ID: idStr(e.FromEntry), Title: e.FromTitle,
+					TypeName: e.FromTypeName, Status: e.FromEntryStatus,
+				},
+			})
+			continue
+		}
 		key := idStr(e.FromTypeID)
 		if _, ok := fieldsByType[key]; !ok {
 			f, err := t.effectiveFields(ctx, e.WorldID, e.FromTypeID)
@@ -258,6 +295,9 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			fieldsByType[key] = f
 		}
 		label := e.Field + " ←"
+		if e.Field == MentionField {
+			label = "Mentioned in"
+		}
 		if def := fieldDefFor(fieldsByType[key], e.Field); def != nil && def.Relation != nil && def.Relation.InverseLabel != "" {
 			label = def.Relation.InverseLabel
 		}

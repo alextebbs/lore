@@ -96,9 +96,32 @@ type FieldValue struct {
 }
 
 type World struct {
-	ID        string    `json:"id"`
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
+	ID        string        `json:"id"`
+	Name      string        `json:"name"`
+	Settings  WorldSettings `json:"settings"`
+	CreatedAt time.Time     `json:"created_at"`
+}
+
+// WorldSettings are world-level knobs (SPEC): global context for the
+// agent, a writing-style primer, and the authoring policies.
+type WorldSettings struct {
+	// Vibe describes the world's overall setting/tone ("It's Elden
+	// Ring", "hopepunk solarcity") — injected into agent context.
+	Vibe string `json:"vibe,omitempty"`
+	// StylePrompt primes AI writers (e.g. toward WoTC sourcebook prose).
+	StylePrompt string `json:"style_prompt,omitempty"`
+	// HumansAuthorAs: "canon" (default) or "draft".
+	HumansAuthorAs string `json:"humans_author_as,omitempty"`
+	// AICanEditCanon permits AI modification/deletion of canon content
+	// without per-call override (still prompt-guided toward caution).
+	AICanEditCanon bool `json:"ai_can_edit_canon,omitempty"`
+}
+
+func (s WorldSettings) humanStatus() string {
+	if s.HumansAuthorAs == StatusDraft {
+		return StatusDraft
+	}
+	return StatusCanon
 }
 
 type EntryType struct {

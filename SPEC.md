@@ -89,16 +89,23 @@ Faction** — all user-extensible.
 - Tracked at **three granularities**: entry, field, and span (within rich
   text). An entry's overall status is *derived* (e.g. "canon with 3 draft
   fields"); "mark as canon" on an entry bulk-canonizes everything inside.
-- **Human-typed content is born canon.** Draft effectively means
-  "AI-authored, awaiting human blessing."
+- **Human-typed content is born canon by default** — a per-world policy
+  (`humans_author_as`) can flip human authoring to draft-first. Draft
+  effectively means "awaiting human blessing."
 - AI has **full power over drafts**: it may create, modify, and delete
   draft entries and draft relations without explicit instruction. Revision
-  history is the safety net. Canon requires explicit human orders (tenet 5).
+  history is the safety net. Canon requires explicit human orders (tenet
+  5), enforced in the tool layer: AI writes touching canon are refused
+  unless the world's `ai_can_edit_canon` policy allows them or the call
+  carries `canon_override` (set only on explicit user instruction; prompt
+  guidance urges caution even when permitted).
 
 ### Schemas
 
 - A schema defines an entry type's fields. Field kinds: string, number,
-  date, rich text, **relation**, (extensible).
+  date, **richtext** (markdown w/ draft markers + mentions),
+  **richtext_list** (a list of rich-text segments, e.g. Character
+  "goals"), **relation**, (extensible).
 - **Soft validation:** schemas scaffold the UI, prompt the AI, and produce
   warnings — they never reject data. Entries may carry extra or missing
   fields. Schema edits require no migrations.
@@ -128,9 +135,32 @@ ontology.
 - **Storage:** edges are first-class rows
   (`from_entry, to_entry, field, annotation, status, …`) so each relation
   has its own draft/canon status and feeds the graph.
-- **Auto reverse sections:** the target entry's page automatically grows a
-  section from the inverse label — Character.hometown → Chicago shows
+- **Bidirectional presentation:** relationships never show a direction to
+  the viewer. Incoming edges whose field the viewing entry's own schema
+  declares merge into that section (family reads identically from both
+  ends — no duplicate sections); everything else appears under the
+  pointing field's inverse label — Character.hometown → Chicago shows
   "People from here: John". No wiring required on the target schema.
+- **Mentions:** `[[Entry Title]]` inside a body or rich-text field links
+  entries and auto-maintains a system relation annotated "mentioned in
+  <section> of <entry>", surfaced on the target as "Mentioned in".
+
+### Worlds: settings and the meta entry
+
+Each world carries settings — capabilities on every surface:
+
+- **vibe** — global context describing the setting's tone ("It's Elden
+  Ring"), injected into all AI context.
+- **style_prompt** — a writing primer layered on the default sourcebook
+  style prompt that guides all AI authoring.
+- **humans_author_as** — `canon` (default) or `draft`.
+- **ai_can_edit_canon** — when true, AI may modify/delete canon without
+  per-call override (still prompt-guided toward caution and explicit
+  user direction).
+
+Every world also owns a **meta entry** (builtin type `World`, seeded at
+creation): the page describing the world itself. Its body is prime agent
+context alongside the vibe.
 
 ### Dates
 

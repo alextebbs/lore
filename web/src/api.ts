@@ -4,7 +4,18 @@ import type { DocNode } from "./doc";
 
 export type FieldDef = { name: string; kind: string; label?: string };
 export type FieldValue = { value: unknown; status: "draft" | "canon" };
-export type World = { id: string; name: string; created_at: string };
+export type WorldSettings = {
+  vibe?: string;
+  style_prompt?: string;
+  humans_author_as?: "draft" | "canon";
+  ai_can_edit_canon?: boolean;
+};
+export type World = {
+  id: string;
+  name: string;
+  settings: WorldSettings;
+  created_at: string;
+};
 export type EntryType = {
   id: string;
   name: string;
@@ -152,6 +163,12 @@ export const api = {
     req<{ deleted: boolean }>(`/api/edges/${edgeId}`, { method: "DELETE" }),
   getGraph: (id: string, depth: 1 | 2) =>
     req<Graph>(`/api/entries/${id}/graph?depth=${depth}`),
+  updateWorldSettings: (id: string, settings: WorldSettings) =>
+    req<World>(`/api/worlds/${id}`, { ...json(settings), method: "PATCH" }),
+  deleteWorld: (id: string) =>
+    req<{ deleted: boolean }>(`/api/worlds/${id}`, { method: "DELETE" }),
+  deleteEntry: (id: string) =>
+    req<{ deleted: boolean }>(`/api/entries/${id}`, { method: "DELETE" }),
   getTray: (worldId: string, current?: string) =>
     req<Tray>(
       `/api/worlds/${worldId}/tray${current ? `?current=${current}` : ""}`,

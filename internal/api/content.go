@@ -38,6 +38,28 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/worlds/{id}/types", s.createEntryType)
 	mux.HandleFunc("GET /api/worlds/{id}/dump", s.dumpWorld)
 	mux.HandleFunc("POST /api/worlds/import", s.importWorld)
+	mux.HandleFunc("PATCH /api/worlds/{id}", s.updateWorldSettings)
+	mux.HandleFunc("DELETE /api/worlds/{id}", s.deleteWorld)
+	mux.HandleFunc("DELETE /api/entries/{id}", s.deleteEntry)
+}
+
+func (s *Server) updateWorldSettings(w http.ResponseWriter, r *http.Request) {
+	var in tools.WorldSettings
+	if !decode(w, r, &in) {
+		return
+	}
+	world, err := s.Tools.UpdateWorldSettings(r.Context(), r.PathValue("id"), in)
+	respond(w, world, err)
+}
+
+func (s *Server) deleteWorld(w http.ResponseWriter, r *http.Request) {
+	err := s.Tools.DeleteWorld(r.Context(), r.PathValue("id"))
+	respond(w, map[string]bool{"deleted": err == nil}, err)
+}
+
+func (s *Server) deleteEntry(w http.ResponseWriter, r *http.Request) {
+	err := s.Tools.DeleteEntry(r.Context(), r.PathValue("id"), tools.AuthorHuman, true)
+	respond(w, map[string]bool{"deleted": err == nil}, err)
 }
 
 func (s *Server) createEntryType(w http.ResponseWriter, r *http.Request) {

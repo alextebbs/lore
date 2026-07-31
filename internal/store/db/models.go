@@ -97,4 +97,5 @@ type World struct {
 	OwnerID   pgtype.UUID
 	Name      string
 	CreatedAt pgtype.Timestamptz
+	Settings  []byte
 }

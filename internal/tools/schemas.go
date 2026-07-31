@@ -39,7 +39,7 @@ func (t *Tools) CreateEntryType(ctx context.Context, worldID, name, parentID str
 	}
 
 	var warnings []string
-	known := map[string]bool{"string": true, "number": true, "date": true, "richtext": true, "relation": true}
+	known := map[string]bool{"string": true, "number": true, "date": true, "richtext": true, "richtext_list": true, "relation": true}
 	for _, f := range fields {
 		if f.Name == "" {
 			return EntryType{}, nil, fmt.Errorf("every field needs a name")

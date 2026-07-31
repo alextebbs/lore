@@ -63,6 +63,20 @@ func (q *Queries) DeleteEdge(ctx context.Context, id pgtype.UUID) error {
 	return err
 }
 
+const deleteEdgesByField = `-- name: DeleteEdgesByField :exec
+DELETE FROM edges WHERE from_entry = $1 AND field = $2
+`
+
+type DeleteEdgesByFieldParams struct {
+	FromEntry pgtype.UUID
+	Field     string
+}
+
+func (q *Queries) DeleteEdgesByField(ctx context.Context, arg DeleteEdgesByFieldParams) error {
+	_, err := q.db.Exec(ctx, deleteEdgesByField, arg.FromEntry, arg.Field)
+	return err
+}
+
 const getEdge = `-- name: GetEdge :one
 SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE id = $1
 `

@@ -19,3 +19,12 @@ SELECT * FROM entry_types WHERE world_id = $1 ORDER BY builtin DESC, name;
 
 -- name: GetEntryType :one
 SELECT * FROM entry_types WHERE id = $1;
+
+-- name: UpdateWorldSettings :one
+UPDATE worlds SET settings = $2 WHERE id = $1 RETURNING *;
+
+-- name: DeleteWorld :exec
+DELETE FROM worlds WHERE id = $1;
+
+-- name: GetEntryByTitle :one
+SELECT id FROM entries WHERE world_id = $1 AND lower(title) = lower($2) LIMIT 1;

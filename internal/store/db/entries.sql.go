@@ -92,6 +92,15 @@ func (q *Queries) CreateRevision(ctx context.Context, arg CreateRevisionParams) 
 	return i, err
 }
 
+const deleteEntry = `-- name: DeleteEntry :exec
+DELETE FROM entries WHERE id = $1
+`
+
+func (q *Queries) DeleteEntry(ctx context.Context, id pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteEntry, id)
+	return err
+}
+
 const getEntry = `-- name: GetEntry :one
 SELECT id, world_id, type_id, title, fields, body, status, created_at, updated_at FROM entries WHERE id = $1
 `

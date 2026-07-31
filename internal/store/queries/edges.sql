@@ -44,3 +44,6 @@ WHERE e.id = ANY($1::uuid[]);
 
 -- name: ListEdgeRows :many
 SELECT * FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position;
+
+-- name: DeleteEdgesByField :exec
+DELETE FROM edges WHERE from_entry = $1 AND field = $2;

@@ -43,6 +43,9 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | CreateEntryType (single inheritance, soft warnings) | POST /api/worlds/{id}/types | create_entry_type |
 | DumpWorld (full-fidelity fixture) | GET /api/worlds/{id}/dump | dump_world |
 | ImportWorld (rebuild from fixture) | POST /api/worlds/import | import_world |
+| UpdateWorldSettings (vibe/style/policies) | PATCH /api/worlds/{id} | update_world_settings |
+| DeleteEntry (AI: draft-only unless permitted) | DELETE /api/entries/{id} | delete_entry |
+| DeleteWorld | DELETE /api/worlds/{id} | delete_world (human-gated) |
 
 UI-only (SPEC tenet 2 exception — orchestration, not capability): the
 chat harness (conversations/messages/evict endpoints) drives the agent

@@ -19,6 +19,8 @@ var builtinTypes = []struct {
 	{"Character", []FieldDef{
 		{Name: "gender", Kind: "string"},
 		{Name: "occupation", Kind: "string"},
+		{Name: "origin", Kind: "richtext"},
+		{Name: "goals", Kind: "richtext_list"},
 		{Name: "hometown", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
 			Template: "A is the hometown of B", InverseLabel: "People from here",
@@ -68,6 +70,9 @@ var builtinTypes = []struct {
 			Template: "A is based at B", InverseLabel: "Factions based here",
 		}},
 	}},
+	// The world's own page: one meta entry per world describes the
+	// setting itself (its body is prime agent context).
+	{"World", nil},
 }
 
 func (t *Tools) CreateWorld(ctx context.Context, name string) (World, error) {
@@ -87,22 +92,93 @@ func (t *Tools) CreateWorld(ctx context.Context, name string) (World, error) {
 		if err != nil {
 			return fmt.Errorf("creating world: %w", err)
 		}
+		var worldTypeID pgtype.UUID
 		for _, bt := range builtinTypes {
 			fields, err := json.Marshal(bt.Fields)
 			if err != nil {
 				return err
 			}
-			if _, err := q.CreateEntryType(ctx, db.CreateEntryTypeParams{
+			ty, err := q.CreateEntryType(ctx, db.CreateEntryTypeParams{
 				ID: newID(), WorldID: w.ID, Name: bt.Name,
 				ParentID: pgtype.UUID{}, Fields: fields, Builtin: true,
-			}); err != nil {
+			})
+			if err != nil {
 				return fmt.Errorf("seeding type %s: %w", bt.Name, err)
 			}
+			if bt.Name == "World" {
+				worldTypeID = ty.ID
+			}
+		}
+		// The world's meta entry: a page describing the world itself.
+		meta, err := q.CreateEntry(ctx, db.CreateEntryParams{
+			ID: newID(), WorldID: w.ID, TypeID: worldTypeID, Title: name,
+			Fields: []byte("{}"), Body: []byte(`{"type":"doc"}`), Status: StatusCanon,
+		})
+		if err != nil {
+			return fmt.Errorf("creating meta entry: %w", err)
+		}
+		if err := recordRevision(ctx, q, meta, AuthorHuman); err != nil {
+			return err
+		}
+		if err := t.refreshDerived(ctx, q, meta, "World"); err != nil {
+			return err
 		}
 		out = worldOut(w)
 		return nil
 	})
 	return out, err
+}
+
+// GetWorldSettings loads a world's settings.
+func (t *Tools) GetWorldSettings(ctx context.Context, worldID string) (WorldSettings, error) {
+	wid, err := parseID(worldID)
+	if err != nil {
+		return WorldSettings{}, err
+	}
+	w, err := t.store.Queries.GetWorld(ctx, wid)
+	if err != nil {
+		return WorldSettings{}, notFound(err)
+	}
+	return parseSettings(w.Settings), nil
+}
+
+// UpdateWorldSettings replaces a world's settings (all surfaces).
+func (t *Tools) UpdateWorldSettings(ctx context.Context, worldID string, s WorldSettings) (World, error) {
+	wid, err := parseID(worldID)
+	if err != nil {
+		return World{}, err
+	}
+	if s.HumansAuthorAs != "" && s.HumansAuthorAs != StatusDraft && s.HumansAuthorAs != StatusCanon {
+		return World{}, fmt.Errorf("humans_author_as must be draft or canon")
+	}
+	raw, err := json.Marshal(s)
+	if err != nil {
+		return World{}, err
+	}
+	w, err := t.store.Queries.UpdateWorldSettings(ctx, db.UpdateWorldSettingsParams{
+		ID: wid, Settings: raw,
+	})
+	if err != nil {
+		return World{}, notFound(err)
+	}
+	return worldOut(w), nil
+}
+
+// DeleteWorld permanently removes a world and everything in it.
+// Human-gated: exposed to the UI/API; over MCP only on explicit user
+// instruction.
+func (t *Tools) DeleteWorld(ctx context.Context, worldID string) error {
+	wid, err := parseID(worldID)
+	if err != nil {
+		return err
+	}
+	return t.store.Queries.DeleteWorld(ctx, wid)
+}
+
+func parseSettings(raw []byte) WorldSettings {
+	var s WorldSettings
+	_ = json.Unmarshal(raw, &s)
+	return s
 }
 
 func (t *Tools) ListWorlds(ctx context.Context) ([]World, error) {
@@ -161,7 +237,10 @@ func (t *Tools) ListTypes(ctx context.Context, worldID string) ([]EntryType, err
 }
 
 func worldOut(w db.World) World {
-	return World{ID: idStr(w.ID), Name: w.Name, CreatedAt: w.CreatedAt.Time}
+	return World{
+		ID: idStr(w.ID), Name: w.Name,
+		Settings: parseSettings(w.Settings), CreatedAt: w.CreatedAt.Time,
+	}
 }
 
 // typeOut resolves effective fields: ancestors first, child additions
