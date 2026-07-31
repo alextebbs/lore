@@ -577,7 +577,7 @@ function ReverseSectionRow({
   const declaringTypes = new Set(
     (world.data?.types ?? [])
       .filter((t) =>
-        t.fields.some((f) => f.name === sec.field && f.kind === "relation"),
+        (t.fields ?? []).some((f) => f.name === sec.field && f.kind === "relation"),
       )
       .map((t) => t.name),
   );

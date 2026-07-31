@@ -272,6 +272,9 @@ func typeOut(r db.EntryType, byID map[string]db.EntryType) (EntryType, error) {
 			effective = append(effective, f)
 		}
 	}
+	if effective == nil {
+		effective = []FieldDef{}
+	}
 	et := EntryType{
 		ID: idStr(r.ID), Name: r.Name, Builtin: r.Builtin,
 		Fields: effective,
