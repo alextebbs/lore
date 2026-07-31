@@ -32,11 +32,11 @@ migration; migrations apply automatically at server startup.
 
 ## Demo fixture
 
-`fixtures/emberfall.json` is a full campaign setting (150+ entries, 380+
-edges, mixed draft/canon states) generated entirely through the MCP
-surface (`scripts/generate_fixture.py`). Load it into a running dev
-server with `make fixture-load` — safe to repeat; each import creates a
-fresh world.
+`fixtures/emberfall.json` is a full campaign setting (150+ entries,
+290+ edges, mixed draft/canon states), originally authored through the
+MCP surface. The JSON export is the single source of truth: load it
+with `make fixture-load`, edit the world through the app or MCP, then
+re-export with `make fixture-dump world=<id>` and commit the JSON.
 
 ## Work tracking
 

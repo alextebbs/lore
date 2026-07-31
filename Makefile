@@ -45,3 +45,9 @@ fixture-load:
 	  -H "Content-Type: application/json" \
 	  -d "{\"dump\": $$(cat fixtures/emberfall.json)}" \
 	  | python3 -c "import json,sys; w=json.load(sys.stdin); print('imported world:', w['name'], w['id'])"
+
+## fixture-dump world=<world-id>: re-export a world over fixtures/emberfall.json
+fixture-dump:
+	@test -n "$(world)" || (echo "usage: make fixture-dump world=<world-id>" && exit 1)
+	@curl -s localhost:8080/api/worlds/$(world)/dump | python3 -m json.tool > fixtures/emberfall.json
+	@echo "fixtures/emberfall.json updated ($$(wc -c < fixtures/emberfall.json) bytes)"
