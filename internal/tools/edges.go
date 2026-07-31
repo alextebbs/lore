@@ -42,6 +42,7 @@ type RelationSection struct {
 // (ADR 0003): grouped by the pointing field's inverse label.
 type ReverseSection struct {
 	Label string        `json:"label"`
+	Field string        `json:"field"` // the declaring side's field name
 	Items []ReverseItem `json:"items"`
 }
 
@@ -121,6 +122,8 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 	}
 	def := fieldDefFor(fields, field)
 	switch {
+	case field == RelatedField || field == MentionField:
+		// system fields: always allowed, untyped, annotated freely
 	case def == nil:
 		warnings = append(warnings, fmt.Sprintf("field %q is not declared on this type", field))
 	case def.Kind != "relation":
@@ -162,6 +165,7 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 					if err := q.DeleteEdge(ctx, e.ID); err != nil {
 						return err
 					}
+					warnings = append(warnings, fmt.Sprintf("replaced the existing %q relation to %s (cardinality one)", field, e.ToTitle))
 				}
 			}
 		}
@@ -253,8 +257,18 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 		})
 		delete(byField, def.Name)
 	}
+	// The universal untyped section: every entry can relate to anything.
+	sections = append(sections, RelationSection{
+		Field: RelatedField,
+		Config: &RelationConfig{Many: true, Annotations: true, InverseLabel: "Related"},
+		Edges:  byField[RelatedField],
+	})
+	delete(byField, RelatedField)
 	// Undeclared relation fields with edges still render (soft schema).
 	for field, edges := range byField {
+		if field == MentionField {
+			continue // mentions render on the target side only
+		}
 		sections = append(sections, RelationSection{Field: field, Edges: edges})
 	}
 
@@ -275,7 +289,7 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 	var reverse []ReverseSection
 	revIndex := map[string]int{}
 	for _, e := range incoming {
-		if i, ok := sectionIndex[e.Field]; ok && fieldDefFor(fields, e.Field) != nil {
+		if i, ok := sectionIndex[e.Field]; ok && (e.Field == RelatedField || fieldDefFor(fields, e.Field) != nil) {
 			sections[i].Edges = append(sections[i].Edges, Edge{
 				ID: idStr(e.ID), Field: e.Field, Annotation: e.Annotation,
 				Status: e.Status, Incoming: true,
@@ -312,7 +326,7 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			reverse[i].Items = append(reverse[i].Items, item)
 		} else {
 			revIndex[label] = len(reverse)
-			reverse = append(reverse, ReverseSection{Label: label, Items: []ReverseItem{item}})
+			reverse = append(reverse, ReverseSection{Label: label, Field: e.Field, Items: []ReverseItem{item}})
 		}
 	}
 	return sections, reverse, nil

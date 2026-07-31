@@ -47,3 +47,11 @@ SELECT * FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position;
 
 -- name: DeleteEdgesByField :exec
 DELETE FROM edges WHERE from_entry = $1 AND field = $2;
+
+-- name: ListMentionEdgesTo :many
+SELECT * FROM edges WHERE to_entry = $1 AND field = 'mentions';
+
+-- name: RenameEdgeField :exec
+UPDATE edges SET field = $3
+WHERE field = $2
+  AND from_entry IN (SELECT id FROM entries WHERE type_id = ANY($1::uuid[]));

@@ -324,11 +324,62 @@ func (q *Queries) ListEdgesTouching(ctx context.Context, dollar_1 []pgtype.UUID)
 	return items, nil
 }
 
+const listMentionEdgesTo = `-- name: ListMentionEdgesTo :many
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE to_entry = $1 AND field = 'mentions'
+`
+
+func (q *Queries) ListMentionEdgesTo(ctx context.Context, toEntry pgtype.UUID) ([]Edge, error) {
+	rows, err := q.db.Query(ctx, listMentionEdgesTo, toEntry)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Edge
+	for rows.Next() {
+		var i Edge
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorldID,
+			&i.FromEntry,
+			&i.Field,
+			&i.ToEntry,
+			&i.Annotation,
+			&i.Status,
+			&i.Position,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const promoteEdgesFrom = `-- name: PromoteEdgesFrom :exec
 UPDATE edges SET status = 'canon' WHERE from_entry = $1
 `
 
 func (q *Queries) PromoteEdgesFrom(ctx context.Context, fromEntry pgtype.UUID) error {
 	_, err := q.db.Exec(ctx, promoteEdgesFrom, fromEntry)
+	return err
+}
+
+const renameEdgeField = `-- name: RenameEdgeField :exec
+UPDATE edges SET field = $3
+WHERE field = $2
+  AND from_entry IN (SELECT id FROM entries WHERE type_id = ANY($1::uuid[]))
+`
+
+type RenameEdgeFieldParams struct {
+	Column1 []pgtype.UUID
+	Field   string
+	Field_2 string
+}
+
+func (q *Queries) RenameEdgeField(ctx context.Context, arg RenameEdgeFieldParams) error {
+	_, err := q.db.Exec(ctx, renameEdgeField, arg.Column1, arg.Field, arg.Field_2)
 	return err
 }

@@ -196,6 +196,31 @@ func (q *Queries) ListWorlds(ctx context.Context, ownerID pgtype.UUID) ([]World,
 	return items, nil
 }
 
+const updateEntryTypeRow = `-- name: UpdateEntryTypeRow :one
+UPDATE entry_types SET name = $2, fields = $3 WHERE id = $1 RETURNING id, world_id, name, parent_id, fields, builtin, created_at
+`
+
+type UpdateEntryTypeRowParams struct {
+	ID     pgtype.UUID
+	Name   string
+	Fields []byte
+}
+
+func (q *Queries) UpdateEntryTypeRow(ctx context.Context, arg UpdateEntryTypeRowParams) (EntryType, error) {
+	row := q.db.QueryRow(ctx, updateEntryTypeRow, arg.ID, arg.Name, arg.Fields)
+	var i EntryType
+	err := row.Scan(
+		&i.ID,
+		&i.WorldID,
+		&i.Name,
+		&i.ParentID,
+		&i.Fields,
+		&i.Builtin,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const updateWorldSettings = `-- name: UpdateWorldSettings :one
 UPDATE worlds SET settings = $2 WHERE id = $1 RETURNING id, owner_id, name, created_at, settings
 `

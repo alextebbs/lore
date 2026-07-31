@@ -121,8 +121,8 @@ There is no global relation registry. A **relation field** on a schema
 carries its own config:
 
 - target entry type(s)
-- cardinality (one / many)
-- sentence template with placeholders: "A is the hometown of B"
+- cardinality (one / many) — creating over a full one-slot **replaces the
+  existing edge and warns**
 - inverse label for the reverse section
 - whether per-edge freeform **annotations** are allowed
   (e.g. Family: link to Jane + note "Jane is John's older sister")
@@ -144,6 +144,16 @@ ontology.
 - **Mentions:** `[[Entry Title]]` inside a body or rich-text field links
   entries and auto-maintains a system relation annotated "mentioned in
   <section> of <entry>", surfaced on the target as "Mentioned in".
+  Mentions persist through IDs: renaming an entry rewrites the
+  `[[links]]` in every mentioning entry (located via the edges).
+- **Untyped relations:** every entry carries a universal `related`
+  section — untyped, annotated, bidirectional — for connections that
+  don't fit a declared field yet.
+- **Bidirectional authoring:** reverse sections accept adds too; the
+  edge is created on the declaring side transparently.
+- **Schema field renames migrate data:** renaming a relation (or any)
+  field via UpdateEntryType moves existing edges and stored field
+  values along with it, across the type and its subtypes.
 
 ### Worlds: settings and the meta entry
 

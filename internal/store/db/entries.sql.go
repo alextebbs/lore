@@ -269,6 +269,24 @@ func (q *Queries) ListRevisions(ctx context.Context, entryID pgtype.UUID) ([]Lis
 	return items, nil
 }
 
+const renameEntryFieldKey = `-- name: RenameEntryFieldKey :exec
+UPDATE entries
+SET fields = (fields - $1::text)
+    || jsonb_build_object($2::text, fields -> $1::text)
+WHERE type_id = ANY($3::uuid[]) AND fields ? $1::text
+`
+
+type RenameEntryFieldKeyParams struct {
+	OldName string
+	NewName string
+	TypeIds []pgtype.UUID
+}
+
+func (q *Queries) RenameEntryFieldKey(ctx context.Context, arg RenameEntryFieldKeyParams) error {
+	_, err := q.db.Exec(ctx, renameEntryFieldKey, arg.OldName, arg.NewName, arg.TypeIds)
+	return err
+}
+
 const updateEntry = `-- name: UpdateEntry :one
 UPDATE entries
 SET title = $2, fields = $3, body = $4, status = $5, updated_at = now()

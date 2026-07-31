@@ -133,21 +133,19 @@ new_type("Region", "Place", [{"name": "climate", "kind": "string"}])
 new_type("City", "Place", [
     {"name": "population", "kind": "number"},
     {"name": "ruler", "kind": "relation", "relation": {
-        "targets": ["Character"], "template": "A is ruled by B",
-        "inverse_label": "Rules"}},
+        "targets": ["Character"], "inverse_label": "Rules"}},
 ])
 new_type("Village", "Place", [{"name": "population", "kind": "number"}])
 new_type("Ruin", "Place", [
     {"name": "danger", "kind": "string"},
     {"name": "guarded_by", "kind": "relation", "relation": {
         "targets": ["Character", "Faction"], "many": True,
-        "template": "A is guarded by B", "inverse_label": "Guards"}},
+        "inverse_label": "Guards"}},
 ])
 new_type("Artifact", "Item", [
     {"name": "attunement", "kind": "string"},
     {"name": "forged_in", "kind": "relation", "relation": {
-        "targets": ["Place"], "template": "A was forged in B",
-        "inverse_label": "Artifacts forged here"}},
+        "targets": ["Place"], "inverse_label": "Artifacts forged here"}},
 ])
 warn = new_type("Deity", "Character", [
     {"name": "domain", "kind": "string"},

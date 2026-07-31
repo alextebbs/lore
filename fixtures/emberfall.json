@@ -3,7 +3,7 @@
     "world": "Emberfall",
     "types": [
         {
-            "id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "name": "Character",
             "fields": [
                 {
@@ -29,7 +29,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A is the hometown of B",
                         "inverse_label": "People from here"
                     }
                 },
@@ -41,7 +40,6 @@
                         "targets": [
                             "Character"
                         ],
-                        "template": "A is family of B",
                         "annotations": true,
                         "inverse_label": "Family"
                     }
@@ -50,7 +48,7 @@
             "builtin": true
         },
         {
-            "id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "name": "Event",
             "fields": [
                 {
@@ -64,7 +62,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A happened at B",
                         "inverse_label": "Events here"
                     }
                 },
@@ -77,7 +74,6 @@
                             "Character",
                             "Faction"
                         ],
-                        "template": "A involved B",
                         "annotations": true,
                         "inverse_label": "Involved in"
                     }
@@ -86,7 +82,7 @@
             "builtin": true
         },
         {
-            "id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "name": "Faction",
             "fields": [
                 {
@@ -101,7 +97,6 @@
                         "targets": [
                             "Character"
                         ],
-                        "template": "B is a member of A",
                         "annotations": true,
                         "inverse_label": "Member of"
                     }
@@ -113,7 +108,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A is based at B",
                         "inverse_label": "Factions based here"
                     }
                 }
@@ -121,7 +115,7 @@
             "builtin": true
         },
         {
-            "id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "name": "Item",
             "fields": [
                 {
@@ -135,7 +129,6 @@
                         "targets": [
                             "Character"
                         ],
-                        "template": "A is wielded by B",
                         "inverse_label": "Wields"
                     }
                 },
@@ -146,7 +139,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A is found at B",
                         "inverse_label": "Items here"
                     }
                 }
@@ -154,7 +146,7 @@
             "builtin": true
         },
         {
-            "id": "019fb92a-3a38-7aa2-8d1c-0686e953e71e",
+            "id": "019fb934-a6b0-777a-b190-2002b2991dcd",
             "name": "Place",
             "fields": [
                 {
@@ -169,7 +161,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A is located within B",
                         "inverse_label": "Places within"
                     }
                 }
@@ -177,15 +168,15 @@
             "builtin": true
         },
         {
-            "id": "019fb92a-3a39-7ed4-8e55-d5f27387f056",
+            "id": "019fb934-a6b1-7a21-a815-1f3d359724b1",
             "name": "World",
             "fields": null,
             "builtin": true
         },
         {
-            "id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "name": "Artifact",
-            "parent_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "parent_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "fields": [
                 {
                     "kind": "string",
@@ -198,7 +189,6 @@
                         "targets": [
                             "Place"
                         ],
-                        "template": "A was forged in B",
                         "inverse_label": "Artifacts forged here"
                     }
                 }
@@ -206,9 +196,9 @@
             "builtin": false
         },
         {
-            "id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "name": "City",
-            "parent_id": "019fb92a-3a38-7aa2-8d1c-0686e953e71e",
+            "parent_id": "019fb934-a6b0-777a-b190-2002b2991dcd",
             "fields": [
                 {
                     "kind": "number",
@@ -221,7 +211,6 @@
                         "targets": [
                             "Character"
                         ],
-                        "template": "A is ruled by B",
                         "inverse_label": "Rules"
                     }
                 }
@@ -229,9 +218,9 @@
             "builtin": false
         },
         {
-            "id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "name": "Deity",
-            "parent_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "parent_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "fields": [
                 {
                     "kind": "string",
@@ -245,9 +234,9 @@
             "builtin": false
         },
         {
-            "id": "019fb92a-3a48-75f7-b947-7898148806ab",
+            "id": "019fb934-a6bf-75b1-a52d-24ebc3263a5d",
             "name": "Region",
-            "parent_id": "019fb92a-3a38-7aa2-8d1c-0686e953e71e",
+            "parent_id": "019fb934-a6b0-777a-b190-2002b2991dcd",
             "fields": [
                 {
                     "kind": "string",
@@ -257,9 +246,9 @@
             "builtin": false
         },
         {
-            "id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "name": "Ruin",
-            "parent_id": "019fb92a-3a38-7aa2-8d1c-0686e953e71e",
+            "parent_id": "019fb934-a6b0-777a-b190-2002b2991dcd",
             "fields": [
                 {
                     "kind": "string",
@@ -274,7 +263,6 @@
                             "Character",
                             "Faction"
                         ],
-                        "template": "A is guarded by B",
                         "inverse_label": "Guards"
                     }
                 }
@@ -282,9 +270,9 @@
             "builtin": false
         },
         {
-            "id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "name": "Village",
-            "parent_id": "019fb92a-3a38-7aa2-8d1c-0686e953e71e",
+            "parent_id": "019fb934-a6b0-777a-b190-2002b2991dcd",
             "fields": [
                 {
                     "kind": "number",
@@ -296,8 +284,8 @@
     ],
     "entries": [
         {
-            "id": "019fb92a-3a3a-7416-838d-1f83b4c2a8a7",
-            "type_id": "019fb92a-3a39-7ed4-8e55-d5f27387f056",
+            "id": "019fb934-a6b1-7f0b-b836-b963bb59d4aa",
+            "type_id": "019fb934-a6b1-7a21-a815-1f3d359724b1",
             "title": "Emberfall",
             "fields": {},
             "body": {
@@ -392,8 +380,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3a53-7105-b3c2-b5106d845065",
-            "type_id": "019fb92a-3a48-75f7-b947-7898148806ab",
+            "id": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
+            "type_id": "019fb934-a6bf-75b1-a52d-24ebc3263a5d",
             "title": "The Cinderwastes",
             "fields": {
                 "kind": {
@@ -422,8 +410,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3a5d-738e-aadf-a36b862e7ce4",
-            "type_id": "019fb92a-3a48-75f7-b947-7898148806ab",
+            "id": "019fb934-a6d3-7ab6-bd6b-bc0902e9b538",
+            "type_id": "019fb934-a6bf-75b1-a52d-24ebc3263a5d",
             "title": "The Verdant Throat",
             "fields": {
                 "kind": {
@@ -452,8 +440,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
-            "type_id": "019fb92a-3a48-75f7-b947-7898148806ab",
+            "id": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
+            "type_id": "019fb934-a6bf-75b1-a52d-24ebc3263a5d",
             "title": "The Palegrave Peaks",
             "fields": {
                 "kind": {
@@ -482,8 +470,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
-            "type_id": "019fb92a-3a48-75f7-b947-7898148806ab",
+            "id": "019fb934-a6e6-7a41-a14c-aec137131711",
+            "type_id": "019fb934-a6bf-75b1-a52d-24ebc3263a5d",
             "title": "The Saltmere Coast",
             "fields": {
                 "kind": {
@@ -512,8 +500,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Vellum Reach",
             "fields": {
                 "kind": {
@@ -542,8 +530,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Ashvault",
             "fields": {
                 "kind": {
@@ -572,8 +560,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Greenhollow",
             "fields": {
                 "kind": {
@@ -602,8 +590,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a712-7213-b50c-8ef6d7e69865",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Cindral",
             "fields": {
                 "kind": {
@@ -632,8 +620,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a71e-704a-93b0-f1a0ed334f46",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Highcairn",
             "fields": {
                 "kind": {
@@ -662,8 +650,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Brinemarket",
             "fields": {
                 "kind": {
@@ -692,8 +680,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3ac3-73ef-9d89-b5943c263351",
-            "type_id": "019fb92a-3a4a-73a9-bdd6-194b0e7669c7",
+            "id": "019fb934-a733-71c1-810c-18fd4615a208",
+            "type_id": "019fb934-a6c1-710d-8dea-3ebddfffbc59",
             "title": "Duskwell",
             "fields": {
                 "kind": {
@@ -722,8 +710,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Fennel Crossing",
             "fields": {
                 "kind": {
@@ -752,8 +740,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3adb-7269-87e8-14e6cc088755",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a746-7785-8b10-8fdf7309c553",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Greyharrow",
             "fields": {
                 "kind": {
@@ -782,8 +770,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ae5-75a5-94fa-266330f0b426",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a754-7b0c-98ed-d23b08251f5f",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Emberlight",
             "fields": {
                 "kind": {
@@ -812,8 +800,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a75e-7999-842f-51f29d312745",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Saltwhistle",
             "fields": {
                 "kind": {
@@ -842,8 +830,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3af9-7e86-9455-46ad55062a13",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a769-75a5-b49a-058390bbdf96",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Mosshaven",
             "fields": {
                 "kind": {
@@ -872,8 +860,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
-            "type_id": "019fb92a-3a4c-743a-ad04-9b81a2d5047c",
+            "id": "019fb934-a773-7455-a3b8-37e717fa12a8",
+            "type_id": "019fb934-a6c2-7e0d-ae0e-a41d3ae8c0f3",
             "title": "Cairnfoot",
             "fields": {
                 "kind": {
@@ -902,8 +890,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b0e-7d17-a563-5c7229e9f8be",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a77f-70ee-bc44-cf4494d1deed",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "The Sunken Rotunda",
             "fields": {
                 "kind": {
@@ -932,8 +920,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b19-70a0-9b20-f185a257e7e0",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a789-76ba-9e88-a99ff5de1489",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "Karvex Deep",
             "fields": {
                 "kind": {
@@ -962,8 +950,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b23-793b-a3f8-32812cf9b9e0",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a793-7357-9f5e-c7ebc2d67dbd",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "The Chained Library",
             "fields": {
                 "kind": {
@@ -992,8 +980,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b2c-7ac1-ac85-796168236f0b",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a79d-78ed-a182-48a0c54851e0",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "Thornmaw Palace",
             "fields": {
                 "kind": {
@@ -1022,8 +1010,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "The Ember Gate",
             "fields": {
                 "kind": {
@@ -1052,8 +1040,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b41-7ab6-9c63-354ecfb052bc",
-            "type_id": "019fb92a-3a4d-7e5b-9882-851c16163cac",
+            "id": "019fb934-a7b1-7785-a545-11ff60d3f87c",
+            "type_id": "019fb934-a6c4-772f-b99c-e4fab0f40850",
             "title": "Wreck of the Lantern-Bearer",
             "fields": {
                 "kind": {
@@ -1082,8 +1070,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b4b-7105-801c-866b3e14d20c",
-            "type_id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a7ba-7641-ad54-ed44de8bd32e",
+            "type_id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "title": "Vhezar, the Broken Lantern",
             "fields": {
                 "domain": {
@@ -1116,8 +1104,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b51-7cc5-8847-0b77bd81e465",
-            "type_id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a7c0-763d-8634-d45028c5d65c",
+            "type_id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "title": "Mother Meridian",
             "fields": {
                 "domain": {
@@ -1150,8 +1138,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b59-74b7-9a0a-dbb84be431c3",
-            "type_id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a7c6-7ac1-a7f8-6038cb4c67fd",
+            "type_id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "title": "The Gardener Below",
             "fields": {
                 "domain": {
@@ -1184,8 +1172,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b60-7ce8-8e84-ca34a763c2c5",
-            "type_id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a7cc-7ebd-b0c9-0146023ab74f",
+            "type_id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "title": "Saint Ledger",
             "fields": {
                 "domain": {
@@ -1218,8 +1206,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b68-711d-82ab-7d062bfd5ac0",
-            "type_id": "019fb92a-3a50-7d0f-b7fc-685875a96eac",
+            "id": "019fb934-a7d2-7a06-bf2a-d75edd1ee4c1",
+            "type_id": "019fb934-a6c7-7bf6-8eba-ab6c494371cf",
             "title": "The Pale Auditor",
             "fields": {
                 "domain": {
@@ -1252,8 +1240,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Ledger-Court",
             "fields": {
                 "purpose": {
@@ -1278,8 +1266,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b77-7d1f-9123-e46534e75392",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a7e0-7b79-9e2f-486332e19302",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Emberfaith",
             "fields": {
                 "purpose": {
@@ -1304,8 +1292,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b81-7557-a394-743d5c2ef978",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Glasswrights' Union",
             "fields": {
                 "purpose": {
@@ -1330,8 +1318,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a7f2-76dd-96f0-b29edc134099",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Green Choir",
             "fields": {
                 "purpose": {
@@ -1356,8 +1344,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3b97-701f-af13-596b8283a7c8",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Cairn Wardens",
             "fields": {
                 "purpose": {
@@ -1382,8 +1370,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a804-78b2-9e38-5426b612f175",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Saltmere Combine",
             "fields": {
                 "purpose": {
@@ -1408,8 +1396,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a80d-78dd-8108-d237822df21a",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Lantern Society",
             "fields": {
                 "purpose": {
@@ -1434,8 +1422,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a816-75ef-85af-62eb3bd60dc8",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Ashen Hand",
             "fields": {
                 "purpose": {
@@ -1460,8 +1448,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Meridian Walkers",
             "fields": {
                 "purpose": {
@@ -1486,8 +1474,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3bc6-73ff-ab5a-2bb28425890e",
-            "type_id": "019fb92a-3a39-7a16-a3ef-86cabcf2ac80",
+            "id": "019fb934-a82a-702a-b50a-78caa0f16774",
+            "type_id": "019fb934-a6b1-75a9-9588-e30920ac4451",
             "title": "The Grey Company",
             "fields": {
                 "purpose": {
@@ -1512,8 +1500,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a832-7e9e-be4a-3fa76e668e72",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Chancellor Ivex Callo",
             "fields": {
                 "goals": {
@@ -1568,8 +1556,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3bdc-7ce8-be7b-4c7ce558bfb5",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a840-7382-b191-ea998f162ee1",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Forge-Matron Sella Vhayne",
             "fields": {
                 "goals": {
@@ -1609,8 +1597,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Warden-Captain Douro Kest",
             "fields": {
                 "goals": {
@@ -1664,8 +1652,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3bf5-703e-b423-c31ae6b56739",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a859-7cb9-9f97-a0ea1a07fd8d",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Mirren of the Green Choir",
             "fields": {
                 "goals": {
@@ -1705,8 +1693,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c00-7cdc-92a6-6021939cc13f",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a866-70ee-9a1b-beb604f5c0e6",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Admiral Coa Brack",
             "fields": {
                 "goals": {
@@ -1746,8 +1734,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a871-7add-8950-e98d1728e8d8",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Archivist Pell Undertow",
             "fields": {
                 "goals": {
@@ -1787,8 +1775,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c1a-702e-860e-dd7521fee487",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a87c-7c02-a30b-01f6bd908807",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Glassmother Oruna Veck",
             "fields": {
                 "goals": {
@@ -1828,8 +1816,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c25-7e0d-829c-a3685f130153",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a888-7084-bfea-fd8b38895f91",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Brother Tallow",
             "fields": {
                 "goals": {
@@ -1883,8 +1871,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a893-7153-816b-bd58201d64d7",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Captain Erya Voss",
             "fields": {
                 "goals": {
@@ -1924,8 +1912,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "The Kindled King",
             "fields": {
                 "goals": {
@@ -1979,8 +1967,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sarl Emberlight",
             "fields": {
                 "goals": {
@@ -2026,8 +2014,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8b3-7470-92bf-669a591459d5",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Nightingale Ash",
             "fields": {
                 "goals": {
@@ -2071,8 +2059,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8be-7870-ac46-1b89ca0d753a",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Odessa Saltmarsh",
             "fields": {
                 "goals": {
@@ -2108,8 +2096,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c6b-7334-a807-48b4becf5286",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8c9-7ba4-a59d-c4140efbc195",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Hakon Saltmarsh",
             "fields": {
                 "gender": {
@@ -2143,8 +2131,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3c73-7de2-9522-847800d81d98",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8d2-7e82-aca4-4d79d57ef4c9",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Brine-Elder Maud Saltmarsh",
             "fields": {
                 "gender": {
@@ -2173,8 +2161,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c7c-7ac5-ba52-19f7cb658333",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8db-7518-96e2-61bede298454",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Tegan Saltmarsh",
             "fields": {
                 "gender": {
@@ -2208,8 +2196,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3c88-7cc5-abdd-86c9cac5284c",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8e5-7a25-a9af-ccd2194de177",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ffion Saltmarsh",
             "fields": {
                 "goals": {
@@ -2257,8 +2245,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3c94-7680-99df-30416e83c2f3",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8f0-70de-8cdd-7f19ad01eb31",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Foreman Jorasz Cinderkin",
             "fields": {
                 "gender": {
@@ -2292,8 +2280,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Vessa Cinderkin",
             "fields": {
                 "goals": {
@@ -2328,8 +2316,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3cab-7678-ad6b-e4b6f44207ba",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a905-76d2-b58b-e7ff90102d8c",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Old Marrow Cinderkin",
             "fields": {
                 "gender": {
@@ -2363,8 +2351,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3cb4-7ecd-a29e-b74a5c3962ce",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a90d-7874-8faa-1a6de2823fdd",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sable Cinderkin",
             "fields": {
                 "gender": {
@@ -2393,8 +2381,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3cbe-7294-a258-49ebed09eba4",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a916-71f4-afa2-ab5bb3d19251",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Prentice Aury Cinderkin",
             "fields": {
                 "gender": {
@@ -2428,8 +2416,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3cc9-7c7b-9255-fdaaca4352c7",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a920-74f9-bca4-64702fe999f7",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Notary Prin Vellowine",
             "fields": {
                 "gender": {
@@ -2458,8 +2446,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3cd4-7e4c-8b78-afcf7bebbdb8",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a92b-7242-be0d-0a720b323544",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Cassick Vellowine",
             "fields": {
                 "gender": {
@@ -2493,8 +2481,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ce0-76d6-97d2-c33e2c3df305",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a935-7829-80ce-b7fcbbd79a97",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Wick Vellowine",
             "fields": {
                 "gender": {
@@ -2523,8 +2511,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ce9-71d4-a8f5-8998ff763efc",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a93e-7c2d-93bb-a1d75946c054",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Damaris Vellowine",
             "fields": {
                 "goals": {
@@ -2565,8 +2553,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3cf6-776a-92bc-b8ad2685b1f0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a94a-7c31-9a92-72528dfdbbce",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Tobin Vellowine",
             "fields": {
                 "gender": {
@@ -2595,8 +2583,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d02-7a02-8017-8c35155d0bdb",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a955-73e4-bd91-1d074a096c87",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Shepherd Anwen Harrowgate",
             "fields": {
                 "gender": {
@@ -2630,8 +2618,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d0b-7835-9004-b78a9ea4eada",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a95d-7324-8aac-ee1a2bd94647",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Bryn Harrowgate",
             "fields": {
                 "gender": {
@@ -2660,8 +2648,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d15-74b3-8692-8a2e211511e3",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a965-7f0b-9490-899b25830940",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Mercy Harrowgate",
             "fields": {
                 "goals": {
@@ -2701,8 +2689,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d21-7b42-9923-1cb5720d738d",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a970-7d52-acec-f25a7a48edb7",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ifor Harrowgate",
             "fields": {
                 "gender": {
@@ -2731,8 +2719,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d29-7f26-9d46-7347a001e56f",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a979-7128-b002-001f482d1831",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Gwenna Harrowgate",
             "fields": {
                 "gender": {
@@ -2766,8 +2754,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d33-7080-8aa4-407127710fde",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a980-7e92-af31-37a3092f8ae6",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Root-Doctor Sef Mossbourne",
             "fields": {
                 "gender": {
@@ -2796,8 +2784,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d3e-72b3-9310-eb909ae387e0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a98b-7947-aa80-d69f895f2700",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Briar Mossbourne",
             "fields": {
                 "gender": {
@@ -2831,8 +2819,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d47-75c4-8416-cbf27fa4d168",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a994-7353-886e-26d52a06cd87",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Hesper Mossbourne",
             "fields": {
                 "gender": {
@@ -2861,8 +2849,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d51-7090-bdaf-1c667c3a5b2d",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a99c-7b71-80b7-bd1aee50160f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Colm Mossbourne",
             "fields": {
                 "gender": {
@@ -2896,8 +2884,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d5d-7952-87ef-646d7a801547",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9a7-71ff-9655-b963e19b6f3d",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ivy Mossbourne",
             "fields": {
                 "goals": {
@@ -2933,8 +2921,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d69-772b-91ba-ac79717de408",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9b1-7eec-8c8d-e058bba2755f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sexton Ordo Palefrost",
             "fields": {
                 "gender": {
@@ -2968,8 +2956,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d75-717e-befb-3a2f882d4bac",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9bc-7aa2-b839-828ba8534ffc",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Una Palefrost",
             "fields": {
                 "gender": {
@@ -2998,8 +2986,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d7d-7b79-9473-697f743257a7",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9c5-76c2-babe-ebb84a0e5de8",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Corporal Enid Palefrost",
             "fields": {
                 "gender": {
@@ -3033,8 +3021,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d89-7138-8234-674ed68fe01e",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9d0-7115-9596-4888fe4b3342",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Doone Palefrost",
             "fields": {
                 "gender": {
@@ -3063,8 +3051,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3d91-7d2b-871d-00be31c846e0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9d8-7478-90b6-10b57074ed05",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Marged Palefrost",
             "fields": {
                 "gender": {
@@ -3098,8 +3086,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3d9d-7aec-aa19-f8712d96634b",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9e3-75bc-b758-c9d649c2bc87",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Harvest-Boss Kettil Glasseye",
             "fields": {
                 "gender": {
@@ -3128,8 +3116,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9ec-7098-b9f6-0347a712a75e",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Signe Glasseye",
             "fields": {
                 "goals": {
@@ -3170,8 +3158,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3db3-7dde-ae0b-0006680cdba4",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-a9f7-7af0-884c-538a9fd2b5dc",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Pell-of-the-Dunes Glasseye",
             "fields": {
                 "gender": {
@@ -3200,8 +3188,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3dbd-785c-addd-9d6d72fbdfa9",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa00-7144-a4d7-b6c6ad319da2",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Widow Ansa Glasseye",
             "fields": {
                 "gender": {
@@ -3235,8 +3223,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3dc7-7f23-ae9a-5fcae20262de",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa08-7639-8a06-cf6783d099ee",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Torvald Glasseye",
             "fields": {
                 "gender": {
@@ -3265,8 +3253,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3dd4-766c-a76c-38e048a9dabf",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa13-7553-ab50-0cc1c4d08e50",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Arbor-Judge Lira Thornwald",
             "fields": {
                 "gender": {
@@ -3300,8 +3288,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ddf-7655-911d-dbf53a050f10",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa1e-74ba-b225-77243a57f57c",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Berrin Thornwald",
             "fields": {
                 "gender": {
@@ -3330,8 +3318,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3de8-7461-b280-63b3e2440bfd",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa27-7d27-9995-99b9b62c4d40",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Nightshade Thornwald",
             "fields": {
                 "gender": {
@@ -3365,8 +3353,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3df4-75d4-8c91-16ea3762ba06",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa32-7b62-8a7f-179c53ebbbb0",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Fenwick Thornwald",
             "fields": {
                 "gender": {
@@ -3395,8 +3383,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3dfd-7109-af4d-a0268efaa30a",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa3b-78c6-b321-64c2abdeaba6",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Perpetua Thornwald",
             "fields": {
                 "goals": {
@@ -3437,8 +3425,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e08-735f-a06d-410537272900",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa46-7908-a6f0-1dad59b309fe",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Quartermaster Hesse Brackwater",
             "fields": {
                 "gender": {
@@ -3467,8 +3455,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e13-7d2b-b97d-95f454d81531",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa51-7952-8825-c0f5edb19239",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Delia Brackwater",
             "fields": {
                 "gender": {
@@ -3502,8 +3490,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e1c-76fd-9c44-09d3d59f26bb",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa5a-78dd-b7a8-0fa71e24d505",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Auctioneer Vole Brackwater",
             "fields": {
                 "gender": {
@@ -3532,8 +3520,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e27-7d81-8ad4-eab7133dd0a2",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa64-7b5a-a917-1401c7d54047",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Marisol Brackwater",
             "fields": {
                 "gender": {
@@ -3567,8 +3555,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e30-7a54-9b83-08f2b031661f",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa6d-7dac-8622-3e6579c2b76f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Finn Brackwater",
             "fields": {
                 "gender": {
@@ -3597,8 +3585,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e39-78cd-8939-5114ebfd1138",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa76-721b-a197-0b3be4883e9f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Digger-Prime Halvard Cairnson",
             "fields": {
                 "gender": {
@@ -3632,8 +3620,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e45-7eff-ba1c-65c2cddf7806",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa81-76e9-b9cb-7c4433b6c669",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Rilla Cairnson",
             "fields": {
                 "gender": {
@@ -3662,8 +3650,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e55-7261-9bab-ecf2b1236bc3",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa8b-7470-8c01-ed09322ebbe5",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Petros Cairnson",
             "fields": {
                 "gender": {
@@ -3718,8 +3706,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e61-7b52-b90c-3d898b4252c0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa96-7e40-a494-92791fd63856",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sorrel Cairnson",
             "fields": {
                 "gender": {
@@ -3748,8 +3736,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e6b-71b5-98d3-f4d725e2e411",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aa9f-76b2-a3e3-b50dbd518085",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Edda Cairnson",
             "fields": {
                 "goals": {
@@ -3790,8 +3778,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e75-7c11-ba30-7d088795206e",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aaa8-7226-93a9-f852a7d64701",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Toll-Mother Bess Fennelwick",
             "fields": {
                 "gender": {
@@ -3820,8 +3808,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e81-7914-97aa-70ffb17345d0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aab2-7f0f-a51f-8c9aa84ea00b",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Gower Fennelwick",
             "fields": {
                 "gender": {
@@ -3855,8 +3843,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3e8a-7a73-9d76-3b4680a09e29",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aabb-7ae8-aacf-09e3b9ab7e1f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sister Halda Fennelwick",
             "fields": {
                 "gender": {
@@ -3885,8 +3873,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3e96-75f3-b0ca-6b0fef9722d6",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aac6-7799-b942-3265087df947",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Jephta Fennelwick",
             "fields": {
                 "gender": {
@@ -3920,8 +3908,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ea0-762a-98d0-b9169e7e4dd7",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aace-7868-8330-983ed5d8b76d",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Weir-Child Nan Fennelwick",
             "fields": {
                 "gender": {
@@ -3950,8 +3938,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ea9-7f32-8034-095e44d50783",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aad6-7e82-94dc-f736be259dd9",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Deacon Ashter Emberhart",
             "fields": {
                 "gender": {
@@ -3985,8 +3973,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3eb6-700b-b0f0-2a4919a8edba",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aae1-7232-a215-325f546f2e87",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Candle-Wife Merenn Emberhart",
             "fields": {
                 "gender": {
@@ -4015,8 +4003,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ec1-7484-8b72-605f3f930e9e",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aaeb-79a0-a2d7-e81720171881",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Pilgrim-Master Coale Emberhart",
             "fields": {
                 "gender": {
@@ -4050,8 +4038,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ecc-7753-9f41-89dc4df7fc67",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-aaf6-78d1-8081-ebdde57da20b",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ember-Clerk Sidonie Emberhart",
             "fields": {
                 "goals": {
@@ -4086,8 +4074,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ed8-750c-8609-49006f3926ab",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab01-7582-bab1-08fa292fd4e7",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Gratia Emberhart",
             "fields": {
                 "gender": {
@@ -4121,8 +4109,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ee0-7a31-8457-253713f25be0",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab0a-7ac9-b5b2-da13b86f80ef",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Master Gudrun Deepdelve",
             "fields": {
                 "gender": {
@@ -4151,8 +4139,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ee9-7c50-b1f9-9a85c593f66e",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab13-768b-9322-77809ca9fc66",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Keeper Aldous Deepdelve",
             "fields": {
                 "gender": {
@@ -4186,8 +4174,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3ef4-79d7-acd0-c79344bcc3ff",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab1e-73a5-bdb0-961b1274a3e2",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ronwen Deepdelve",
             "fields": {
                 "gender": {
@@ -4216,8 +4204,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3efd-7680-9610-60fda0087ef1",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab27-7059-9b10-17d870f7a32f",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Chandler Pryce Deepdelve",
             "fields": {
                 "gender": {
@@ -4251,8 +4239,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3f09-7412-941d-083efcb369a7",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab31-754b-add5-2aa32a5b14ea",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Ferren Deepdelve",
             "fields": {
                 "goals": {
@@ -4288,8 +4276,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3f15-70a7-b714-b2a9d2afd817",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab3d-79c4-9c69-8f5858c2f923",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Doctor Imogen Lanterly",
             "fields": {
                 "gender": {
@@ -4323,8 +4311,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3f1d-7ebd-889c-827640e82f86",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab46-7c9a-9863-53aa3833ed2e",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Barrow Lanterly",
             "fields": {
                 "gender": {
@@ -4353,8 +4341,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3f29-7c63-9162-887cbb648d4c",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab52-7a60-a827-1aeae61d5448",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Sable-of-the-Stacks Lanterly",
             "fields": {
                 "gender": {
@@ -4388,8 +4376,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3f35-720b-8bcf-f814e7eee644",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab5e-73b5-a197-fb60837e5c86",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Cornelius Lanterly",
             "fields": {
                 "gender": {
@@ -4418,8 +4406,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3f41-7a64-a383-0e50de9143ab",
-            "type_id": "019fb92a-3a38-742e-a555-b34975359ba2",
+            "id": "019fb934-ab69-79a0-9a9e-2452961bcba6",
+            "type_id": "019fb934-a6b0-7280-81f6-49df79d6a00b",
             "title": "Verity Lanterly",
             "fields": {
                 "gender": {
@@ -4453,8 +4441,8 @@
             "status": "draft"
         },
         {
-            "id": "019fb92a-3fcc-7845-bd36-e45d34f948b7",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-abed-7c67-8ceb-2b71507985eb",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "The Unspent Coin",
             "fields": {
                 "kind": {
@@ -4483,8 +4471,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3fd8-722a-b975-75aa33957dc2",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-abf9-7781-8389-b73f74c25b0a",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "Ledgerbane",
             "fields": {
                 "kind": {
@@ -4513,8 +4501,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3fe3-76e5-98fe-c041e6c0778f",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-ac04-70f2-aa1e-d1f7e31cb4da",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "The Dreaming Pane",
             "fields": {
                 "kind": {
@@ -4543,8 +4531,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ff0-7b69-8165-9026a5228908",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-ac0f-7e9e-a68d-c88a5e85f7cc",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "Vhezar's Ember",
             "fields": {
                 "kind": {
@@ -4573,8 +4561,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-3ffe-7157-b778-3c597b0e5685",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-ac1b-747c-96ee-b05944f3890b",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "The Auditor's Bell",
             "fields": {
                 "kind": {
@@ -4603,8 +4591,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-400b-7c19-9b93-6d9225730e44",
-            "type_id": "019fb92a-3a4f-76e5-8455-040255ccbd30",
+            "id": "019fb934-ac26-7626-89b2-837eb5bc352b",
+            "type_id": "019fb934-a6c6-715f-ad73-6cba82b51ea7",
             "title": "The Nightingale's Ledger",
             "fields": {
                 "kind": {
@@ -4633,8 +4621,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4017-7d94-aade-49e5806b19a3",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac31-7d42-9abf-5591c7ec2651",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Fog-crow whistle",
             "fields": {
                 "kind": {
@@ -4659,8 +4647,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4020-766c-b346-c192466d7751",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac3a-7bbb-8461-c99ff36ff85d",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Ember-tide charts",
             "fields": {
                 "kind": {
@@ -4685,8 +4673,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4028-7a73-ac6c-4a1ab1d52cd2",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac43-70f6-8d24-8e11111e494d",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Chained folio, unopened",
             "fields": {
                 "kind": {
@@ -4711,8 +4699,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4031-7582-850e-6bf25d0d0574",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac4c-7b75-8bac-4ffbbd96e89b",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Meridian shrine-coin",
             "fields": {
                 "kind": {
@@ -4737,8 +4725,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4039-7c3c-ac98-faf321e90f37",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac55-7e29-8fb1-31232040c13a",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Glasswright's cutting-song",
             "fields": {
                 "kind": {
@@ -4763,8 +4751,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4042-783d-81f7-be973d5c0283",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac5e-7061-8fff-814a8ec0614a",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Eel-farmer's toll receipt",
             "fields": {
                 "kind": {
@@ -4789,8 +4777,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-404b-718a-90b6-1634ecc433de",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac66-74ed-bf67-da83bae27187",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Funerary road toll-marker",
             "fields": {
                 "kind": {
@@ -4815,8 +4803,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4053-7e34-9d27-2965d6d0322d",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac6e-72b7-a6cd-a8fe14b270ae",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Salvaged senate gavel",
             "fields": {
                 "kind": {
@@ -4841,8 +4829,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-405d-766c-bfce-4e8675d3aa45",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac77-71e8-b71c-e279f49d97e6",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Green Choir seed-prayer",
             "fields": {
                 "kind": {
@@ -4867,8 +4855,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4066-7e6f-9e0b-fd556a0b0956",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac7f-70a4-b546-474b5757973a",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Grey Company standard contract",
             "fields": {
                 "kind": {
@@ -4893,8 +4881,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4070-7c92-b11b-fd838b15f901",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac88-7651-accf-36674b6bb859",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Palegrave mourning veil",
             "fields": {
                 "kind": {
@@ -4919,8 +4907,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4079-79c0-8178-d9d7b05b32e9",
-            "type_id": "019fb92a-3a39-750c-ac36-1537971a2c98",
+            "id": "019fb934-ac90-751c-a690-84a65867a076",
+            "type_id": "019fb934-a6b1-713c-89d7-ff170aae4b69",
             "title": "Wreck-light lantern",
             "fields": {
                 "kind": {
@@ -4945,8 +4933,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4082-7259-9002-0e81092815fa",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ac98-7bbb-90f7-9dd84feca160",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Night of Falling Embers",
             "fields": {
                 "date": {
@@ -4971,8 +4959,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-408d-75b1-95b5-a6f940ade388",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-aca2-7dfa-93c2-dda35d0e8b4c",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Drowning of the Rotunda",
             "fields": {
                 "date": {
@@ -4997,8 +4985,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4098-7626-a3ed-b6b05922d6b9",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-acae-7aaa-b05e-fdb6996c177f",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The First Toll",
             "fields": {
                 "date": {
@@ -5023,8 +5011,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40a6-7071-b2e4-f5a0b0052732",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-acbd-7d4e-9a73-714bb4646686",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "Founding of the Ledger-Court",
             "fields": {
                 "date": {
@@ -5049,8 +5037,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40b3-748c-9362-042aff7d3808",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-accd-7897-9f49-3960f159f99b",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Glass Concord",
             "fields": {
                 "date": {
@@ -5075,8 +5063,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40c0-7e38-915c-6ddb5cebcacb",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-acdc-7aaa-af4b-b25831d6e724",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Green Swallowing",
             "fields": {
                 "date": {
@@ -5115,8 +5103,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-40cd-7df6-9fe6-110342f60c34",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-acea-764d-b77f-012adc77b6c6",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Fog Census",
             "fields": {
                 "date": {
@@ -5141,8 +5129,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40dc-7e01-98bf-18c4dcef8911",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-acf8-7090-a1a9-cc970ca8dde1",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Brinemarket Compact",
             "fields": {
                 "date": {
@@ -5167,8 +5155,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40ea-7d23-8c5c-3e12e669ec0a",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ad06-715f-bc2c-0ad015bd2bbf",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "Return of the Kindled King",
             "fields": {
                 "date": {
@@ -5193,8 +5181,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-40f9-721e-9660-f5ce851f49ab",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ad13-7825-9124-6177bfa1dd7b",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Eleventh Ember",
             "fields": {
                 "date": {
@@ -5219,8 +5207,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4107-724d-91e6-ced33e032f81",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ad20-71c5-8c7c-f5a77741a2b3",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Nightingale's Silence",
             "fields": {
                 "date": {
@@ -5245,8 +5233,8 @@
             "status": "canon"
         },
         {
-            "id": "019fb92a-4112-7bb8-a625-569b34bf8137",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ad2a-7ab2-95d0-f0a1b5a12166",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Audit of Duskwell",
             "fields": {
                 "date": {
@@ -5285,8 +5273,8 @@
             "status": "mixed"
         },
         {
-            "id": "019fb92a-4120-7a41-81a2-cb7725fb347a",
-            "type_id": "019fb92a-3a39-70e6-a523-aaf10bb40689",
+            "id": "019fb934-ad38-7520-9ca5-fdfb1fa9a983",
+            "type_id": "019fb934-a6b0-7c35-9967-6ea5f42dff02",
             "title": "The Present Unrest",
             "fields": {
                 "date": {
@@ -5313,1897 +5301,1897 @@
     ],
     "edges": [
         {
-            "from_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "from_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "field": "located_in",
-            "to_entry": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
+            "to_entry": "019fb934-a6e6-7a41-a14c-aec137131711",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "from_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "field": "ruler",
-            "to_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "to_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "from_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "field": "located_in",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "from_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "field": "located_in",
-            "to_entry": "019fb92a-3a5d-738e-aadf-a36b862e7ce4",
+            "to_entry": "019fb934-a6d3-7ab6-bd6b-bc0902e9b538",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "from_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "field": "located_in",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "from_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "field": "located_in",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "from_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "field": "located_in",
-            "to_entry": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
+            "to_entry": "019fb934-a6e6-7a41-a14c-aec137131711",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "from_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "field": "located_in",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "from_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "field": "located_in",
-            "to_entry": "019fb92a-3a5d-738e-aadf-a36b862e7ce4",
+            "to_entry": "019fb934-a6d3-7ab6-bd6b-bc0902e9b538",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "from_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "field": "located_in",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "from_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "field": "located_in",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "from_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "field": "located_in",
-            "to_entry": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
+            "to_entry": "019fb934-a6e6-7a41-a14c-aec137131711",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "from_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "field": "located_in",
-            "to_entry": "019fb92a-3a5d-738e-aadf-a36b862e7ce4",
+            "to_entry": "019fb934-a6d3-7ab6-bd6b-bc0902e9b538",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "from_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "field": "located_in",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b0e-7d17-a563-5c7229e9f8be",
+            "from_entry": "019fb934-a77f-70ee-bc44-cf4494d1deed",
             "field": "guarded_by",
-            "to_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "to_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "annotation": "warded, dive-licensed, earplugs mandatory",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b0e-7d17-a563-5c7229e9f8be",
+            "from_entry": "019fb934-a77f-70ee-bc44-cf4494d1deed",
             "field": "located_in",
-            "to_entry": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
+            "to_entry": "019fb934-a6e6-7a41-a14c-aec137131711",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b19-70a0-9b20-f185a257e7e0",
+            "from_entry": "019fb934-a789-76ba-9e88-a99ff5de1489",
             "field": "guarded_by",
-            "to_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "to_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "annotation": "three doors and a choir of cutting-songs",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b19-70a0-9b20-f185a257e7e0",
+            "from_entry": "019fb934-a789-76ba-9e88-a99ff5de1489",
             "field": "located_in",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b23-793b-a3f8-32812cf9b9e0",
+            "from_entry": "019fb934-a793-7357-9f5e-c7ebc2d67dbd",
             "field": "located_in",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b2c-7ac1-ac85-796168236f0b",
+            "from_entry": "019fb934-a79d-78ed-a182-48a0c54851e0",
             "field": "located_in",
-            "to_entry": "019fb92a-3a5d-738e-aadf-a36b862e7ce4",
+            "to_entry": "019fb934-a6d3-7ab6-bd6b-bc0902e9b538",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
+            "from_entry": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
             "field": "guarded_by",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "annotation": "he calls it 'waiting', not guarding",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
+            "from_entry": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
             "field": "located_in",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b41-7ab6-9c63-354ecfb052bc",
+            "from_entry": "019fb934-a7b1-7785-a545-11ff60d3f87c",
             "field": "located_in",
-            "to_entry": "019fb92a-3a70-77bc-8a5b-5c48956d958d",
+            "to_entry": "019fb934-a6e6-7a41-a14c-aec137131711",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "base",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "members",
-            "to_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "to_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "annotation": "First Signatory",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "members",
-            "to_entry": "019fb92a-3cc9-7c7b-9255-fdaaca4352c7",
+            "to_entry": "019fb934-a920-74f9-bca4-64702fe999f7",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "members",
-            "to_entry": "019fb92a-3cd4-7e4c-8b78-afcf7bebbdb8",
+            "to_entry": "019fb934-a92b-7242-be0d-0a720b323544",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "members",
-            "to_entry": "019fb92a-3ce9-71d4-a8f5-8998ff763efc",
+            "to_entry": "019fb934-a93e-7c2d-93bb-a1d75946c054",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "from_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "field": "members",
-            "to_entry": "019fb92a-3f41-7a64-a383-0e50de9143ab",
+            "to_entry": "019fb934-ab69-79a0-9a9e-2452961bcba6",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b77-7d1f-9123-e46534e75392",
+            "from_entry": "019fb934-a7e0-7b79-9e2f-486332e19302",
             "field": "base",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b77-7d1f-9123-e46534e75392",
+            "from_entry": "019fb934-a7e0-7b79-9e2f-486332e19302",
             "field": "members",
-            "to_entry": "019fb92a-3bdc-7ce8-be7b-4c7ce558bfb5",
+            "to_entry": "019fb934-a840-7382-b191-ea998f162ee1",
             "annotation": "Forge-Matron",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b77-7d1f-9123-e46534e75392",
+            "from_entry": "019fb934-a7e0-7b79-9e2f-486332e19302",
             "field": "members",
-            "to_entry": "019fb92a-3ea9-7f32-8034-095e44d50783",
+            "to_entry": "019fb934-aad6-7e82-94dc-f736be259dd9",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b77-7d1f-9123-e46534e75392",
+            "from_entry": "019fb934-a7e0-7b79-9e2f-486332e19302",
             "field": "members",
-            "to_entry": "019fb92a-3eb6-700b-b0f0-2a4919a8edba",
+            "to_entry": "019fb934-aae1-7232-a215-325f546f2e87",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b77-7d1f-9123-e46534e75392",
+            "from_entry": "019fb934-a7e0-7b79-9e2f-486332e19302",
             "field": "members",
-            "to_entry": "019fb92a-3ec1-7484-8b72-605f3f930e9e",
+            "to_entry": "019fb934-aaeb-79a0-a2d7-e81720171881",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "base",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3c1a-702e-860e-dd7521fee487",
+            "to_entry": "019fb934-a87c-7c02-a30b-01f6bd908807",
             "annotation": "Glassmother",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3c94-7680-99df-30416e83c2f3",
+            "to_entry": "019fb934-a8f0-70de-8cdd-7f19ad01eb31",
             "annotation": "rank: elder",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
+            "to_entry": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3cbe-7294-a258-49ebed09eba4",
+            "to_entry": "019fb934-a916-71f4-afa2-ab5bb3d19251",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "to_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "from_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "field": "members",
-            "to_entry": "019fb92a-3dc7-7f23-ae9a-5fcae20262de",
+            "to_entry": "019fb934-aa08-7639-8a06-cf6783d099ee",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "base",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "members",
-            "to_entry": "019fb92a-3bf5-703e-b423-c31ae6b56739",
+            "to_entry": "019fb934-a859-7cb9-9f97-a0ea1a07fd8d",
             "annotation": "First Voice",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "members",
-            "to_entry": "019fb92a-3d33-7080-8aa4-407127710fde",
+            "to_entry": "019fb934-a980-7e92-af31-37a3092f8ae6",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "members",
-            "to_entry": "019fb92a-3d5d-7952-87ef-646d7a801547",
+            "to_entry": "019fb934-a9a7-71ff-9655-b963e19b6f3d",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "members",
-            "to_entry": "019fb92a-3dd4-766c-a76c-38e048a9dabf",
+            "to_entry": "019fb934-aa13-7553-ab50-0cc1c4d08e50",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "from_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "field": "members",
-            "to_entry": "019fb92a-3de8-7461-b280-63b3e2440bfd",
+            "to_entry": "019fb934-aa27-7d27-9995-99b9b62c4d40",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "base",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "to_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "annotation": "Warden-Captain",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3d15-74b3-8692-8a2e211511e3",
+            "to_entry": "019fb934-a965-7f0b-9490-899b25830940",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3d69-772b-91ba-ac79717de408",
+            "to_entry": "019fb934-a9b1-7eec-8c8d-e058bba2755f",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3d91-7d2b-871d-00be31c846e0",
+            "to_entry": "019fb934-a9d8-7478-90b6-10b57074ed05",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3e39-78cd-8939-5114ebfd1138",
+            "to_entry": "019fb934-aa76-721b-a197-0b3be4883e9f",
             "annotation": "rank: elder",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3e55-7261-9bab-ecf2b1236bc3",
+            "to_entry": "019fb934-aa8b-7470-8c01-ed09322ebbe5",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3ee9-7c50-b1f9-9a85c593f66e",
+            "to_entry": "019fb934-ab13-768b-9322-77809ca9fc66",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "from_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "field": "members",
-            "to_entry": "019fb92a-3efd-7680-9610-60fda0087ef1",
+            "to_entry": "019fb934-ab27-7059-9b10-17d870f7a32f",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "base",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3c00-7cdc-92a6-6021939cc13f",
+            "to_entry": "019fb934-a866-70ee-9a1b-beb604f5c0e6",
             "annotation": "Admiral of Hulls",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "to_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "annotation": "unlisted asset",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "to_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3c88-7cc5-abdd-86c9cac5284c",
+            "to_entry": "019fb934-a8e5-7a25-a9af-ccd2194de177",
             "annotation": "rank: unlisted",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3e08-735f-a06d-410537272900",
+            "to_entry": "019fb934-aa46-7908-a6f0-1dad59b309fe",
             "annotation": "rank: elder",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "from_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "field": "members",
-            "to_entry": "019fb92a-3e1c-76fd-9c44-09d3d59f26bb",
+            "to_entry": "019fb934-aa5a-78dd-b7a8-0fa71e24d505",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "base",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
+            "to_entry": "019fb934-a871-7add-8950-e98d1728e8d8",
             "annotation": "Senior Archivist",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3cf6-776a-92bc-b8ad2685b1f0",
+            "to_entry": "019fb934-a94a-7c31-9a92-72528dfdbbce",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3dfd-7109-af4d-a0268efaa30a",
+            "to_entry": "019fb934-aa3b-78c6-b321-64c2abdeaba6",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3ecc-7753-9f41-89dc4df7fc67",
+            "to_entry": "019fb934-aaf6-78d1-8081-ebdde57da20b",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3f09-7412-941d-083efcb369a7",
+            "to_entry": "019fb934-ab31-754b-add5-2aa32a5b14ea",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3f1d-7ebd-889c-827640e82f86",
+            "to_entry": "019fb934-ab46-7c9a-9863-53aa3833ed2e",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3f29-7c63-9162-887cbb648d4c",
+            "to_entry": "019fb934-ab52-7a60-a827-1aeae61d5448",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "from_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "field": "members",
-            "to_entry": "019fb92a-3f35-720b-8bcf-f814e7eee644",
+            "to_entry": "019fb934-ab5e-73b5-a197-fb60837e5c86",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
+            "from_entry": "019fb934-a816-75ef-85af-62eb3bd60dc8",
             "field": "base",
-            "to_entry": "019fb92a-3b19-70a0-9b20-f185a257e7e0",
+            "to_entry": "019fb934-a789-76ba-9e88-a99ff5de1489",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
+            "from_entry": "019fb934-a816-75ef-85af-62eb3bd60dc8",
             "field": "members",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "annotation": "Prophet-Sovereign",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "base",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "members",
-            "to_entry": "019fb92a-3c25-7e0d-829c-a3685f130153",
+            "to_entry": "019fb934-a888-7084-bfea-fd8b38895f91",
             "annotation": "Road-Brother",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "members",
-            "to_entry": "019fb92a-3c7c-7ac5-ba52-19f7cb658333",
+            "to_entry": "019fb934-a8db-7518-96e2-61bede298454",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "members",
-            "to_entry": "019fb92a-3d51-7090-bdaf-1c667c3a5b2d",
+            "to_entry": "019fb934-a99c-7b71-80b7-bd1aee50160f",
             "annotation": "rank: initiate",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "members",
-            "to_entry": "019fb92a-3e75-7c11-ba30-7d088795206e",
+            "to_entry": "019fb934-aaa8-7226-93a9-f852a7d64701",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bbd-72a7-ae5d-2256adad1f8e",
+            "from_entry": "019fb934-a81f-7c38-9a88-02ffc7ad3cbf",
             "field": "members",
-            "to_entry": "019fb92a-3e8a-7a73-9d76-3b4680a09e29",
+            "to_entry": "019fb934-aabb-7ae8-aacf-09e3b9ab7e1f",
             "annotation": "rank: journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bc6-73ff-ab5a-2bb28425890e",
+            "from_entry": "019fb934-a82a-702a-b50a-78caa0f16774",
             "field": "base",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bc6-73ff-ab5a-2bb28425890e",
+            "from_entry": "019fb934-a82a-702a-b50a-78caa0f16774",
             "field": "members",
-            "to_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "to_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "annotation": "Contract-Captain",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bc6-73ff-ab5a-2bb28425890e",
+            "from_entry": "019fb934-a82a-702a-b50a-78caa0f16774",
             "field": "members",
-            "to_entry": "019fb92a-3d7d-7b79-9473-697f743257a7",
+            "to_entry": "019fb934-a9c5-76c2-babe-ebb84a0e5de8",
             "annotation": "rank: sworn",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "from_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "field": "family",
-            "to_entry": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
+            "to_entry": "019fb934-a871-7add-8950-e98d1728e8d8",
             "annotation": "siblings; the estrangement is itself under contract",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "from_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bdc-7ce8-be7b-4c7ce558bfb5",
+            "from_entry": "019fb934-a840-7382-b191-ea998f162ee1",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bdc-7ce8-be7b-4c7ce558bfb5",
+            "from_entry": "019fb934-a840-7382-b191-ea998f162ee1",
             "field": "mentions",
-            "to_entry": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
+            "to_entry": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
             "annotation": "mentioned in origin of Forge-Matron Sella Vhayne",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "from_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "field": "family",
-            "to_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "to_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "annotation": "Erya is Douro's daughter; she left the mountain with a self-drafted release the fog has honored",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "from_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3bf5-703e-b423-c31ae6b56739",
+            "from_entry": "019fb934-a859-7cb9-9f97-a0ea1a07fd8d",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c00-7cdc-92a6-6021939cc13f",
+            "from_entry": "019fb934-a866-70ee-9a1b-beb604f5c0e6",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
+            "from_entry": "019fb934-a871-7add-8950-e98d1728e8d8",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
+            "from_entry": "019fb934-a871-7add-8950-e98d1728e8d8",
             "field": "mentions",
-            "to_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "to_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "annotation": "mentioned in origin of Archivist Pell Undertow",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c1a-702e-860e-dd7521fee487",
+            "from_entry": "019fb934-a87c-7c02-a30b-01f6bd908807",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c25-7e0d-829c-a3685f130153",
+            "from_entry": "019fb934-a888-7084-bfea-fd8b38895f91",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "from_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "from_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "field": "mentions",
-            "to_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "to_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "annotation": "mentioned in goals of Captain Erya Voss",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "from_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "field": "hometown",
-            "to_entry": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
+            "to_entry": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
+            "from_entry": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
             "field": "family",
-            "to_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "to_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "annotation": "second cousins through the Glasseye line; the squint runs on that side",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
+            "from_entry": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
+            "from_entry": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
             "field": "mentions",
-            "to_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "to_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "annotation": "mentioned in goals of Sarl Emberlight",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
+            "from_entry": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
             "field": "mentions",
-            "to_entry": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
+            "to_entry": "019fb934-a816-75ef-85af-62eb3bd60dc8",
             "annotation": "mentioned in goals of Sarl Emberlight",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "from_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "from_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "field": "mentions",
-            "to_entry": "019fb92a-3b68-711d-82ab-7d062bfd5ac0",
+            "to_entry": "019fb934-a7d2-7a06-bf2a-d75edd1ee4c1",
             "annotation": "mentioned in goals of Nightingale Ash",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "from_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "field": "family",
-            "to_entry": "019fb92a-3c6b-7334-a807-48b4becf5286",
+            "to_entry": "019fb934-a8c9-7ba4-a59d-c4140efbc195",
             "annotation": "Hakon is Odessa's uncle; he taught her knots before she could walk",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "from_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "field": "family",
-            "to_entry": "019fb92a-3c73-7de2-9522-847800d81d98",
+            "to_entry": "019fb934-a8d2-7e82-aca4-4d79d57ef4c9",
             "annotation": "Maud is Odessa's great-aunt and holds her diving license in the iron chest, 'for safekeeping'",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "from_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "field": "hometown",
-            "to_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "to_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "from_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "field": "mentions",
-            "to_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "to_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "annotation": "mentioned in goals of Odessa Saltmarsh",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c6b-7334-a807-48b4becf5286",
+            "from_entry": "019fb934-a8c9-7ba4-a59d-c4140efbc195",
             "field": "hometown",
-            "to_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "to_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c73-7de2-9522-847800d81d98",
+            "from_entry": "019fb934-a8d2-7e82-aca4-4d79d57ef4c9",
             "field": "hometown",
-            "to_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "to_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c7c-7ac5-ba52-19f7cb658333",
+            "from_entry": "019fb934-a8db-7518-96e2-61bede298454",
             "field": "family",
-            "to_entry": "019fb92a-3c73-7de2-9522-847800d81d98",
+            "to_entry": "019fb934-a8d2-7e82-aca4-4d79d57ef4c9",
             "annotation": "Maud raised Tegan after the red-sail winter",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c7c-7ac5-ba52-19f7cb658333",
+            "from_entry": "019fb934-a8db-7518-96e2-61bede298454",
             "field": "hometown",
-            "to_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "to_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c88-7cc5-abdd-86c9cac5284c",
+            "from_entry": "019fb934-a8e5-7a25-a9af-ccd2194de177",
             "field": "family",
-            "to_entry": "019fb92a-3c5f-790c-9ee3-1df70fe17dd6",
+            "to_entry": "019fb934-a8be-7870-ac46-1b89ca0d753a",
             "annotation": "cousins, co-owners of one disputed rowboat",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c88-7cc5-abdd-86c9cac5284c",
+            "from_entry": "019fb934-a8e5-7a25-a9af-ccd2194de177",
             "field": "hometown",
-            "to_entry": "019fb92a-3aef-7ae1-809f-1a92a77df37e",
+            "to_entry": "019fb934-a75e-7999-842f-51f29d312745",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c94-7680-99df-30416e83c2f3",
+            "from_entry": "019fb934-a8f0-70de-8cdd-7f19ad01eb31",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
+            "from_entry": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
             "field": "family",
-            "to_entry": "019fb92a-3c94-7680-99df-30416e83c2f3",
+            "to_entry": "019fb934-a8f0-70de-8cdd-7f19ad01eb31",
             "annotation": "Jorasz is Vessa's father; they argue about the Deep in a private shorthand",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
+            "from_entry": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
+            "from_entry": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
             "field": "mentions",
-            "to_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "to_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "annotation": "mentioned in goals of Vessa Cinderkin",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3cab-7678-ad6b-e4b6f44207ba",
+            "from_entry": "019fb934-a905-76d2-b58b-e7ff90102d8c",
             "field": "family",
-            "to_entry": "019fb92a-3c94-7680-99df-30416e83c2f3",
+            "to_entry": "019fb934-a8f0-70de-8cdd-7f19ad01eb31",
             "annotation": "Marrow is Jorasz's uncle, the last of the singing shift",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3cab-7678-ad6b-e4b6f44207ba",
+            "from_entry": "019fb934-a905-76d2-b58b-e7ff90102d8c",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3cb4-7ecd-a29e-b74a5c3962ce",
+            "from_entry": "019fb934-a90d-7874-8faa-1a6de2823fdd",
             "field": "family",
-            "to_entry": "019fb92a-3c9f-7bbb-a530-31cc8f87f0cc",
+            "to_entry": "019fb934-a8fa-76ca-8774-e7ed32c80cb4",
             "annotation": "sisters; Sable runs the samples Vessa refuses to cut",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3cb4-7ecd-a29e-b74a5c3962ce",
+            "from_entry": "019fb934-a90d-7874-8faa-1a6de2823fdd",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3cbe-7294-a258-49ebed09eba4",
+            "from_entry": "019fb934-a916-71f4-afa2-ab5bb3d19251",
             "field": "family",
-            "to_entry": "019fb92a-3cab-7678-ad6b-e4b6f44207ba",
+            "to_entry": "019fb934-a905-76d2-b58b-e7ff90102d8c",
             "annotation": "Marrow is Aury's grandfather and their only defender at family dinners",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3cbe-7294-a258-49ebed09eba4",
+            "from_entry": "019fb934-a916-71f4-afa2-ab5bb3d19251",
             "field": "hometown",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3cc9-7c7b-9255-fdaaca4352c7",
+            "from_entry": "019fb934-a920-74f9-bca4-64702fe999f7",
             "field": "family",
-            "to_entry": "019fb92a-3cd4-7e4c-8b78-afcf7bebbdb8",
+            "to_entry": "019fb934-a92b-7242-be0d-0a720b323544",
             "annotation": "Prin is Cassick's elder sister; she notarized his first collection contract",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3cc9-7c7b-9255-fdaaca4352c7",
+            "from_entry": "019fb934-a920-74f9-bca4-64702fe999f7",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3cd4-7e4c-8b78-afcf7bebbdb8",
+            "from_entry": "019fb934-a92b-7242-be0d-0a720b323544",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ce0-76d6-97d2-c33e2c3df305",
+            "from_entry": "019fb934-a935-7829-80ce-b7fcbbd79a97",
             "field": "family",
-            "to_entry": "019fb92a-3cf6-776a-92bc-b8ad2685b1f0",
+            "to_entry": "019fb934-a94a-7c31-9a92-72528dfdbbce",
             "annotation": "brothers; Tobin makes the ink, Wick burns the oil",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ce0-76d6-97d2-c33e2c3df305",
+            "from_entry": "019fb934-a935-7829-80ce-b7fcbbd79a97",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ce9-71d4-a8f5-8998ff763efc",
+            "from_entry": "019fb934-a93e-7c2d-93bb-a1d75946c054",
             "field": "family",
-            "to_entry": "019fb92a-3cc9-7c7b-9255-fdaaca4352c7",
+            "to_entry": "019fb934-a920-74f9-bca4-64702fe999f7",
             "annotation": "cousins; Damaris cites Prin's seals, Prin proofreads Damaris's briefs",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ce9-71d4-a8f5-8998ff763efc",
+            "from_entry": "019fb934-a93e-7c2d-93bb-a1d75946c054",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ce9-71d4-a8f5-8998ff763efc",
+            "from_entry": "019fb934-a93e-7c2d-93bb-a1d75946c054",
             "field": "mentions",
-            "to_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "to_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "annotation": "mentioned in goals of Damaris Vellowine",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3cf6-776a-92bc-b8ad2685b1f0",
+            "from_entry": "019fb934-a94a-7c31-9a92-72528dfdbbce",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d02-7a02-8017-8c35155d0bdb",
+            "from_entry": "019fb934-a955-73e4-bd91-1d074a096c87",
             "field": "family",
-            "to_entry": "019fb92a-3d15-74b3-8692-8a2e211511e3",
+            "to_entry": "019fb934-a965-7f0b-9490-899b25830940",
             "annotation": "Mercy is Anwen's daughter; the fog-warden learned the mist from her mother's flock",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d02-7a02-8017-8c35155d0bdb",
+            "from_entry": "019fb934-a955-73e4-bd91-1d074a096c87",
             "field": "hometown",
-            "to_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "to_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d0b-7835-9004-b78a9ea4eada",
+            "from_entry": "019fb934-a95d-7324-8aac-ee1a2bd94647",
             "field": "family",
-            "to_entry": "019fb92a-3d29-7f26-9d46-7347a001e56f",
+            "to_entry": "019fb934-a979-7128-b002-001f482d1831",
             "annotation": "Gwenna is Bryn's aunt; he quarries the blanks she carves",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d0b-7835-9004-b78a9ea4eada",
+            "from_entry": "019fb934-a95d-7324-8aac-ee1a2bd94647",
             "field": "hometown",
-            "to_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "to_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d15-74b3-8692-8a2e211511e3",
+            "from_entry": "019fb934-a965-7f0b-9490-899b25830940",
             "field": "hometown",
-            "to_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "to_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d15-74b3-8692-8a2e211511e3",
+            "from_entry": "019fb934-a965-7f0b-9490-899b25830940",
             "field": "mentions",
-            "to_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "to_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "annotation": "mentioned in goals of Mercy Harrowgate",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d21-7b42-9923-1cb5720d738d",
+            "from_entry": "019fb934-a970-7d52-acec-f25a7a48edb7",
             "field": "family",
-            "to_entry": "019fb92a-3d0b-7835-9004-b78a9ea4eada",
+            "to_entry": "019fb934-a95d-7324-8aac-ee1a2bd94647",
             "annotation": "brothers-in-law; the inn's roof is Bryn's finest work and Ifor's best story",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d21-7b42-9923-1cb5720d738d",
+            "from_entry": "019fb934-a970-7d52-acec-f25a7a48edb7",
             "field": "hometown",
-            "to_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "to_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d29-7f26-9d46-7347a001e56f",
+            "from_entry": "019fb934-a979-7128-b002-001f482d1831",
             "field": "hometown",
-            "to_entry": "019fb92a-3adb-7269-87e8-14e6cc088755",
+            "to_entry": "019fb934-a746-7785-8b10-8fdf7309c553",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d33-7080-8aa4-407127710fde",
+            "from_entry": "019fb934-a980-7e92-af31-37a3092f8ae6",
             "field": "family",
-            "to_entry": "019fb92a-3d5d-7952-87ef-646d7a801547",
+            "to_entry": "019fb934-a9a7-71ff-9655-b963e19b6f3d",
             "annotation": "Ivy is Sef's niece; he packs her satchel with remedies she trades along the branch-roads",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d33-7080-8aa4-407127710fde",
+            "from_entry": "019fb934-a980-7e92-af31-37a3092f8ae6",
             "field": "hometown",
-            "to_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "to_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d3e-72b3-9310-eb909ae387e0",
+            "from_entry": "019fb934-a98b-7947-aa80-d69f895f2700",
             "field": "family",
-            "to_entry": "019fb92a-3d47-75c4-8416-cbf27fa4d168",
+            "to_entry": "019fb934-a994-7353-886e-26d52a06cd87",
             "annotation": "Briar is Hesper's child; her smokehouse and their carving-shed share a wall and a feud about smoke",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d3e-72b3-9310-eb909ae387e0",
+            "from_entry": "019fb934-a98b-7947-aa80-d69f895f2700",
             "field": "hometown",
-            "to_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "to_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d47-75c4-8416-cbf27fa4d168",
+            "from_entry": "019fb934-a994-7353-886e-26d52a06cd87",
             "field": "family",
-            "to_entry": "019fb92a-3d51-7090-bdaf-1c667c3a5b2d",
+            "to_entry": "019fb934-a99c-7b71-80b7-bd1aee50160f",
             "annotation": "Hesper is Colm's mother; she pays his ferry-toll in smoked eel, over-generously, to embarrass him",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d47-75c4-8416-cbf27fa4d168",
+            "from_entry": "019fb934-a994-7353-886e-26d52a06cd87",
             "field": "hometown",
-            "to_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "to_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d51-7090-bdaf-1c667c3a5b2d",
+            "from_entry": "019fb934-a99c-7b71-80b7-bd1aee50160f",
             "field": "hometown",
-            "to_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "to_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d5d-7952-87ef-646d7a801547",
+            "from_entry": "019fb934-a9a7-71ff-9655-b963e19b6f3d",
             "field": "hometown",
-            "to_entry": "019fb92a-3af9-7e86-9455-46ad55062a13",
+            "to_entry": "019fb934-a769-75a5-b49a-058390bbdf96",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d69-772b-91ba-ac79717de408",
+            "from_entry": "019fb934-a9b1-7eec-8c8d-e058bba2755f",
             "field": "family",
-            "to_entry": "019fb92a-3d75-717e-befb-3a2f882d4bac",
+            "to_entry": "019fb934-a9bc-7aa2-b839-828ba8534ffc",
             "annotation": "Ordo is Una's father; they do not discuss the third column",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d69-772b-91ba-ac79717de408",
+            "from_entry": "019fb934-a9b1-7eec-8c8d-e058bba2755f",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d75-717e-befb-3a2f882d4bac",
+            "from_entry": "019fb934-a9bc-7aa2-b839-828ba8534ffc",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d7d-7b79-9473-697f743257a7",
+            "from_entry": "019fb934-a9c5-76c2-babe-ebb84a0e5de8",
             "field": "family",
-            "to_entry": "019fb92a-3d69-772b-91ba-ac79717de408",
+            "to_entry": "019fb934-a9b1-7eec-8c8d-e058bba2755f",
             "annotation": "Enid is Ordo's niece; her mother's shield hung in his hall until she came for it",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d7d-7b79-9473-697f743257a7",
+            "from_entry": "019fb934-a9c5-76c2-babe-ebb84a0e5de8",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d89-7138-8234-674ed68fe01e",
+            "from_entry": "019fb934-a9d0-7115-9596-4888fe4b3342",
             "field": "family",
-            "to_entry": "019fb92a-3d91-7d2b-871d-00be31c846e0",
+            "to_entry": "019fb934-a9d8-7478-90b6-10b57074ed05",
             "annotation": "Marged is Doone's sister; she knits, he plays, the fog attends both",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d89-7138-8234-674ed68fe01e",
+            "from_entry": "019fb934-a9d0-7115-9596-4888fe4b3342",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d91-7d2b-871d-00be31c846e0",
+            "from_entry": "019fb934-a9d8-7478-90b6-10b57074ed05",
             "field": "hometown",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3d9d-7aec-aa19-f8712d96634b",
+            "from_entry": "019fb934-a9e3-75bc-b758-c9d649c2bc87",
             "field": "family",
-            "to_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "to_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "annotation": "Signe is Kettil's daughter; her rejects shelf began with his burn-map",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3d9d-7aec-aa19-f8712d96634b",
+            "from_entry": "019fb934-a9e3-75bc-b758-c9d649c2bc87",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "from_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3da7-74b7-84d6-5429ae40ae69",
+            "from_entry": "019fb934-a9ec-7098-b9f6-0347a712a75e",
             "field": "mentions",
-            "to_entry": "019fb92a-3c49-7144-8ba7-6f49266ad89d",
+            "to_entry": "019fb934-a8a9-7cdc-adf4-4a8a4133c961",
             "annotation": "mentioned in goals of Signe Glasseye",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3db3-7dde-ae0b-0006680cdba4",
+            "from_entry": "019fb934-a9f7-7af0-884c-538a9fd2b5dc",
             "field": "family",
-            "to_entry": "019fb92a-3dc7-7f23-ae9a-5fcae20262de",
+            "to_entry": "019fb934-aa08-7639-8a06-cf6783d099ee",
             "annotation": "Torvald is Pell's father, and has never once graded their guiding",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3db3-7dde-ae0b-0006680cdba4",
+            "from_entry": "019fb934-a9f7-7af0-884c-538a9fd2b5dc",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3dbd-785c-addd-9d6d72fbdfa9",
+            "from_entry": "019fb934-aa00-7144-a4d7-b6c6ad319da2",
             "field": "family",
-            "to_entry": "019fb92a-3d9d-7aec-aa19-f8712d96634b",
+            "to_entry": "019fb934-a9e3-75bc-b758-c9d649c2bc87",
             "annotation": "Ansa is Kettil's sister-in-law; her husband was his brother",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3dbd-785c-addd-9d6d72fbdfa9",
+            "from_entry": "019fb934-aa00-7144-a4d7-b6c6ad319da2",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3dc7-7f23-ae9a-5fcae20262de",
+            "from_entry": "019fb934-aa08-7639-8a06-cf6783d099ee",
             "field": "hometown",
-            "to_entry": "019fb92a-3ae5-75a5-94fa-266330f0b426",
+            "to_entry": "019fb934-a754-7b0c-98ed-d23b08251f5f",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3dd4-766c-a76c-38e048a9dabf",
+            "from_entry": "019fb934-aa13-7553-ab50-0cc1c4d08e50",
             "field": "family",
-            "to_entry": "019fb92a-3ddf-7655-911d-dbf53a050f10",
+            "to_entry": "019fb934-aa1e-74ba-b225-77243a57f57c",
             "annotation": "Berrin is Lira's brother; he grew her courtroom's bench, which she notes is slowly turning to face him",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3dd4-766c-a76c-38e048a9dabf",
+            "from_entry": "019fb934-aa13-7553-ab50-0cc1c4d08e50",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ddf-7655-911d-dbf53a050f10",
+            "from_entry": "019fb934-aa1e-74ba-b225-77243a57f57c",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3de8-7461-b280-63b3e2440bfd",
+            "from_entry": "019fb934-aa27-7d27-9995-99b9b62c4d40",
             "field": "family",
-            "to_entry": "019fb92a-3dd4-766c-a76c-38e048a9dabf",
+            "to_entry": "019fb934-aa13-7553-ab50-0cc1c4d08e50",
             "annotation": "Lira is Nightshade's aunt and executed both of their brief wills",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3de8-7461-b280-63b3e2440bfd",
+            "from_entry": "019fb934-aa27-7d27-9995-99b9b62c4d40",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3df4-75d4-8c91-16ea3762ba06",
+            "from_entry": "019fb934-aa32-7b62-8a7f-179c53ebbbb0",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3dfd-7109-af4d-a0268efaa30a",
+            "from_entry": "019fb934-aa3b-78c6-b321-64c2abdeaba6",
             "field": "family",
-            "to_entry": "019fb92a-3ddf-7655-911d-dbf53a050f10",
+            "to_entry": "019fb934-aa1e-74ba-b225-77243a57f57c",
             "annotation": "married twenty years; the seed-vault's door is his one metal work",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3dfd-7109-af4d-a0268efaa30a",
+            "from_entry": "019fb934-aa3b-78c6-b321-64c2abdeaba6",
             "field": "hometown",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e08-735f-a06d-410537272900",
+            "from_entry": "019fb934-aa46-7908-a6f0-1dad59b309fe",
             "field": "family",
-            "to_entry": "019fb92a-3e1c-76fd-9c44-09d3d59f26bb",
+            "to_entry": "019fb934-aa5a-78dd-b7a8-0fa71e24d505",
             "annotation": "brothers; Vole sells what Hesse cannot source, which is nothing",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e08-735f-a06d-410537272900",
+            "from_entry": "019fb934-aa46-7908-a6f0-1dad59b309fe",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e13-7d2b-b97d-95f454d81531",
+            "from_entry": "019fb934-aa51-7952-8825-c0f5edb19239",
             "field": "family",
-            "to_entry": "019fb92a-3e30-7a54-9b83-08f2b031661f",
+            "to_entry": "019fb934-aa6d-7dac-8622-3e6579c2b76f",
             "annotation": "Delia is Finn's elder sister and pretends not to check his knots",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e13-7d2b-b97d-95f454d81531",
+            "from_entry": "019fb934-aa51-7952-8825-c0f5edb19239",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e1c-76fd-9c44-09d3d59f26bb",
+            "from_entry": "019fb934-aa5a-78dd-b7a8-0fa71e24d505",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e27-7d81-8ad4-eab7133dd0a2",
+            "from_entry": "019fb934-aa64-7b5a-a917-1401c7d54047",
             "field": "family",
-            "to_entry": "019fb92a-3e08-735f-a06d-410537272900",
+            "to_entry": "019fb934-aa46-7908-a6f0-1dad59b309fe",
             "annotation": "Marisol is Hesse's estranged wife; she chalk-marked his warehouse-hulk once, as a warning, during the estrangement",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e27-7d81-8ad4-eab7133dd0a2",
+            "from_entry": "019fb934-aa64-7b5a-a917-1401c7d54047",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e30-7a54-9b83-08f2b031661f",
+            "from_entry": "019fb934-aa6d-7dac-8622-3e6579c2b76f",
             "field": "hometown",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e39-78cd-8939-5114ebfd1138",
+            "from_entry": "019fb934-aa76-721b-a197-0b3be4883e9f",
             "field": "family",
-            "to_entry": "019fb92a-3e55-7261-9bab-ecf2b1236bc3",
+            "to_entry": "019fb934-aa8b-7470-8c01-ed09322ebbe5",
             "annotation": "Petros is Halvard's son; the bell answers the spade",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e39-78cd-8939-5114ebfd1138",
+            "from_entry": "019fb934-aa76-721b-a197-0b3be4883e9f",
             "field": "hometown",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e45-7eff-ba1c-65c2cddf7806",
+            "from_entry": "019fb934-aa81-76e9-b9cb-7c4433b6c669",
             "field": "family",
-            "to_entry": "019fb92a-3e39-78cd-8939-5114ebfd1138",
+            "to_entry": "019fb934-aa76-721b-a197-0b3be4883e9f",
             "annotation": "Rilla is Halvard's sister; her iron goes into his graves",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e45-7eff-ba1c-65c2cddf7806",
+            "from_entry": "019fb934-aa81-76e9-b9cb-7c4433b6c669",
             "field": "hometown",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e55-7261-9bab-ecf2b1236bc3",
+            "from_entry": "019fb934-aa8b-7470-8c01-ed09322ebbe5",
             "field": "hometown",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e61-7b52-b90c-3d898b4252c0",
+            "from_entry": "019fb934-aa96-7e40-a494-92791fd63856",
             "field": "hometown",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e6b-71b5-98d3-f4d725e2e411",
+            "from_entry": "019fb934-aa9f-76b2-a3e3-b50dbd518085",
             "field": "family",
-            "to_entry": "019fb92a-3e61-7b52-b90c-3d898b4252c0",
+            "to_entry": "019fb934-aa96-7e40-a494-92791fd63856",
             "annotation": "Sorrel is Edda's cousin and cooks for the reading of the names, every year, all night",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e6b-71b5-98d3-f4d725e2e411",
+            "from_entry": "019fb934-aa9f-76b2-a3e3-b50dbd518085",
             "field": "hometown",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e6b-71b5-98d3-f4d725e2e411",
+            "from_entry": "019fb934-aa9f-76b2-a3e3-b50dbd518085",
             "field": "mentions",
-            "to_entry": "019fb92a-3b68-711d-82ab-7d062bfd5ac0",
+            "to_entry": "019fb934-a7d2-7a06-bf2a-d75edd1ee4c1",
             "annotation": "mentioned in goals of Edda Cairnson",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e75-7c11-ba30-7d088795206e",
+            "from_entry": "019fb934-aaa8-7226-93a9-f852a7d64701",
             "field": "family",
-            "to_entry": "019fb92a-3e8a-7a73-9d76-3b4680a09e29",
+            "to_entry": "019fb934-aabb-7ae8-aacf-09e3b9ab7e1f",
             "annotation": "sisters; Bess prices the crossing, Halda records where it was going",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e75-7c11-ba30-7d088795206e",
+            "from_entry": "019fb934-aaa8-7226-93a9-f852a7d64701",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e81-7914-97aa-70ffb17345d0",
+            "from_entry": "019fb934-aab2-7f0f-a51f-8c9aa84ea00b",
             "field": "family",
-            "to_entry": "019fb92a-3ea0-762a-98d0-b9169e7e4dd7",
+            "to_entry": "019fb934-aace-7868-8330-983ed5d8b76d",
             "annotation": "Nan is Gower's granddaughter and the named eels are his fault, he admits, having started it",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e81-7914-97aa-70ffb17345d0",
+            "from_entry": "019fb934-aab2-7f0f-a51f-8c9aa84ea00b",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e8a-7a73-9d76-3b4680a09e29",
+            "from_entry": "019fb934-aabb-7ae8-aacf-09e3b9ab7e1f",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3e96-75f3-b0ca-6b0fef9722d6",
+            "from_entry": "019fb934-aac6-7799-b942-3265087df947",
             "field": "family",
-            "to_entry": "019fb92a-3e75-7c11-ba30-7d088795206e",
+            "to_entry": "019fb934-aaa8-7226-93a9-f852a7d64701",
             "annotation": "Jephta is Bess's nephew; she taught him to price people, he declined, preferring cargo",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3e96-75f3-b0ca-6b0fef9722d6",
+            "from_entry": "019fb934-aac6-7799-b942-3265087df947",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ea0-762a-98d0-b9169e7e4dd7",
+            "from_entry": "019fb934-aace-7868-8330-983ed5d8b76d",
             "field": "hometown",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ea9-7f32-8034-095e44d50783",
+            "from_entry": "019fb934-aad6-7e82-94dc-f736be259dd9",
             "field": "family",
-            "to_entry": "019fb92a-3eb6-700b-b0f0-2a4919a8edba",
+            "to_entry": "019fb934-aae1-7232-a215-325f546f2e87",
             "annotation": "married; his forge lights her dipping-room, her candles time his sermons",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ea9-7f32-8034-095e44d50783",
+            "from_entry": "019fb934-aad6-7e82-94dc-f736be259dd9",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3eb6-700b-b0f0-2a4919a8edba",
+            "from_entry": "019fb934-aae1-7232-a215-325f546f2e87",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ec1-7484-8b72-605f3f930e9e",
+            "from_entry": "019fb934-aaeb-79a0-a2d7-e81720171881",
             "field": "family",
-            "to_entry": "019fb92a-3ea9-7f32-8034-095e44d50783",
+            "to_entry": "019fb934-aad6-7e82-94dc-f736be259dd9",
             "annotation": "brothers; Coale walks the circuit Ashter forges brackets for",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ec1-7484-8b72-605f3f930e9e",
+            "from_entry": "019fb934-aaeb-79a0-a2d7-e81720171881",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ecc-7753-9f41-89dc4df7fc67",
+            "from_entry": "019fb934-aaf6-78d1-8081-ebdde57da20b",
             "field": "family",
-            "to_entry": "019fb92a-3ed8-750c-8609-49006f3926ab",
+            "to_entry": "019fb934-ab01-7582-bab1-08fa292fd4e7",
             "annotation": "Gratia is Sidonie's mother; the moss-word on the crater wall is Sidonie's name",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ecc-7753-9f41-89dc4df7fc67",
+            "from_entry": "019fb934-aaf6-78d1-8081-ebdde57da20b",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ed8-750c-8609-49006f3926ab",
+            "from_entry": "019fb934-ab01-7582-bab1-08fa292fd4e7",
             "field": "hometown",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ee0-7a31-8457-253713f25be0",
+            "from_entry": "019fb934-ab0a-7ac9-b5b2-da13b86f80ef",
             "field": "family",
-            "to_entry": "019fb92a-3ef4-79d7-acd0-c79344bcc3ff",
+            "to_entry": "019fb934-ab1e-73a5-bdb0-961b1274a3e2",
             "annotation": "cousins; stone and snow, the family's two dialects",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ee0-7a31-8457-253713f25be0",
+            "from_entry": "019fb934-ab0a-7ac9-b5b2-da13b86f80ef",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ee9-7c50-b1f9-9a85c593f66e",
+            "from_entry": "019fb934-ab13-768b-9322-77809ca9fc66",
             "field": "family",
-            "to_entry": "019fb92a-3ee0-7a31-8457-253713f25be0",
+            "to_entry": "019fb934-ab0a-7ac9-b5b2-da13b86f80ef",
             "annotation": "Aldous is Gudrun's brother; she cut his gatehouse lintel with the family mark inward",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ee9-7c50-b1f9-9a85c593f66e",
+            "from_entry": "019fb934-ab13-768b-9322-77809ca9fc66",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3ef4-79d7-acd0-c79344bcc3ff",
+            "from_entry": "019fb934-ab1e-73a5-bdb0-961b1274a3e2",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3efd-7680-9610-60fda0087ef1",
+            "from_entry": "019fb934-ab27-7059-9b10-17d870f7a32f",
             "field": "family",
-            "to_entry": "019fb92a-3ee9-7c50-b1f9-9a85c593f66e",
+            "to_entry": "019fb934-ab13-768b-9322-77809ca9fc66",
             "annotation": "Aldous is Pryce's uncle and pretends the whispered names are not on the requisition forms",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3efd-7680-9610-60fda0087ef1",
+            "from_entry": "019fb934-ab27-7059-9b10-17d870f7a32f",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3f09-7412-941d-083efcb369a7",
+            "from_entry": "019fb934-ab31-754b-add5-2aa32a5b14ea",
             "field": "family",
-            "to_entry": "019fb92a-3ef4-79d7-acd0-c79344bcc3ff",
+            "to_entry": "019fb934-ab1e-73a5-bdb0-961b1274a3e2",
             "annotation": "Ronwen is Ferren's mother; her avalanche postings are the only data Ferren takes on faith",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3f09-7412-941d-083efcb369a7",
+            "from_entry": "019fb934-ab31-754b-add5-2aa32a5b14ea",
             "field": "hometown",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3f15-70a7-b714-b2a9d2afd817",
+            "from_entry": "019fb934-ab3d-79c4-9c69-8f5858c2f923",
             "field": "family",
-            "to_entry": "019fb92a-3f1d-7ebd-889c-827640e82f86",
+            "to_entry": "019fb934-ab46-7c9a-9863-53aa3833ed2e",
             "annotation": "married; her case-notes are the only modern texts he has ever bound",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3f15-70a7-b714-b2a9d2afd817",
+            "from_entry": "019fb934-ab3d-79c4-9c69-8f5858c2f923",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3f1d-7ebd-889c-827640e82f86",
+            "from_entry": "019fb934-ab46-7c9a-9863-53aa3833ed2e",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3f29-7c63-9162-887cbb648d4c",
+            "from_entry": "019fb934-ab52-7a60-a827-1aeae61d5448",
             "field": "family",
-            "to_entry": "019fb92a-3f1d-7ebd-889c-827640e82f86",
+            "to_entry": "019fb934-ab46-7c9a-9863-53aa3833ed2e",
             "annotation": "Barrow is Sable's parent; he binds the books, they become them",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3f29-7c63-9162-887cbb648d4c",
+            "from_entry": "019fb934-ab52-7a60-a827-1aeae61d5448",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3f35-720b-8bcf-f814e7eee644",
+            "from_entry": "019fb934-ab5e-73b5-a197-fb60837e5c86",
             "field": "family",
-            "to_entry": "019fb92a-3f41-7a64-a383-0e50de9143ab",
+            "to_entry": "019fb934-ab69-79a0-9a9e-2452961bcba6",
             "annotation": "Verity is Cornelius's aunt; she proof-read his catalogue and marked the harbor-log '?', which keeps him up nights",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3f35-720b-8bcf-f814e7eee644",
+            "from_entry": "019fb934-ab5e-73b5-a197-fb60837e5c86",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3f41-7a64-a383-0e50de9143ab",
+            "from_entry": "019fb934-ab69-79a0-9a9e-2452961bcba6",
             "field": "hometown",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "draft"
         },
         {
-            "from_entry": "019fb92a-3fcc-7845-bd36-e45d34f948b7",
+            "from_entry": "019fb934-abed-7c67-8ceb-2b71507985eb",
             "field": "forged_in",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fcc-7845-bd36-e45d34f948b7",
+            "from_entry": "019fb934-abed-7c67-8ceb-2b71507985eb",
             "field": "mentions",
-            "to_entry": "019fb92a-3c25-7e0d-829c-a3685f130153",
+            "to_entry": "019fb934-a888-7084-bfea-fd8b38895f91",
             "annotation": "mentioned in body of The Unspent Coin",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fcc-7845-bd36-e45d34f948b7",
+            "from_entry": "019fb934-abed-7c67-8ceb-2b71507985eb",
             "field": "wielder",
-            "to_entry": "019fb92a-3c25-7e0d-829c-a3685f130153",
+            "to_entry": "019fb934-a888-7084-bfea-fd8b38895f91",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fd8-722a-b975-75aa33957dc2",
+            "from_entry": "019fb934-abf9-7781-8389-b73f74c25b0a",
             "field": "forged_in",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fd8-722a-b975-75aa33957dc2",
+            "from_entry": "019fb934-abf9-7781-8389-b73f74c25b0a",
             "field": "mentions",
-            "to_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "to_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "annotation": "mentioned in body of Ledgerbane",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fd8-722a-b975-75aa33957dc2",
+            "from_entry": "019fb934-abf9-7781-8389-b73f74c25b0a",
             "field": "wielder",
-            "to_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "to_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fe3-76e5-98fe-c041e6c0778f",
+            "from_entry": "019fb934-ac04-70f2-aa1e-d1f7e31cb4da",
             "field": "forged_in",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fe3-76e5-98fe-c041e6c0778f",
+            "from_entry": "019fb934-ac04-70f2-aa1e-d1f7e31cb4da",
             "field": "mentions",
-            "to_entry": "019fb92a-3c1a-702e-860e-dd7521fee487",
+            "to_entry": "019fb934-a87c-7c02-a30b-01f6bd908807",
             "annotation": "mentioned in body of The Dreaming Pane",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3fe3-76e5-98fe-c041e6c0778f",
+            "from_entry": "019fb934-ac04-70f2-aa1e-d1f7e31cb4da",
             "field": "wielder",
-            "to_entry": "019fb92a-3c1a-702e-860e-dd7521fee487",
+            "to_entry": "019fb934-a87c-7c02-a30b-01f6bd908807",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ff0-7b69-8165-9026a5228908",
+            "from_entry": "019fb934-ac0f-7e9e-a68d-c88a5e85f7cc",
             "field": "forged_in",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ff0-7b69-8165-9026a5228908",
+            "from_entry": "019fb934-ac0f-7e9e-a68d-c88a5e85f7cc",
             "field": "mentions",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "annotation": "mentioned in body of Vhezar's Ember",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ff0-7b69-8165-9026a5228908",
+            "from_entry": "019fb934-ac0f-7e9e-a68d-c88a5e85f7cc",
             "field": "wielder",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ffe-7157-b778-3c597b0e5685",
+            "from_entry": "019fb934-ac1b-747c-96ee-b05944f3890b",
             "field": "forged_in",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ffe-7157-b778-3c597b0e5685",
+            "from_entry": "019fb934-ac1b-747c-96ee-b05944f3890b",
             "field": "mentions",
-            "to_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "to_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "annotation": "mentioned in body of The Auditor's Bell",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-3ffe-7157-b778-3c597b0e5685",
+            "from_entry": "019fb934-ac1b-747c-96ee-b05944f3890b",
             "field": "wielder",
-            "to_entry": "019fb92a-3be9-72d6-9a9b-296d93a046e5",
+            "to_entry": "019fb934-a84d-7bd7-a2f6-f94c24abc74c",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-400b-7c19-9b93-6d9225730e44",
+            "from_entry": "019fb934-ac26-7626-89b2-837eb5bc352b",
             "field": "forged_in",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-400b-7c19-9b93-6d9225730e44",
+            "from_entry": "019fb934-ac26-7626-89b2-837eb5bc352b",
             "field": "mentions",
-            "to_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "to_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "annotation": "mentioned in body of The Nightingale's Ledger",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-400b-7c19-9b93-6d9225730e44",
+            "from_entry": "019fb934-ac26-7626-89b2-837eb5bc352b",
             "field": "wielder",
-            "to_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "to_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4017-7d94-aade-49e5806b19a3",
+            "from_entry": "019fb934-ac31-7d42-9abf-5591c7ec2651",
             "field": "location",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4020-766c-b346-c192466d7751",
+            "from_entry": "019fb934-ac3a-7bbb-8461-c99ff36ff85d",
             "field": "location",
-            "to_entry": "019fb92a-3aa1-735b-ae9b-8bb0ffa5d54a",
+            "to_entry": "019fb934-a712-7213-b50c-8ef6d7e69865",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4028-7a73-ac6c-4a1ab1d52cd2",
+            "from_entry": "019fb934-ac43-70f6-8d24-8e11111e494d",
             "field": "location",
-            "to_entry": "019fb92a-3b23-793b-a3f8-32812cf9b9e0",
+            "to_entry": "019fb934-a793-7357-9f5e-c7ebc2d67dbd",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4031-7582-850e-6bf25d0d0574",
+            "from_entry": "019fb934-ac4c-7b75-8bac-4ffbbd96e89b",
             "field": "location",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4039-7c3c-ac98-faf321e90f37",
+            "from_entry": "019fb934-ac55-7e29-8fb1-31232040c13a",
             "field": "location",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4042-783d-81f7-be973d5c0283",
+            "from_entry": "019fb934-ac5e-7061-8fff-814a8ec0614a",
             "field": "location",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-404b-718a-90b6-1634ecc433de",
+            "from_entry": "019fb934-ac66-74ed-bf67-da83bae27187",
             "field": "location",
-            "to_entry": "019fb92a-3b04-76e1-a76e-cbfc8167def1",
+            "to_entry": "019fb934-a773-7455-a3b8-37e717fa12a8",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4053-7e34-9d27-2965d6d0322d",
+            "from_entry": "019fb934-ac6e-72b7-a6cd-a8fe14b270ae",
             "field": "location",
-            "to_entry": "019fb92a-3b0e-7d17-a563-5c7229e9f8be",
+            "to_entry": "019fb934-a77f-70ee-bc44-cf4494d1deed",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-405d-766c-bfce-4e8675d3aa45",
+            "from_entry": "019fb934-ac77-71e8-b71c-e279f49d97e6",
             "field": "location",
-            "to_entry": "019fb92a-3a95-75a5-a5e8-20020fad7a78",
+            "to_entry": "019fb934-a705-7ea9-a91c-5bf964cf17a2",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4066-7e6f-9e0b-fd556a0b0956",
+            "from_entry": "019fb934-ac7f-70a4-b546-474b5757973a",
             "field": "location",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4070-7c92-b11b-fd838b15f901",
+            "from_entry": "019fb934-ac88-7651-accf-36674b6bb859",
             "field": "location",
-            "to_entry": "019fb92a-3aac-7dbf-9f2d-802d04e63057",
+            "to_entry": "019fb934-a71e-704a-93b0-f1a0ed334f46",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4079-79c0-8178-d9d7b05b32e9",
+            "from_entry": "019fb934-ac90-751c-a690-84a65867a076",
             "field": "location",
-            "to_entry": "019fb92a-3b41-7ab6-9c63-354ecfb052bc",
+            "to_entry": "019fb934-a7b1-7785-a545-11ff60d3f87c",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4082-7259-9002-0e81092815fa",
+            "from_entry": "019fb934-ac98-7bbb-90f7-9dd84feca160",
             "field": "location",
-            "to_entry": "019fb92a-3a53-7105-b3c2-b5106d845065",
+            "to_entry": "019fb934-a6ca-7065-bcc8-ae6315b13bfa",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4082-7259-9002-0e81092815fa",
+            "from_entry": "019fb934-ac98-7bbb-90f7-9dd84feca160",
             "field": "participants",
-            "to_entry": "019fb92a-3b4b-7105-801c-866b3e14d20c",
+            "to_entry": "019fb934-a7ba-7641-ad54-ed44de8bd32e",
             "annotation": "the comet itself",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-408d-75b1-95b5-a6f940ade388",
+            "from_entry": "019fb934-aca2-7dfa-93c2-dda35d0e8b4c",
             "field": "location",
-            "to_entry": "019fb92a-3b0e-7d17-a563-5c7229e9f8be",
+            "to_entry": "019fb934-a77f-70ee-bc44-cf4494d1deed",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-408d-75b1-95b5-a6f940ade388",
+            "from_entry": "019fb934-aca2-7dfa-93c2-dda35d0e8b4c",
             "field": "participants",
-            "to_entry": "019fb92a-3c0d-76be-8b79-47a1a0b88d34",
+            "to_entry": "019fb934-a871-7add-8950-e98d1728e8d8",
             "annotation": "recovered the record, a century later",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4098-7626-a3ed-b6b05922d6b9",
+            "from_entry": "019fb934-acae-7aaa-b05e-fdb6996c177f",
             "field": "location",
-            "to_entry": "019fb92a-3ad0-7534-ba87-37f2f9c7109c",
+            "to_entry": "019fb934-a73c-7ab6-a62e-c297ca671a4a",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4098-7626-a3ed-b6b05922d6b9",
+            "from_entry": "019fb934-acae-7aaa-b05e-fdb6996c177f",
             "field": "participants",
-            "to_entry": "019fb92a-3c25-7e0d-829c-a3685f130153",
+            "to_entry": "019fb934-a888-7084-bfea-fd8b38895f91",
             "annotation": "paid it",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4098-7626-a3ed-b6b05922d6b9",
+            "from_entry": "019fb934-acae-7aaa-b05e-fdb6996c177f",
             "field": "participants",
-            "to_entry": "019fb92a-3b51-7cc5-8847-0b77bd81e465",
+            "to_entry": "019fb934-a7c0-763d-8634-d45028c5d65c",
             "annotation": "collected it",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40a6-7071-b2e4-f5a0b0052732",
+            "from_entry": "019fb934-acbd-7d4e-9a73-714bb4646686",
             "field": "location",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40a6-7071-b2e4-f5a0b0052732",
+            "from_entry": "019fb934-acbd-7d4e-9a73-714bb4646686",
             "field": "participants",
-            "to_entry": "019fb92a-3b60-7ce8-8e84-ca34a763c2c5",
+            "to_entry": "019fb934-a7cc-7ebd-b0c9-0146023ab74f",
             "annotation": "his ledgers were the founding texts",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40a6-7071-b2e4-f5a0b0052732",
+            "from_entry": "019fb934-acbd-7d4e-9a73-714bb4646686",
             "field": "participants",
-            "to_entry": "019fb92a-3b6e-76e9-a59d-b0c62f1daeb1",
+            "to_entry": "019fb934-a7d8-7a0a-82be-13f3b64fb4fb",
             "annotation": "founded",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40b3-748c-9362-042aff7d3808",
+            "from_entry": "019fb934-accd-7897-9f49-3960f159f99b",
             "field": "location",
-            "to_entry": "019fb92a-3a88-781e-bb38-3c5fa14c3a3e",
+            "to_entry": "019fb934-a6fa-7e73-a7e7-b1d53f549d5b",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40b3-748c-9362-042aff7d3808",
+            "from_entry": "019fb934-accd-7897-9f49-3960f159f99b",
             "field": "participants",
-            "to_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "to_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "annotation": "signatory",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40b3-748c-9362-042aff7d3808",
+            "from_entry": "019fb934-accd-7897-9f49-3960f159f99b",
             "field": "participants",
-            "to_entry": "019fb92a-3c1a-702e-860e-dd7521fee487",
+            "to_entry": "019fb934-a87c-7c02-a30b-01f6bd908807",
             "annotation": "negotiated as a journeyman",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40c0-7e38-915c-6ddb5cebcacb",
+            "from_entry": "019fb934-acdc-7aaa-af4b-b25831d6e724",
             "field": "location",
-            "to_entry": "019fb92a-3b2c-7ac1-ac85-796168236f0b",
+            "to_entry": "019fb934-a79d-78ed-a182-48a0c54851e0",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40c0-7e38-915c-6ddb5cebcacb",
+            "from_entry": "019fb934-acdc-7aaa-af4b-b25831d6e724",
             "field": "participants",
-            "to_entry": "019fb92a-3b59-74b7-9a0a-dbb84be431c3",
+            "to_entry": "019fb934-a7c6-7ac1-a7f8-6038cb4c67fd",
             "annotation": "acted, or slept restlessly",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40c0-7e38-915c-6ddb5cebcacb",
+            "from_entry": "019fb934-acdc-7aaa-af4b-b25831d6e724",
             "field": "participants",
-            "to_entry": "019fb92a-3b8b-79e3-9d22-18f8d36c82af",
+            "to_entry": "019fb934-a7f2-76dd-96f0-b29edc134099",
             "annotation": "interpreted",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40cd-7df6-9fe6-110342f60c34",
+            "from_entry": "019fb934-acea-764d-b77f-012adc77b6c6",
             "field": "location",
-            "to_entry": "019fb92a-3a66-7b04-810f-ef99ff0dfdb9",
+            "to_entry": "019fb934-a6dd-729f-9665-d5a4d0e6f8c7",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40cd-7df6-9fe6-110342f60c34",
+            "from_entry": "019fb934-acea-764d-b77f-012adc77b6c6",
             "field": "participants",
-            "to_entry": "019fb92a-3b68-711d-82ab-7d062bfd5ac0",
+            "to_entry": "019fb934-a7d2-7a06-bf2a-d75edd1ee4c1",
             "annotation": "conducted",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40cd-7df6-9fe6-110342f60c34",
+            "from_entry": "019fb934-acea-764d-b77f-012adc77b6c6",
             "field": "participants",
-            "to_entry": "019fb92a-3b97-701f-af13-596b8283a7c8",
+            "to_entry": "019fb934-a7fb-7ca6-806a-a55065ad7b28",
             "annotation": "assisted under duress",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40dc-7e01-98bf-18c4dcef8911",
+            "from_entry": "019fb934-acf8-7090-a1a9-cc970ca8dde1",
             "field": "location",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40dc-7e01-98bf-18c4dcef8911",
+            "from_entry": "019fb934-acf8-7090-a1a9-cc970ca8dde1",
             "field": "participants",
-            "to_entry": "019fb92a-3c00-7cdc-92a6-6021939cc13f",
+            "to_entry": "019fb934-a866-70ee-9a1b-beb604f5c0e6",
             "annotation": "enforced it",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40dc-7e01-98bf-18c4dcef8911",
+            "from_entry": "019fb934-acf8-7090-a1a9-cc970ca8dde1",
             "field": "participants",
-            "to_entry": "019fb92a-3ba0-7cb5-9348-323ed23a79ab",
+            "to_entry": "019fb934-a804-78b2-9e38-5426b612f175",
             "annotation": "profited",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40ea-7d23-8c5c-3e12e669ec0a",
+            "from_entry": "019fb934-ad06-715f-bc2c-0ad015bd2bbf",
             "field": "location",
-            "to_entry": "019fb92a-3b37-71d0-b82d-0d65fd2b0b00",
+            "to_entry": "019fb934-a7a7-7c8e-bda2-bc1cc6a242d3",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40ea-7d23-8c5c-3e12e669ec0a",
+            "from_entry": "019fb934-ad06-715f-bc2c-0ad015bd2bbf",
             "field": "participants",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "annotation": "returned",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40ea-7d23-8c5c-3e12e669ec0a",
+            "from_entry": "019fb934-ad06-715f-bc2c-0ad015bd2bbf",
             "field": "participants",
-            "to_entry": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
+            "to_entry": "019fb934-a816-75ef-85af-62eb3bd60dc8",
             "annotation": "was waiting",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40f9-721e-9660-f5ce851f49ab",
+            "from_entry": "019fb934-ad13-7825-9124-6177bfa1dd7b",
             "field": "location",
-            "to_entry": "019fb92a-3b19-70a0-9b20-f185a257e7e0",
+            "to_entry": "019fb934-a789-76ba-9e88-a99ff5de1489",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40f9-721e-9660-f5ce851f49ab",
+            "from_entry": "019fb934-ad13-7825-9124-6177bfa1dd7b",
             "field": "participants",
-            "to_entry": "019fb92a-3bb3-7a5c-911e-a3e8bfa4a605",
+            "to_entry": "019fb934-a816-75ef-85af-62eb3bd60dc8",
             "annotation": "stole it",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-40f9-721e-9660-f5ce851f49ab",
+            "from_entry": "019fb934-ad13-7825-9124-6177bfa1dd7b",
             "field": "participants",
-            "to_entry": "019fb92a-3b81-7557-a394-743d5c2ef978",
+            "to_entry": "019fb934-a7e9-79d3-8cb1-36e45b72b214",
             "annotation": "will not say what it was guarding",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4107-724d-91e6-ced33e032f81",
+            "from_entry": "019fb934-ad20-71c5-8c7c-f5a77741a2b3",
             "field": "location",
-            "to_entry": "019fb92a-3ab8-74d6-972e-077f2ac6a6ba",
+            "to_entry": "019fb934-a728-7aaa-99aa-8d04f02b64ab",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4107-724d-91e6-ced33e032f81",
+            "from_entry": "019fb934-ad20-71c5-8c7c-f5a77741a2b3",
             "field": "participants",
-            "to_entry": "019fb92a-3c53-7718-9297-00c7c7dc33a8",
+            "to_entry": "019fb934-a8b3-7470-92bf-669a591459d5",
             "annotation": "went silent for nine days",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4112-7bb8-a625-569b34bf8137",
+            "from_entry": "019fb934-ad2a-7ab2-95d0-f0a1b5a12166",
             "field": "location",
-            "to_entry": "019fb92a-3ac3-73ef-9d89-b5943c263351",
+            "to_entry": "019fb934-a733-71c1-810c-18fd4615a208",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4112-7bb8-a625-569b34bf8137",
+            "from_entry": "019fb934-ad2a-7ab2-95d0-f0a1b5a12166",
             "field": "participants",
-            "to_entry": "019fb92a-3b68-711d-82ab-7d062bfd5ac0",
+            "to_entry": "019fb934-a7d2-7a06-bf2a-d75edd1ee4c1",
             "annotation": "walked the streets in person",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4112-7bb8-a625-569b34bf8137",
+            "from_entry": "019fb934-ad2a-7ab2-95d0-f0a1b5a12166",
             "field": "participants",
-            "to_entry": "019fb92a-3c31-7674-bcba-6d72ab169fb0",
+            "to_entry": "019fb934-a893-7153-816b-bd58201d64d7",
             "annotation": "escorted it, by contract",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4120-7a41-81a2-cb7725fb347a",
+            "from_entry": "019fb934-ad38-7520-9ca5-fdfb1fa9a983",
             "field": "location",
-            "to_entry": "019fb92a-3a7a-7668-9c2c-98428c2cb94c",
+            "to_entry": "019fb934-a6ef-70a4-8262-c7394ab3ecc6",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4120-7a41-81a2-cb7725fb347a",
+            "from_entry": "019fb934-ad38-7520-9ca5-fdfb1fa9a983",
             "field": "participants",
-            "to_entry": "019fb92a-3bd0-717e-b6c3-4a65151b6d6d",
+            "to_entry": "019fb934-a832-7e9e-be4a-3fa76e668e72",
             "annotation": "holds the center",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4120-7a41-81a2-cb7725fb347a",
+            "from_entry": "019fb934-ad38-7520-9ca5-fdfb1fa9a983",
             "field": "participants",
-            "to_entry": "019fb92a-3c3d-74fd-b236-6d4b1ed77a31",
+            "to_entry": "019fb934-a89e-71b9-a4e6-fb2eb5aea836",
             "annotation": "makes generous offers",
             "status": "canon"
         },
         {
-            "from_entry": "019fb92a-4120-7a41-81a2-cb7725fb347a",
+            "from_entry": "019fb934-ad38-7520-9ca5-fdfb1fa9a983",
             "field": "participants",
-            "to_entry": "019fb92a-3baa-75ff-a2b7-2867b71f1c52",
+            "to_entry": "019fb934-a80d-78dd-8108-d237822df21a",
             "annotation": "counts missing embers",
             "status": "canon"
         }

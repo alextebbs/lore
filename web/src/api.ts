@@ -57,6 +57,7 @@ export type RelationSection = {
 };
 export type ReverseSection = {
   label: string;
+  field: string;
   items: {
     edge_id: string;
     from: EntryRef;

@@ -23,51 +23,51 @@ var builtinTypes = []struct {
 		{Name: "goals", Kind: "richtext_list"},
 		{Name: "hometown", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
-			Template: "A is the hometown of B", InverseLabel: "People from here",
+			InverseLabel: "People from here",
 		}},
 		{Name: "family", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Character"}, Many: true, Annotations: true,
-			Template: "A is family of B", InverseLabel: "Family",
+			InverseLabel: "Family",
 		}},
 	}},
 	{"Place", []FieldDef{
 		{Name: "kind", Kind: "string", Label: "Kind (city, region, dungeon…)"},
 		{Name: "located_in", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
-			Template: "A is located within B", InverseLabel: "Places within",
+			InverseLabel: "Places within",
 		}},
 	}},
 	{"Event", []FieldDef{
 		{Name: "date", Kind: "date"},
 		{Name: "location", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
-			Template: "A happened at B", InverseLabel: "Events here",
+			InverseLabel: "Events here",
 		}},
 		{Name: "participants", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Character", "Faction"}, Many: true, Annotations: true,
-			Template: "A involved B", InverseLabel: "Involved in",
+			InverseLabel: "Involved in",
 		}},
 	}},
 	{"Item", []FieldDef{
 		{Name: "kind", Kind: "string"},
 		{Name: "wielder", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Character"},
-			Template: "A is wielded by B", InverseLabel: "Wields",
+			InverseLabel: "Wields",
 		}},
 		{Name: "location", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
-			Template: "A is found at B", InverseLabel: "Items here",
+			InverseLabel: "Items here",
 		}},
 	}},
 	{"Faction", []FieldDef{
 		{Name: "purpose", Kind: "string"},
 		{Name: "members", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Character"}, Many: true, Annotations: true,
-			Template: "B is a member of A", InverseLabel: "Member of",
+			InverseLabel: "Member of",
 		}},
 		{Name: "base", Kind: "relation", Relation: &RelationConfig{
 			Targets: []string{"Place"},
-			Template: "A is based at B", InverseLabel: "Factions based here",
+			InverseLabel: "Factions based here",
 		}},
 	}},
 	// The world's own page: one meta entry per world describes the

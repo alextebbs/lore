@@ -181,7 +181,18 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		if err := t.refreshDerived(ctx, q, updated, et.Name); err != nil {
 			return err
 		}
-		return t.syncMentions(ctx, q, updated, author)
+		if err := t.syncMentions(ctx, q, updated, author); err != nil {
+			return err
+		}
+		// Mentions persist through IDs: renaming an entry rewrites the
+		// [[links]] in every entry that mentions it (found via the
+		// mention edges, not text search).
+		if title != row.Title {
+			if err := t.propagateRename(ctx, q, updated, row.Title, title); err != nil {
+				return err
+			}
+		}
+		return nil
 	})
 	if err != nil {
 		return Entry{}, nil, err

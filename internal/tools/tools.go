@@ -84,7 +84,6 @@ type FieldDef struct {
 type RelationConfig struct {
 	Targets      []string `json:"targets,omitempty"` // allowed target type names; empty = any
 	Many         bool     `json:"many,omitempty"`
-	Template     string   `json:"template,omitempty"`      // "A is the hometown of B"
 	InverseLabel string   `json:"inverse_label,omitempty"` // target page section title
 	Annotations  bool     `json:"annotations,omitempty"`   // per-edge freeform notes
 }

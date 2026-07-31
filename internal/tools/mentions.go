@@ -19,7 +19,12 @@ func jsonUnmarshal(raw []byte, v any) error { return json.Unmarshal(raw, v) }
 // "mentioned in <section> of <entry>". They resync on every write and
 // surface on the target as a "Mentioned in" reverse section.
 
-const MentionField = "mentions"
+const (
+	MentionField = "mentions"
+	// RelatedField is the universal untyped relationship available on
+	// every entry regardless of schema.
+	RelatedField = "related"
+)
 
 var mentionRe = regexp.MustCompile(`\[\[([^\[\]{}]+)\]\]`)
 
@@ -97,6 +102,101 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 			Annotation: fmt.Sprintf("mentioned in %s of %s", section, row.Title),
 			Status:     status,
 		}); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// propagateRename rewrites [[Old Title]] to [[New Title]] in every entry
+// that mentions the renamed one — located by the mention edges (IDs),
+// not text search — then refreshes their derived rows and mention edges.
+func (t *Tools) propagateRename(ctx context.Context, q *db.Queries, renamed db.Entry, oldTitle, newTitle string) error {
+	inbound, err := q.ListMentionEdgesTo(ctx, renamed.ID)
+	if err != nil {
+		return err
+	}
+	oldLink, newLink := "[["+oldTitle+"]]", "[["+newTitle+"]]"
+	for _, e := range inbound {
+		src, err := q.GetEntry(ctx, e.FromEntry)
+		if err != nil {
+			continue
+		}
+		changed := false
+
+		if doc, err := richtext.ParseDoc(src.Body); err == nil {
+			var rewrite func(n richtext.Node) richtext.Node
+			rewrite = func(n richtext.Node) richtext.Node {
+				if n.Type == "text" && strings.Contains(n.Text, oldLink) {
+					n.Text = strings.ReplaceAll(n.Text, oldLink, newLink)
+					changed = true
+				}
+				for i, c := range n.Content {
+					n.Content[i] = rewrite(c)
+				}
+				return n
+			}
+			doc = rewrite(doc)
+			if changed {
+				if src.Body, err = json.Marshal(doc); err != nil {
+					return err
+				}
+			}
+		}
+
+		fields := map[string]FieldValue{}
+		if err := json.Unmarshal(src.Fields, &fields); err == nil {
+			fieldsChanged := false
+			for name, fv := range fields {
+				switch v := fv.Value.(type) {
+				case string:
+					if strings.Contains(v, oldLink) {
+						fv.Value = strings.ReplaceAll(v, oldLink, newLink)
+						fields[name] = fv
+						fieldsChanged = true
+					}
+				case []any:
+					for i, item := range v {
+						if s, ok := item.(string); ok && strings.Contains(s, oldLink) {
+							v[i] = strings.ReplaceAll(s, oldLink, newLink)
+							fieldsChanged = true
+						}
+					}
+					if fieldsChanged {
+						fields[name] = fv
+					}
+				}
+			}
+			if fieldsChanged {
+				changed = true
+				if src.Fields, err = json.Marshal(fields); err != nil {
+					return err
+				}
+			}
+		}
+
+		if !changed {
+			continue
+		}
+		updated, err := q.UpdateEntry(ctx, db.UpdateEntryParams{
+			ID: src.ID, Title: src.Title, Fields: src.Fields,
+			Body: src.Body, Status: src.Status,
+		})
+		if err != nil {
+			return err
+		}
+		srcType, err := q.GetEntryType(ctx, updated.TypeID)
+		if err != nil {
+			return err
+		}
+		if err := t.refreshDerived(ctx, q, updated, srcType.Name); err != nil {
+			return err
+		}
+		author := AuthorHuman
+		if e.Status == StatusDraft {
+			author = AuthorAI
+		}
+		if err := t.syncMentions(ctx, q, updated, author); err != nil {
 			return err
 		}
 	}

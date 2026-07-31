@@ -36,6 +36,7 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/entries/{id}/export", s.exportEntry)
 	mux.HandleFunc("GET /api/worlds/{id}/export", s.exportWorld)
 	mux.HandleFunc("POST /api/worlds/{id}/types", s.createEntryType)
+	mux.HandleFunc("PATCH /api/worlds/{id}/types/{typeId}", s.updateEntryType)
 	mux.HandleFunc("GET /api/worlds/{id}/dump", s.dumpWorld)
 	mux.HandleFunc("POST /api/worlds/import", s.importWorld)
 	mux.HandleFunc("PATCH /api/worlds/{id}", s.updateWorldSettings)
@@ -72,6 +73,19 @@ func (s *Server) createEntryType(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	et, warnings, err := s.Tools.CreateEntryType(r.Context(), r.PathValue("id"), in.Name, in.ParentID, in.Fields)
+	respond(w, map[string]any{"type": et, "warnings": warnings}, err)
+}
+
+func (s *Server) updateEntryType(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Name    string            `json:"name"`
+		Fields  []tools.FieldDef  `json:"fields"`
+		Renames map[string]string `json:"renames"`
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	et, warnings, err := s.Tools.UpdateEntryType(r.Context(), r.PathValue("id"), r.PathValue("typeId"), in.Name, in.Fields, in.Renames)
 	respond(w, map[string]any{"type": et, "warnings": warnings}, err)
 }
 

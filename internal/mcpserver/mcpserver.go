@@ -21,7 +21,9 @@ const instructions = `Lore is a TTRPG worldbuilding tool. Content has draft/cano
 your writes always land as DRAFT; a human promotes them to canon. Rich
 text is Markdown where {~draft}...{/~} marks draft spans (your authored
 text is auto-marked). [[Entry Title]] anywhere in body or rich-text
-fields links entries and auto-creates "mentioned in" relations. Worlds
+fields links entries and auto-creates "mentioned in" relations (links follow
+renames automatically). Every entry also accepts untyped edges via the
+"related" field — use it when no declared relation fits. Worlds
 carry settings (vibe, style_prompt, authoring policies) and a meta World
 entry describing the setting — read both before writing, and match the
 world's voice. Canon is protected: if a world's ai_can_edit_canon is
@@ -324,6 +326,21 @@ func New(t *tools.Tools) *mcp.Server {
 		Description: "Define a new entry type (schema) in a world, optionally inheriting from a parent type. Soft-validated: warnings, not rejections.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in createTypeIn) (*mcp.CallToolResult, createTypeOut, error) {
 		et, warnings, err := t.CreateEntryType(ctx, in.WorldID, in.Name, in.ParentID, in.Fields)
+		return nil, createTypeOut{Type: et, Warnings: warnings}, err
+	})
+
+	type updateTypeIn struct {
+		WorldID string            `json:"world_id" jsonschema:"the world's id"`
+		TypeID  string            `json:"type_id" jsonschema:"the entry type to edit"`
+		Name    string            `json:"name,omitempty" jsonschema:"new type name (optional)"`
+		Fields  []tools.FieldDef  `json:"fields,omitempty" jsonschema:"replacement field list (optional; omit to keep)"`
+		Renames map[string]string `json:"renames,omitempty" jsonschema:"old field name -> new field name; existing edges and field values migrate automatically"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "update_entry_type",
+		Description: "Edit an entry type: rename it, replace fields, and rename fields with automatic migration of edges and stored values (type + subtypes).",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in updateTypeIn) (*mcp.CallToolResult, createTypeOut, error) {
+		et, warnings, err := t.UpdateEntryType(ctx, in.WorldID, in.TypeID, in.Name, in.Fields, in.Renames)
 		return nil, createTypeOut{Type: et, Warnings: warnings}, err
 	})
 

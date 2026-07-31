@@ -76,3 +76,89 @@ func (t *Tools) CreateEntryType(ctx context.Context, worldID, name, parentID str
 	out, err := typeOut(row, byID)
 	return out, warnings, err
 }
+
+// UpdateEntryType edits a type: rename it, replace its field list, and —
+// critically — migrate data when fields are renamed: edges keyed by the
+// old field name and entry field values both follow the rename, across
+// the type and all its subtypes.
+func (t *Tools) UpdateEntryType(ctx context.Context, worldID, typeID, name string, fields []FieldDef, renames map[string]string) (EntryType, []string, error) {
+	wid, err := parseID(worldID)
+	if err != nil {
+		return EntryType{}, nil, err
+	}
+	tid, err := parseID(typeID)
+	if err != nil {
+		return EntryType{}, nil, err
+	}
+	row, err := t.store.Queries.GetEntryType(ctx, tid)
+	if err != nil {
+		return EntryType{}, nil, notFound(err)
+	}
+	if row.WorldID != wid {
+		return EntryType{}, nil, ErrNotFound
+	}
+	if name == "" {
+		name = row.Name
+	}
+	if fields == nil {
+		if err := json.Unmarshal(row.Fields, &fields); err != nil {
+			return EntryType{}, nil, err
+		}
+	}
+
+	// Self + all descendant type ids (single inheritance, ADR 0004).
+	all, err := t.store.Queries.ListEntryTypes(ctx, wid)
+	if err != nil {
+		return EntryType{}, nil, err
+	}
+	children := map[string][]pgtype.UUID{}
+	for _, ty := range all {
+		if ty.ParentID.Valid {
+			children[idStr(ty.ParentID)] = append(children[idStr(ty.ParentID)], ty.ID)
+		}
+	}
+	affected := []pgtype.UUID{tid}
+	for i := 0; i < len(affected); i++ {
+		affected = append(affected, children[idStr(affected[i])]...)
+	}
+
+	var warnings []string
+	var out db.EntryType
+	err = t.store.Tx(ctx, func(q *db.Queries) error {
+		for oldName, newName := range renames {
+			if oldName == newName || oldName == "" || newName == "" {
+				continue
+			}
+			if err := q.RenameEdgeField(ctx, db.RenameEdgeFieldParams{
+				Column1: affected, Field: oldName, Field_2: newName,
+			}); err != nil {
+				return fmt.Errorf("migrating edges %s→%s: %w", oldName, newName, err)
+			}
+			if err := q.RenameEntryFieldKey(ctx, db.RenameEntryFieldKeyParams{
+				TypeIds: affected, OldName: oldName, NewName: newName,
+			}); err != nil {
+				return fmt.Errorf("migrating field values %s→%s: %w", oldName, newName, err)
+			}
+			warnings = append(warnings, fmt.Sprintf("migrated edges and values from %q to %q", oldName, newName))
+		}
+		raw, err := json.Marshal(fields)
+		if err != nil {
+			return err
+		}
+		out, err = q.UpdateEntryTypeRow(ctx, db.UpdateEntryTypeRowParams{
+			ID: tid, Name: name, Fields: raw,
+		})
+		return err
+	})
+	if err != nil {
+		return EntryType{}, nil, err
+	}
+
+	byID := make(map[string]db.EntryType, len(all))
+	for _, r := range all {
+		byID[idStr(r.ID)] = r
+	}
+	byID[idStr(out.ID)] = out
+	et, err := typeOut(out, byID)
+	return et, warnings, err
+}

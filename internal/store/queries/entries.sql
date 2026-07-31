@@ -38,3 +38,9 @@ SELECT * FROM entries WHERE world_id = $1 ORDER BY created_at;
 
 -- name: DeleteEntry :exec
 DELETE FROM entries WHERE id = $1;
+
+-- name: RenameEntryFieldKey :exec
+UPDATE entries
+SET fields = (fields - @old_name::text)
+    || jsonb_build_object(@new_name::text, fields -> @old_name::text)
+WHERE type_id = ANY(@type_ids::uuid[]) AND fields ? @old_name::text;

@@ -46,6 +46,7 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | UpdateWorldSettings (vibe/style/policies) | PATCH /api/worlds/{id} | update_world_settings |
 | DeleteEntry (AI: draft-only unless permitted) | DELETE /api/entries/{id} | delete_entry |
 | DeleteWorld | DELETE /api/worlds/{id} | delete_world (human-gated) |
+| UpdateEntryType (renames migrate edges+values) | PATCH /api/worlds/{id}/types/{typeId} | update_entry_type |
 
 UI-only (SPEC tenet 2 exception — orchestration, not capability): the
 chat harness (conversations/messages/evict endpoints) drives the agent

@@ -440,11 +440,6 @@ function RelationsPanel({
           <div key={sec.field}>
             <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
               {sec.field}
-              {sec.config?.template && (
-                <span className="normal-case text-neutral-700">
-                  · {sec.config.template}
-                </span>
-              )}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {(sec.edges ?? []).map((edge) => (
@@ -545,40 +540,131 @@ function RelationsPanel({
       {(entry.reverse ?? []).length > 0 && (
         <div className="space-y-3 rounded-lg border border-neutral-800 p-3">
           {(entry.reverse ?? []).map((sec) => (
-            <div key={sec.label}>
-              <div className="mb-1 text-xs uppercase tracking-wide text-neutral-500">
-                {sec.label}
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {sec.items.map((item) => (
-                  <span
-                    key={item.edge_id}
-                    className={`rounded-full border px-3 py-1 text-sm ${
-                      item.status === "draft"
-                        ? "border-amber-800 bg-amber-950/40"
-                        : "border-neutral-700"
-                    }`}
-                  >
-                    <Link
-                      to="/e/$entryId"
-                      params={{ entryId: item.from.id }}
-                      className="hover:underline"
-                    >
-                      {item.from.title}
-                    </Link>
-                    {item.annotation && (
-                      <span className="text-xs text-neutral-500">
-                        {" "}
-                        — {item.annotation}
-                      </span>
-                    )}
-                  </span>
-                ))}
-              </div>
-            </div>
+            <ReverseSectionRow
+              key={sec.label}
+              entry={entry}
+              sec={sec}
+              allEntries={allEntries.data ?? []}
+              onChanged={onChanged}
+            />
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+function ReverseSectionRow({
+  entry,
+  sec,
+  allEntries,
+  onChanged,
+}: {
+  entry: Entry;
+  sec: NonNullable<Entry["reverse"]>[number];
+  allEntries: EntrySummary[];
+  onChanged: () => void;
+}) {
+  const world = useQuery({
+    queryKey: ["world", entry.world_id],
+    queryFn: () => api.getWorld(entry.world_id),
+  });
+  const [adding, setAdding] = useState(false);
+  const [source, setSource] = useState("");
+  const [note, setNote] = useState("");
+  // Bidirectional authoring: relate from here by creating the edge on
+  // the declaring side. Candidates = entries whose type declares sec.field.
+  const declaringTypes = new Set(
+    (world.data?.types ?? [])
+      .filter((t) =>
+        t.fields.some((f) => f.name === sec.field && f.kind === "relation"),
+      )
+      .map((t) => t.name),
+  );
+  const candidates = allEntries.filter(
+    (c) => c.id !== entry.id && declaringTypes.has(c.type_name),
+  );
+  return (
+    <div>
+      <div className="mb-1 text-xs uppercase tracking-wide text-neutral-500">
+        {sec.label}
+      </div>
+      <div className="flex flex-wrap items-center gap-2">
+        {sec.items.map((item) => (
+          <span
+            key={item.edge_id}
+            className={`rounded-full border px-3 py-1 text-sm ${
+              item.status === "draft"
+                ? "border-amber-800 bg-amber-950/40"
+                : "border-neutral-700"
+            }`}
+          >
+            <Link
+              to="/e/$entryId"
+              params={{ entryId: item.from.id }}
+              className="hover:underline"
+            >
+              {item.from.title}
+            </Link>
+            {item.annotation && (
+              <span className="text-xs text-neutral-500"> — {item.annotation}</span>
+            )}
+          </span>
+        ))}
+        {sec.field !== "mentions" &&
+          (adding ? (
+            <form
+              className="flex items-center gap-1"
+              onSubmit={async (ev) => {
+                ev.preventDefault();
+                if (!source) return;
+                await api.createEdge(source, sec.field, entry.id, note);
+                setAdding(false);
+                setSource("");
+                setNote("");
+                onChanged();
+              }}
+            >
+              <select
+                value={source}
+                onChange={(ev) => setSource(ev.target.value)}
+                className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+                autoFocus
+              >
+                <option value="">choose…</option>
+                {candidates.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title} ({c.type_name})
+                  </option>
+                ))}
+              </select>
+              <input
+                value={note}
+                onChange={(ev) => setNote(ev.target.value)}
+                placeholder="annotation"
+                className="w-36 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+              />
+              <button className="rounded bg-neutral-200 px-2 py-1 text-sm text-neutral-900">
+                add
+              </button>
+              <button
+                type="button"
+                onClick={() => setAdding(false)}
+                className="px-1 text-neutral-500"
+              >
+                ×
+              </button>
+            </form>
+          ) : (
+            <button
+              onClick={() => setAdding(true)}
+              title={`Relate an entry to this one via ${sec.field}`}
+              className="rounded-full border border-dashed border-neutral-700 px-3 py-1 text-sm text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+            >
+              +
+            </button>
+          ))}
+      </div>
     </div>
   );
 }

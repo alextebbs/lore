@@ -28,3 +28,6 @@ DELETE FROM worlds WHERE id = $1;
 
 -- name: GetEntryByTitle :one
 SELECT id FROM entries WHERE world_id = $1 AND lower(title) = lower($2) LIMIT 1;
+
+-- name: UpdateEntryTypeRow :one
+UPDATE entry_types SET name = $2, fields = $3 WHERE id = $1 RETURNING *;
