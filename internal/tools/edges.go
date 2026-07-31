@@ -157,7 +157,14 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 			ID: newID(), WorldID: from.WorldID, FromEntry: fid,
 			Field: field, ToEntry: tid, Annotation: annotation, Status: status,
 		})
-		return err
+		if err != nil {
+			return err
+		}
+		fromType, err := q.GetEntryType(ctx, from.TypeID)
+		if err != nil {
+			return err
+		}
+		return t.refreshDerived(ctx, q, from, fromType.Name)
 	})
 	if err != nil {
 		return Edge{}, nil, fmt.Errorf("creating edge: %w", err)
@@ -185,7 +192,15 @@ func (t *Tools) DeleteEdge(ctx context.Context, id string, author Author) error 
 	if author == AuthorAI && row.Status == StatusCanon {
 		return fmt.Errorf("canon edge cannot be deleted by AI; a human must do it")
 	}
-	return t.store.Queries.DeleteEdge(ctx, eid)
+	if err := t.store.Queries.DeleteEdge(ctx, eid); err != nil {
+		return err
+	}
+	if from, err := t.store.Queries.GetEntry(ctx, row.FromEntry); err == nil {
+		if et, err := t.store.Queries.GetEntryType(ctx, from.TypeID); err == nil {
+			_ = t.refreshDerived(ctx, t.store.Queries, from, et.Name)
+		}
+	}
+	return nil
 }
 
 // relationSections builds the outgoing and reverse views for an entry.

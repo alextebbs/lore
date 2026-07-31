@@ -5,6 +5,8 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/alextebbs/lore/internal/tools"
 )
@@ -28,6 +30,7 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/entries/{id}/edges", s.createEdge)
 	mux.HandleFunc("DELETE /api/edges/{id}", s.deleteEdge)
 	mux.HandleFunc("GET /api/entries/{id}/graph", s.getGraph)
+	mux.HandleFunc("GET /api/worlds/{id}/search", s.search)
 }
 
 func (s *Server) listWorlds(w http.ResponseWriter, r *http.Request) {
@@ -75,8 +78,30 @@ func (s *Server) createEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getEntry(w http.ResponseWriter, r *http.Request) {
-	entry, err := s.Tools.GetEntry(r.Context(), r.PathValue("id"))
-	respond(w, entry, err)
+	id := r.PathValue("id")
+	switch r.URL.Query().Get("detail") {
+	case "card":
+		card, _, err := s.Tools.Serializations(r.Context(), id)
+		respond(w, map[string]string{"id": id, "card": card}, err)
+	case "digest":
+		_, digest, err := s.Tools.Serializations(r.Context(), id)
+		respond(w, map[string]string{"id": id, "digest": digest}, err)
+	default:
+		entry, err := s.Tools.GetEntry(r.Context(), id)
+		respond(w, entry, err)
+	}
+}
+
+func (s *Server) search(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	var near []string
+	if n := q.Get("near"); n != "" {
+		near = strings.Split(n, ",")
+	}
+	limit, _ := strconv.Atoi(q.Get("limit"))
+	results, err := s.Tools.FindRelevant(r.Context(), r.PathValue("id"),
+		q.Get("q"), q.Get("canon_only") == "true", near, limit)
+	respond(w, results, err)
 }
 
 func (s *Server) updateEntry(w http.ResponseWriter, r *http.Request) {

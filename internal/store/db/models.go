@@ -32,6 +32,14 @@ type Entry struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type EntryDerived struct {
+	EntryID    pgtype.UUID
+	Card       string
+	Digest     string
+	SearchText string
+	UpdatedAt  pgtype.Timestamptz
+}
+
 type EntryType struct {
 	ID        pgtype.UUID
 	WorldID   pgtype.UUID

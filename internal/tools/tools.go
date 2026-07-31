@@ -9,6 +9,7 @@
 package tools
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -41,10 +42,33 @@ const (
 
 type Tools struct {
 	store *store.Store
+	// embedder receives (entry_id, card) after writes to refresh
+	// semantic vectors; nil when embeddings are unavailable.
+	embedder Embedder
+	// semantic augments find_relevant when available.
+	semantic SemanticSearcher
+}
+
+// Embedder consumes card updates for background embedding.
+type Embedder interface {
+	EnqueueEntry(entryID, card string)
+}
+
+// SemanticSearcher scores world entries against a query string.
+type SemanticSearcher interface {
+	// Similar returns entry_id -> similarity in [0,1]; ok=false when
+	// semantic search is unavailable (no key, no pgvector).
+	Similar(ctx context.Context, worldID, query string) (map[string]float64, bool)
 }
 
 func New(st *store.Store) *Tools {
 	return &Tools{store: st}
+}
+
+// SetSemantic wires the optional retrieval engine in (both directions).
+func (t *Tools) SetSemantic(e Embedder, s SemanticSearcher) {
+	t.embedder = e
+	t.semantic = s
 }
 
 // FieldDef is one schema field (soft schema, ADR 0004).

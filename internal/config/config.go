@@ -13,13 +13,19 @@ type Config struct {
 	// MCPToken guards /mcp when set (Authorization: Bearer <token>).
 	// Empty = unauthenticated, for local dev only.
 	MCPToken string
+	// VoyageAPIKey enables semantic retrieval embeddings when set.
+	VoyageAPIKey string
+	// AnthropicAPIKey powers the in-app agent when set.
+	AnthropicAPIKey string
 }
 
 func Load() Config {
 	return Config{
 		Port:        getenv("PORT", "8080"),
 		DatabaseURL: os.Getenv("DATABASE_URL"),
-		MCPToken:    os.Getenv("MCP_TOKEN"),
+		MCPToken:        os.Getenv("MCP_TOKEN"),
+		VoyageAPIKey:    os.Getenv("VOYAGE_API_KEY"),
+		AnthropicAPIKey: os.Getenv("ANTHROPIC_API_KEY"),
 	}
 }
 

@@ -115,12 +115,40 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, view(out), err
 	})
 
+	type getEntryIn struct {
+		EntryID string `json:"entry_id" jsonschema:"the entry's id"`
+		Detail  string `json:"detail,omitempty" jsonschema:"card (one line), digest (paragraph), or full (default). Use card/digest to save tokens."`
+	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "get_entry",
-		Description: "Get an entry in full: fields with statuses, body markdown ({~draft} spans), relations, and reverse sections.",
-	}, func(ctx context.Context, req *mcp.CallToolRequest, in entryID) (*mcp.CallToolResult, entryView, error) {
-		out, err := t.GetEntry(ctx, in.EntryID)
-		return nil, view(out), err
+		Description: "Get an entry. detail=full (default) returns fields with statuses, body markdown ({~draft} spans), relations, and reverse sections; card/digest return compact summaries at lower token cost.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in getEntryIn) (*mcp.CallToolResult, any, error) {
+		switch in.Detail {
+		case "card":
+			card, _, err := t.Serializations(ctx, in.EntryID)
+			return nil, map[string]string{"id": in.EntryID, "card": card}, err
+		case "digest":
+			_, digest, err := t.Serializations(ctx, in.EntryID)
+			return nil, map[string]string{"id": in.EntryID, "digest": digest}, err
+		default:
+			out, err := t.GetEntry(ctx, in.EntryID)
+			return nil, view(out), err
+		}
+	})
+
+	type findRelevantIn struct {
+		WorldID   string   `json:"world_id" jsonschema:"the world's id"`
+		Query     string   `json:"query" jsonschema:"what you're looking for, natural language or names"`
+		CanonOnly bool     `json:"canon_only,omitempty" jsonschema:"restrict to established canon facts"`
+		Near      []string `json:"near,omitempty" jsonschema:"entry ids to boost graph neighbors of (e.g. the entry being discussed)"`
+		Limit     int      `json:"limit,omitempty" jsonschema:"max results, default 10"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "find_relevant",
+		Description: "THE search tool: hybrid ranking (lexical + semantic when available + graph proximity + canon weighting) over a world's entries. Returns cards with scores. Call before authoring to load relevant context.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in findRelevantIn) (*mcp.CallToolResult, []tools.SearchResult, error) {
+		out, err := t.FindRelevant(ctx, in.WorldID, in.Query, in.CanonOnly, in.Near, in.Limit)
+		return nil, out, err
 	})
 
 	type updateEntryIn struct {

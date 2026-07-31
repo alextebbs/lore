@@ -13,6 +13,7 @@ import (
 	"github.com/alextebbs/lore/internal/api"
 	"github.com/alextebbs/lore/internal/config"
 	"github.com/alextebbs/lore/internal/mcpserver"
+	"github.com/alextebbs/lore/internal/retrieval"
 	"github.com/alextebbs/lore/internal/store"
 	"github.com/alextebbs/lore/internal/tools"
 	"github.com/alextebbs/lore/web"
@@ -43,6 +44,8 @@ func run() error {
 		defer st.Close()
 		srv.DB = st.Pool
 		srv.Tools = tools.New(st)
+		engine := retrieval.New(ctx, st, cfg.VoyageAPIKey)
+		srv.Tools.SetSemantic(engine, engine)
 		srv.MCP = mcpserver.Handler(srv.Tools, cfg.MCPToken)
 		slog.Info("database connected, migrations applied",
 			"mcp_auth", cfg.MCPToken != "")

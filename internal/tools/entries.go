@@ -43,7 +43,10 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 		if err != nil {
 			return fmt.Errorf("creating entry: %w", err)
 		}
-		return recordRevision(ctx, q, row, author)
+		if err := recordRevision(ctx, q, row, author); err != nil {
+			return err
+		}
+		return t.refreshDerived(ctx, q, row, et.Name)
 	})
 	if err != nil {
 		return Entry{}, err
@@ -135,7 +138,10 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		if err != nil {
 			return fmt.Errorf("updating entry: %w", err)
 		}
-		return recordRevision(ctx, q, updated, author)
+		if err := recordRevision(ctx, q, updated, author); err != nil {
+			return err
+		}
+		return t.refreshDerived(ctx, q, updated, et.Name)
 	})
 	if err != nil {
 		return Entry{}, nil, err
@@ -225,7 +231,10 @@ func (t *Tools) MarkCanon(ctx context.Context, id string, scope CanonScope) (Ent
 		if err != nil {
 			return err
 		}
-		return recordRevision(ctx, q, updated, AuthorHuman)
+		if err := recordRevision(ctx, q, updated, AuthorHuman); err != nil {
+			return err
+		}
+		return t.refreshDerived(ctx, q, updated, et.Name)
 	})
 	if err != nil {
 		return Entry{}, err
@@ -303,7 +312,10 @@ func (t *Tools) RestoreRevision(ctx context.Context, entryID, revisionID string)
 		if err != nil {
 			return err
 		}
-		return recordRevision(ctx, q, updated, AuthorHuman)
+		if err := recordRevision(ctx, q, updated, AuthorHuman); err != nil {
+			return err
+		}
+		return t.refreshDerived(ctx, q, updated, et.Name)
 	})
 	if err != nil {
 		return Entry{}, err
