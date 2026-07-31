@@ -152,4 +152,88 @@ export const api = {
     req<{ deleted: boolean }>(`/api/edges/${edgeId}`, { method: "DELETE" }),
   getGraph: (id: string, depth: 1 | 2) =>
     req<Graph>(`/api/entries/${id}/graph?depth=${depth}`),
+  getTray: (worldId: string, current?: string) =>
+    req<Tray>(
+      `/api/worlds/${worldId}/tray${current ? `?current=${current}` : ""}`,
+    ),
+  createPin: (worldId: string, entryId: string, withNeighbors: boolean) =>
+    req<{ pinned: boolean }>(
+      `/api/worlds/${worldId}/tray/pins`,
+      json({ entry_id: entryId, with_neighbors: withNeighbors }),
+    ),
+  deletePin: (worldId: string, entryId: string) =>
+    req<{ unpinned: boolean }>(`/api/worlds/${worldId}/tray/pins/${entryId}`, {
+      method: "DELETE",
+    }),
+  listConversations: (worldId: string) =>
+    req<{ id: string; title: string; message_count: number }[]>(
+      `/api/worlds/${worldId}/conversations`,
+    ),
+  createConversation: (worldId: string) =>
+    req<{ id: string }>(`/api/worlds/${worldId}/conversations`, json({})),
+  getConversation: (id: string) =>
+    req<{ role: string; content: ContentBlock[] }[]>(`/api/conversations/${id}`),
+  evictAutoItem: (conversationId: string, entryId: string) =>
+    req<{ evicted: string[] }>(
+      `/api/conversations/${conversationId}/evict`,
+      json({ entry_id: entryId }),
+    ),
 };
+
+export type TrayItem = {
+  entry_id: string;
+  title: string;
+  source: "pinned" | "current" | "neighbor" | "auto";
+  level: "full" | "digest" | "card";
+  text: string;
+  tokens: number;
+  score?: number;
+};
+export type Tray = { items: TrayItem[] | null; total_tokens: number; budget: number };
+export type ContentBlock = {
+  type: string;
+  text?: string;
+  name?: string;
+  input?: unknown;
+  content?: unknown;
+  is_error?: boolean;
+};
+export type AgentEvent = {
+  type: "context" | "text" | "tool_call" | "tool_result" | "error" | "done";
+  text?: string;
+  name?: string;
+  input?: unknown;
+  result?: string;
+  is_error?: boolean;
+  tray?: Tray;
+};
+
+// POST a chat message; yields agent events from the SSE stream.
+export async function* sendMessage(
+  conversationId: string,
+  content: string,
+  currentEntryId?: string,
+): AsyncGenerator<AgentEvent> {
+  const res = await fetch(`/api/conversations/${conversationId}/messages`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ content, current_entry_id: currentEntryId ?? "" }),
+  });
+  if (!res.ok || !res.body) throw new Error(`chat failed: ${res.status}`);
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const parts = buf.split("\n\n");
+    buf = parts.pop() ?? "";
+    for (const part of parts) {
+      const line = part.trim();
+      if (line.startsWith("data: ")) {
+        yield JSON.parse(line.slice(6)) as AgentEvent;
+      }
+    }
+  }
+}

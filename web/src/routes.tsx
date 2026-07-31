@@ -15,6 +15,7 @@ import {
   type Revision as RevisionType,
 } from "./api";
 import { BodyEditor } from "./editor";
+import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
@@ -203,6 +204,8 @@ function WorldPage() {
           Add
         </button>
       </form>
+
+      <ChatPanel worldId={worldId} />
     </div>
   );
 }
@@ -569,6 +572,7 @@ function EntryPage() {
           </span>
         </div>
         <div className="flex items-center gap-2">
+          <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
             <button
@@ -675,7 +679,40 @@ function EntryPage() {
           ))}
         </ul>
       )}
+
+      <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
     </div>
+  );
+}
+
+function PinButton({ worldId, entryId }: { worldId: string; entryId: string }) {
+  const qc = useQueryClient();
+  const tray = useQuery({
+    queryKey: ["tray", worldId],
+    queryFn: () => api.getTray(worldId),
+  });
+  const pinned = (tray.data?.items ?? []).some(
+    (i) => i.entry_id === entryId && i.source === "pinned",
+  );
+  const toggle = useMutation({
+    mutationFn: async () => {
+      if (pinned) await api.deletePin(worldId, entryId);
+      else await api.createPin(worldId, entryId, false);
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["tray"] }),
+  });
+  return (
+    <button
+      onClick={() => toggle.mutate()}
+      title={pinned ? "Unpin from AI context" : "Pin to AI context"}
+      className={`rounded-lg border px-2 py-1 text-sm ${
+        pinned
+          ? "border-sky-700 text-sky-300"
+          : "border-neutral-700 text-neutral-500 hover:text-neutral-300"
+      }`}
+    >
+      📌
+    </button>
   );
 }
 

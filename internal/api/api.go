@@ -7,6 +7,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/alextebbs/lore/internal/agent"
+	"github.com/alextebbs/lore/internal/store"
 	"github.com/alextebbs/lore/internal/tools"
 )
 
@@ -26,6 +28,10 @@ type Server struct {
 	Tools *tools.Tools
 	// MCP is the MCP endpoint handler, mounted at /mcp.
 	MCP http.Handler
+	// Store backs conversation persistence for the chat harness.
+	Store *store.Store
+	// Agent is the in-app chat harness (UI-only orchestration).
+	Agent *agent.Agent
 }
 
 func (s *Server) Router() http.Handler {
@@ -33,6 +39,9 @@ func (s *Server) Router() http.Handler {
 	mux.HandleFunc("GET /api/health", s.handleHealth)
 	if s.Tools != nil {
 		s.registerContent(mux)
+	}
+	if s.Store != nil && s.Agent != nil {
+		s.registerChat(mux)
 	}
 	if s.MCP != nil {
 		mux.Handle("/mcp", s.MCP)

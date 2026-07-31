@@ -8,6 +8,23 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type ContextPin struct {
+	UserID        pgtype.UUID
+	WorldID       pgtype.UUID
+	EntryID       pgtype.UUID
+	WithNeighbors bool
+	CreatedAt     pgtype.Timestamptz
+}
+
+type Conversation struct {
+	ID        pgtype.UUID
+	WorldID   pgtype.UUID
+	UserID    pgtype.UUID
+	Title     string
+	Evicted   []byte
+	CreatedAt pgtype.Timestamptz
+}
+
 type Edge struct {
 	ID         pgtype.UUID
 	WorldID    pgtype.UUID
@@ -48,6 +65,14 @@ type EntryType struct {
 	Fields    []byte
 	Builtin   bool
 	CreatedAt pgtype.Timestamptz
+}
+
+type Message struct {
+	ID             pgtype.UUID
+	ConversationID pgtype.UUID
+	Role           string
+	Content        []byte
+	CreatedAt      pgtype.Timestamptz
 }
 
 type Revision struct {

@@ -247,6 +247,44 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, map[string]bool{"deleted": err == nil}, err
 	})
 
+	type trayIn struct {
+		WorldID        string `json:"world_id" jsonschema:"the world's id"`
+		CurrentEntryID string `json:"current_entry_id,omitempty" jsonschema:"entry currently being discussed (optional)"`
+		Query          string `json:"query,omitempty" jsonschema:"topic to auto-retrieve relevant entries for (optional)"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "get_context_tray",
+		Description: "Get the user's persistent context tray for a world: pinned entries, the current entry, and auto-retrieved items, each with serialized text and token estimates. Call before authoring to load the user's working set.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in trayIn) (*mcp.CallToolResult, tools.Tray, error) {
+		out, err := t.GetContextTray(ctx, in.WorldID, in.CurrentEntryID, in.Query, nil)
+		return nil, out, err
+	})
+
+	type pinIn struct {
+		WorldID       string `json:"world_id" jsonschema:"the world's id"`
+		EntryID       string `json:"entry_id" jsonschema:"entry to pin"`
+		WithNeighbors bool   `json:"with_neighbors,omitempty" jsonschema:"also include the entry's graph neighbors"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "pin_entry",
+		Description: "Pin an entry to the user's context tray (persists across sessions and surfaces).",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in pinIn) (*mcp.CallToolResult, any, error) {
+		err := t.PinEntry(ctx, in.WorldID, in.EntryID, in.WithNeighbors)
+		return nil, map[string]bool{"pinned": err == nil}, err
+	})
+
+	type unpinIn struct {
+		WorldID string `json:"world_id" jsonschema:"the world's id"`
+		EntryID string `json:"entry_id" jsonschema:"entry to unpin"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "unpin_entry",
+		Description: "Remove an entry from the user's context tray.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in unpinIn) (*mcp.CallToolResult, any, error) {
+		err := t.UnpinEntry(ctx, in.WorldID, in.EntryID)
+		return nil, map[string]bool{"unpinned": err == nil}, err
+	})
+
 	type traverseIn struct {
 		EntryID string `json:"entry_id" jsonschema:"center of the ego network"`
 		Depth   int    `json:"depth,omitempty" jsonschema:"hops out from the entry, 1 or 2 (default 1)"`

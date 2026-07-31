@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/alextebbs/lore/internal/agent"
 	"github.com/alextebbs/lore/internal/api"
 	"github.com/alextebbs/lore/internal/config"
 	"github.com/alextebbs/lore/internal/mcpserver"
@@ -47,8 +48,11 @@ func run() error {
 		engine := retrieval.New(ctx, st, cfg.VoyageAPIKey)
 		srv.Tools.SetSemantic(engine, engine)
 		srv.MCP = mcpserver.Handler(srv.Tools, cfg.MCPToken)
+		srv.Store = st
+		srv.Agent = agent.New(srv.Tools, cfg.AnthropicAPIKey)
 		slog.Info("database connected, migrations applied",
-			"mcp_auth", cfg.MCPToken != "")
+			"mcp_auth", cfg.MCPToken != "",
+			"agent_ready", srv.Agent.Ready())
 	} else {
 		slog.Warn("DATABASE_URL not set; running without a database")
 	}
