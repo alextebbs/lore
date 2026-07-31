@@ -30,6 +30,14 @@ binary).
 `make test` runs what CI runs. `make migrate-new name=add_worlds` creates a
 migration; migrations apply automatically at server startup.
 
+## Demo fixture
+
+`fixtures/emberfall.json` is a full campaign setting (150+ entries, 380+
+edges, mixed draft/canon states) generated entirely through the MCP
+surface (`scripts/generate_fixture.py`). Load it into a running dev
+server with `make fixture-load` — safe to repeat; each import creates a
+fresh world.
+
 ## Work tracking
 
 Issues live in [beads](https://github.com/steveyegge/beads): `bd ready`

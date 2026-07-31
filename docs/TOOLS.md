@@ -40,6 +40,9 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | PinEntry / UnpinEntry | POST/DELETE /api/worlds/{id}/tray/pins | pin_entry / unpin_entry |
 | ExportEntry (clean vault markdown) | GET /api/entries/{id}/export | export_entry |
 | ExportWorld (Obsidian vault) | GET /api/worlds/{id}/export (zip) | export_world (file list) |
+| CreateEntryType (single inheritance, soft warnings) | POST /api/worlds/{id}/types | create_entry_type |
+| DumpWorld (full-fidelity fixture) | GET /api/worlds/{id}/dump | dump_world |
+| ImportWorld (rebuild from fixture) | POST /api/worlds/import | import_world |
 
 UI-only (SPEC tenet 2 exception — orchestration, not capability): the
 chat harness (conversations/messages/evict endpoints) drives the agent

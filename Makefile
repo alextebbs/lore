@@ -38,3 +38,10 @@ migrate-new:
 
 clean:
 	rm -rf bin web/dist/assets
+
+## fixture-load: import the Emberfall demo world (safe to run repeatedly)
+fixture-load:
+	@curl -s -X POST localhost:8080/api/worlds/import \
+	  -H "Content-Type: application/json" \
+	  -d "{\"dump\": $$(cat fixtures/emberfall.json)}" \
+	  | python3 -c "import json,sys; w=json.load(sys.stdin); print('imported world:', w['name'], w['id'])"
