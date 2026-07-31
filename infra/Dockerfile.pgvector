@@ -1,0 +1,9 @@
+# mythroller-db image: Fly postgres-flex + pgvector (bead lore-8q6).
+# Build: fly deploy --build-only --push -a mythroller-db \
+#          --dockerfile infra/Dockerfile.pgvector --image-label pgvector
+FROM flyio/postgres-flex:16.4
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        postgresql-16-pgvector \
+    && rm -rf /var/lib/apt/lists/*

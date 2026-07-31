@@ -35,6 +35,39 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/worlds/{id}/search", s.search)
 	mux.HandleFunc("GET /api/entries/{id}/export", s.exportEntry)
 	mux.HandleFunc("GET /api/worlds/{id}/export", s.exportWorld)
+	mux.HandleFunc("POST /api/worlds/{id}/types", s.createEntryType)
+	mux.HandleFunc("GET /api/worlds/{id}/dump", s.dumpWorld)
+	mux.HandleFunc("POST /api/worlds/import", s.importWorld)
+}
+
+func (s *Server) createEntryType(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Name     string           `json:"name"`
+		ParentID string           `json:"parent_id"`
+		Fields   []tools.FieldDef `json:"fields"`
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	et, warnings, err := s.Tools.CreateEntryType(r.Context(), r.PathValue("id"), in.Name, in.ParentID, in.Fields)
+	respond(w, map[string]any{"type": et, "warnings": warnings}, err)
+}
+
+func (s *Server) dumpWorld(w http.ResponseWriter, r *http.Request) {
+	dump, err := s.Tools.DumpWorld(r.Context(), r.PathValue("id"))
+	respond(w, dump, err)
+}
+
+func (s *Server) importWorld(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Name string          `json:"name"`
+		Dump tools.WorldDump `json:"dump"`
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	world, err := s.Tools.ImportWorld(r.Context(), in.Dump, in.Name)
+	respond(w, world, err)
 }
 
 func (s *Server) exportEntry(w http.ResponseWriter, r *http.Request) {

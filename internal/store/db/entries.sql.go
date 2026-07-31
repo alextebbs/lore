@@ -185,6 +185,40 @@ func (q *Queries) ListEntries(ctx context.Context, worldID pgtype.UUID) ([]ListE
 	return items, nil
 }
 
+const listEntryRows = `-- name: ListEntryRows :many
+SELECT id, world_id, type_id, title, fields, body, status, created_at, updated_at FROM entries WHERE world_id = $1 ORDER BY created_at
+`
+
+func (q *Queries) ListEntryRows(ctx context.Context, worldID pgtype.UUID) ([]Entry, error) {
+	rows, err := q.db.Query(ctx, listEntryRows, worldID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Entry
+	for rows.Next() {
+		var i Entry
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorldID,
+			&i.TypeID,
+			&i.Title,
+			&i.Fields,
+			&i.Body,
+			&i.Status,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listRevisions = `-- name: ListRevisions :many
 SELECT id, entry_id, author, status, created_at
 FROM revisions

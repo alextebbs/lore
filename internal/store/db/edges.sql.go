@@ -123,6 +123,40 @@ func (q *Queries) GetEntriesByIDs(ctx context.Context, dollar_1 []pgtype.UUID) (
 	return items, nil
 }
 
+const listEdgeRows = `-- name: ListEdgeRows :many
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position
+`
+
+func (q *Queries) ListEdgeRows(ctx context.Context, worldID pgtype.UUID) ([]Edge, error) {
+	rows, err := q.db.Query(ctx, listEdgeRows, worldID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Edge
+	for rows.Next() {
+		var i Edge
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorldID,
+			&i.FromEntry,
+			&i.Field,
+			&i.ToEntry,
+			&i.Annotation,
+			&i.Status,
+			&i.Position,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listEdgesFrom = `-- name: ListEdgesFrom :many
 SELECT e.id, e.world_id, e.from_entry, e.field, e.to_entry, e.annotation, e.status, e.position, e.created_at, t.title AS to_title, t.status AS to_entry_status,
        ty.name AS to_type_name

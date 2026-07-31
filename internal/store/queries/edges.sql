@@ -41,3 +41,6 @@ SELECT e.id, e.title, e.status, ty.name AS type_name
 FROM entries e
 JOIN entry_types ty ON ty.id = e.type_id
 WHERE e.id = ANY($1::uuid[]);
+
+-- name: ListEdgeRows :many
+SELECT * FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position;

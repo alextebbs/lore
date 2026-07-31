@@ -32,3 +32,6 @@ ORDER BY created_at DESC;
 
 -- name: GetRevision :one
 SELECT * FROM revisions WHERE id = $1;
+
+-- name: ListEntryRows :many
+SELECT * FROM entries WHERE world_id = $1 ORDER BY created_at;

@@ -7,6 +7,8 @@ package mcpserver
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/modelcontextprotocol/go-sdk/mcp"
@@ -295,6 +297,52 @@ func New(t *tools.Tools) *mcp.Server {
 		Description: "Get the ego network around an entry: nodes and typed edges 1-2 hops out. Use to load related context before authoring.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in traverseIn) (*mcp.CallToolResult, tools.Graph, error) {
 		out, err := t.Traverse(ctx, in.EntryID, in.Depth)
+		return nil, out, err
+	})
+
+	type createTypeIn struct {
+		WorldID  string           `json:"world_id" jsonschema:"the world's id"`
+		Name     string           `json:"name" jsonschema:"name of the new entry type"`
+		ParentID string           `json:"parent_id,omitempty" jsonschema:"parent type id for single inheritance (optional)"`
+		Fields   []tools.FieldDef `json:"fields" jsonschema:"field definitions; kind: string|number|date|richtext|relation; relation fields take a relation config (targets, many, template, inverse_label, annotations)"`
+	}
+	type createTypeOut struct {
+		Type     tools.EntryType `json:"type"`
+		Warnings []string        `json:"warnings,omitempty"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "create_entry_type",
+		Description: "Define a new entry type (schema) in a world, optionally inheriting from a parent type. Soft-validated: warnings, not rejections.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in createTypeIn) (*mcp.CallToolResult, createTypeOut, error) {
+		et, warnings, err := t.CreateEntryType(ctx, in.WorldID, in.Name, in.ParentID, in.Fields)
+		return nil, createTypeOut{Type: et, Warnings: warnings}, err
+	})
+
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "dump_world",
+		Description: "Export a world as a full-fidelity fixture (JSON string): types, entries with statuses and draft marks, edges with annotations. Re-importable via import_world.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, any, error) {
+		dump, err := t.DumpWorld(ctx, in.WorldID)
+		if err != nil {
+			return nil, nil, err
+		}
+		raw, err := json.Marshal(dump)
+		return nil, map[string]string{"dump_json": string(raw)}, err
+	})
+
+	type importIn struct {
+		Name     string `json:"name,omitempty" jsonschema:"name for the imported world (defaults to the dump's name)"`
+		DumpJSON string `json:"dump_json" jsonschema:"a fixture produced by dump_world"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "import_world",
+		Description: "Rebuild a world from a dump_world fixture. IDs are remapped; statuses, draft marks, and annotations come through verbatim.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in importIn) (*mcp.CallToolResult, tools.World, error) {
+		var dump tools.WorldDump
+		if err := json.Unmarshal([]byte(in.DumpJSON), &dump); err != nil {
+			return nil, tools.World{}, fmt.Errorf("bad dump json: %w", err)
+		}
+		out, err := t.ImportWorld(ctx, dump, in.Name)
 		return nil, out, err
 	})
 
