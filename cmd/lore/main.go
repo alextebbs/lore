@@ -12,6 +12,7 @@ import (
 
 	"github.com/alextebbs/lore/internal/api"
 	"github.com/alextebbs/lore/internal/config"
+	"github.com/alextebbs/lore/internal/mcpserver"
 	"github.com/alextebbs/lore/internal/store"
 	"github.com/alextebbs/lore/internal/tools"
 	"github.com/alextebbs/lore/web"
@@ -42,7 +43,9 @@ func run() error {
 		defer st.Close()
 		srv.DB = st.Pool
 		srv.Tools = tools.New(st)
-		slog.Info("database connected, migrations applied")
+		srv.MCP = mcpserver.Handler(srv.Tools, cfg.MCPToken)
+		slog.Info("database connected, migrations applied",
+			"mcp_auth", cfg.MCPToken != "")
 	} else {
 		slog.Warn("DATABASE_URL not set; running without a database")
 	}

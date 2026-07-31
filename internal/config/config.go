@@ -10,12 +10,16 @@ type Config struct {
 	// DatabaseURL is a pgx connection string. Empty means no database,
 	// which the server tolerates during early scaffolding.
 	DatabaseURL string
+	// MCPToken guards /mcp when set (Authorization: Bearer <token>).
+	// Empty = unauthenticated, for local dev only.
+	MCPToken string
 }
 
 func Load() Config {
 	return Config{
 		Port:        getenv("PORT", "8080"),
 		DatabaseURL: os.Getenv("DATABASE_URL"),
+		MCPToken:    os.Getenv("MCP_TOKEN"),
 	}
 }
 

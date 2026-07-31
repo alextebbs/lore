@@ -24,6 +24,8 @@ type Server struct {
 	// Tools is the capability layer; content routes register only when
 	// it's wired (i.e., a database is configured).
 	Tools *tools.Tools
+	// MCP is the MCP endpoint handler, mounted at /mcp.
+	MCP http.Handler
 }
 
 func (s *Server) Router() http.Handler {
@@ -31,6 +33,9 @@ func (s *Server) Router() http.Handler {
 	mux.HandleFunc("GET /api/health", s.handleHealth)
 	if s.Tools != nil {
 		s.registerContent(mux)
+	}
+	if s.MCP != nil {
+		mux.Handle("/mcp", s.MCP)
 	}
 	if s.Static != nil {
 		mux.Handle("/", s.Static)

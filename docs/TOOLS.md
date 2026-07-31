@@ -14,25 +14,26 @@ structured and agent-legible.
 
 ## Implemented capabilities (tool-layer function · HTTP route · MCP tool)
 
-Per SPEC tenet 2, every row must eventually have all three columns; the
-MCP column fills in when M3 lands.
+Per SPEC tenet 2, every row has all three surfaces. /mcp is streamable
+HTTP; when MCP_TOKEN is set it requires `Authorization: Bearer`. AI
+callers (MCP + agent) write as draft; the UI/API write as the human.
 
 | Capability | HTTP | MCP tool |
 |---|---|---|
-| CreateWorld | POST /api/worlds | (M3) |
-| ListWorlds | GET /api/worlds | (M3) |
-| GetWorld + ListTypes | GET /api/worlds/{id} | (M3) |
-| ListEntries | GET /api/worlds/{id}/entries | (M3) |
-| CreateEntry | POST /api/worlds/{id}/entries | (M3) |
-| GetEntry | GET /api/entries/{id} | (M3) |
-| UpdateEntry (patch; soft warnings) | PATCH /api/entries/{id} | (M3) |
-| MarkCanon (scoped: fields/body or all) | POST /api/entries/{id}/canon | (M3) |
-| ListRevisions | GET /api/entries/{id}/revisions | (M3) |
-| GetRevision (full snapshot) | GET /api/entries/{id}/revisions/{rid} | (M3) |
-| RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | (M3) |
-| CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | (M3) |
-| DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | (M3) |
-| Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | (M3) |
+| CreateWorld | POST /api/worlds | create_world |
+| ListWorlds | GET /api/worlds | list_worlds |
+| GetWorld + ListTypes | GET /api/worlds/{id} | get_world |
+| ListEntries | GET /api/worlds/{id}/entries | list_entries |
+| CreateEntry | POST /api/worlds/{id}/entries | create_entry |
+| GetEntry | GET /api/entries/{id} | get_entry |
+| UpdateEntry (patch; soft warnings) | PATCH /api/entries/{id} | update_entry |
+| MarkCanon (scoped: fields/body/edges or all) | POST /api/entries/{id}/canon | mark_canon (human-gated) |
+| ListRevisions | GET /api/entries/{id}/revisions | list_revisions |
+| GetRevision (full snapshot) | GET /api/entries/{id}/revisions/{rid} | get_revision |
+| RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | restore_revision (human-gated) |
+| CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | create_edge |
+| DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | delete_edge |
+| Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | traverse |
 
 ## Query
 

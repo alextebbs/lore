@@ -34,3 +34,16 @@ migration; migrations apply automatically at server startup.
 
 Issues live in [beads](https://github.com/steveyegge/beads): `bd ready`
 shows unblocked work. See `CLAUDE.md` for the workflow.
+
+## MCP
+
+The full tool surface is exposed at `/mcp` (streamable HTTP). Connect
+Claude Code:
+
+```sh
+claude mcp add --transport http lore http://localhost:8080/mcp \
+  --header "Authorization: Bearer $MCP_TOKEN"
+```
+
+`MCP_TOKEN` is optional in local dev (unset = open). AI clients author
+in draft; humans promote to canon in the UI or via the API.
