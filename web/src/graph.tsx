@@ -91,13 +91,14 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   const positions = useMemo(() => {
     if (!graph.data) return new Map<string, Pos>();
     return layout(
-      graph.data.nodes.map((n) => n.id),
-      graph.data.edges,
+      (graph.data.nodes ?? []).map((n) => n.id),
+      graph.data.edges ?? [],
     );
   }, [graph.data]);
 
   if (!graph.data) return null;
-  const { nodes, edges } = graph.data;
+  const nodes = graph.data.nodes ?? [];
+  const edges = graph.data.edges ?? [];
   if (nodes.length <= 1) {
     return (
       <p className="text-xs text-neutral-600">

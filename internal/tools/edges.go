@@ -399,7 +399,7 @@ func (t *Tools) Traverse(ctx context.Context, entryID string, depth int) (Graph,
 
 	depthOf := map[string]int{entryID: 0}
 	edgeSeen := map[string]bool{}
-	var edges []GraphEdge
+	edges := []GraphEdge{}
 	frontier := []pgtype.UUID{eid}
 
 	for d := 1; d <= depth; d++ {
@@ -441,7 +441,7 @@ func (t *Tools) Traverse(ctx context.Context, entryID string, depth int) (Graph,
 	if err != nil {
 		return Graph{}, err
 	}
-	nodes := make([]GraphNode, 0, len(rows))
+	nodes := make([]GraphNode, 0, max(len(rows), 1))
 	for _, r := range rows {
 		nodes = append(nodes, GraphNode{
 			ID: idStr(r.ID), Title: r.Title, TypeName: r.TypeName,

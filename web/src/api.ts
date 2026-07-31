@@ -66,14 +66,14 @@ export type ReverseSection = {
   }[];
 };
 export type Graph = {
-  nodes: {
+  nodes: null | {
     id: string;
     title: string;
     type_name: string;
     status: string;
     depth: number;
   }[];
-  edges: {
+  edges: null | {
     id: string;
     from: string;
     to: string;
