@@ -424,6 +424,27 @@ function RelationsPanel({
     onSuccess: onChanged,
   });
 
+  const world = useQuery({
+    queryKey: ["world", entry.world_id],
+    queryFn: () => api.getWorld(entry.world_id),
+  });
+  // Subtype-aware target matching: a City counts as a Place.
+  const parentOf = new Map(
+    (world.data?.types ?? []).map((t) => [t.id, t.parent_id]),
+  );
+  const nameOf = new Map((world.data?.types ?? []).map((t) => [t.id, t.name]));
+  const idOf = new Map((world.data?.types ?? []).map((t) => [t.name, t.id]));
+  const satisfiesTargets = (typeName: string, targets?: string[]) => {
+    if (!targets?.length) return true;
+    let id = idOf.get(typeName);
+    while (id) {
+      const n = nameOf.get(id);
+      if (n && targets.includes(n)) return true;
+      id = parentOf.get(id) ?? undefined;
+    }
+    return false;
+  };
+
   const sections = entry.relations ?? [];
   if (sections.length === 0 && (entry.reverse ?? []).length === 0) return null;
 
@@ -433,8 +454,7 @@ function RelationsPanel({
         const candidates = (allEntries.data ?? []).filter(
           (c) =>
             c.id !== entry.id &&
-            (!sec.config?.targets?.length ||
-              sec.config.targets.includes(c.type_name)),
+            satisfiesTargets(c.type_name, sec.config?.targets),
         );
         return (
           <div key={sec.field}>

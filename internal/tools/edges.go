@@ -129,8 +129,35 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 	case def.Kind != "relation":
 		warnings = append(warnings, fmt.Sprintf("field %q is not a relation field", field))
 	case def.Relation != nil:
-		if len(def.Relation.Targets) > 0 && !slices.Contains(def.Relation.Targets, toType.Name) {
-			warnings = append(warnings, fmt.Sprintf("target type %s is not among %v", toType.Name, def.Relation.Targets))
+		if len(def.Relation.Targets) > 0 {
+			// Subtype-aware: a City satisfies a Place target (ADR 0004).
+			allTypes, err := t.store.Queries.ListEntryTypes(ctx, from.WorldID)
+			if err != nil {
+				return Edge{}, nil, err
+			}
+			byID := map[string]db.EntryType{}
+			for _, ty := range allTypes {
+				byID[idStr(ty.ID)] = ty
+			}
+			ok := false
+			cur := toType
+			for {
+				if slices.Contains(def.Relation.Targets, cur.Name) {
+					ok = true
+					break
+				}
+				if !cur.ParentID.Valid {
+					break
+				}
+				parent, found := byID[idStr(cur.ParentID)]
+				if !found {
+					break
+				}
+				cur = parent
+			}
+			if !ok {
+				warnings = append(warnings, fmt.Sprintf("target type %s is not among %v (or their subtypes)", toType.Name, def.Relation.Targets))
+			}
 		}
 		if annotation != "" && !def.Relation.Annotations {
 			warnings = append(warnings, fmt.Sprintf("field %q does not declare annotations", field))
