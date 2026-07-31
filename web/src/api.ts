@@ -19,6 +19,57 @@ export type EntrySummary = {
   type_name: string;
   status: string;
 };
+export type RelationConfig = {
+  targets?: string[];
+  many?: boolean;
+  template?: string;
+  inverse_label?: string;
+  annotations?: boolean;
+};
+export type EntryRef = {
+  id: string;
+  title: string;
+  type_name: string;
+  status: string;
+};
+export type EdgeType = {
+  id: string;
+  field: string;
+  to: EntryRef;
+  annotation?: string;
+  status: string;
+};
+export type RelationSection = {
+  field: string;
+  config?: RelationConfig;
+  edges: EdgeType[] | null;
+};
+export type ReverseSection = {
+  label: string;
+  items: {
+    edge_id: string;
+    from: EntryRef;
+    annotation?: string;
+    status: string;
+  }[];
+};
+export type Graph = {
+  nodes: {
+    id: string;
+    title: string;
+    type_name: string;
+    status: string;
+    depth: number;
+  }[];
+  edges: {
+    id: string;
+    from: string;
+    to: string;
+    field: string;
+    annotation?: string;
+    status: string;
+  }[];
+};
 export type Entry = {
   id: string;
   world_id: string;
@@ -30,6 +81,8 @@ export type Entry = {
   body_doc: DocNode;
   status: string;
   updated_at: string;
+  relations: RelationSection[] | null;
+  reverse: ReverseSection[] | null;
 };
 export type Revision = {
   id: string;
@@ -90,4 +143,13 @@ export const api = {
     req<RevisionDetail>(`/api/entries/${id}/revisions/${rid}`),
   restoreRevision: (id: string, rid: string) =>
     req<Entry>(`/api/entries/${id}/revisions/${rid}/restore`, json({})),
+  createEdge: (id: string, field: string, to: string, annotation: string) =>
+    req<{ edge: EdgeType; warnings: string[] | null }>(
+      `/api/entries/${id}/edges`,
+      json({ field, to, annotation }),
+    ),
+  deleteEdge: (edgeId: string) =>
+    req<{ deleted: boolean }>(`/api/edges/${edgeId}`, { method: "DELETE" }),
+  getGraph: (id: string, depth: 1 | 2) =>
+    req<Graph>(`/api/entries/${id}/graph?depth=${depth}`),
 };

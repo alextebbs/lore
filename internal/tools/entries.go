@@ -48,7 +48,7 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 	if err != nil {
 		return Entry{}, err
 	}
-	return entryOut(row, et.Name)
+	return t.entryFull(ctx, row, et.Name)
 }
 
 // EntryPatch carries partial updates; nil means "leave unchanged".
@@ -141,7 +141,7 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		return Entry{}, nil, err
 	}
 
-	out, err := entryOut(updated, et.Name)
+	out, err := t.entryFull(ctx, updated, et.Name)
 	return out, schemaWarnings(et, fields), err
 }
 
@@ -149,9 +149,10 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 type CanonScope struct {
 	Fields []string `json:"fields"` // specific fields to promote
 	Body   bool     `json:"body"`   // strip draft spans from the body
+	Edges  bool     `json:"edges"`  // promote this entry's outgoing edges
 }
 
-func (s CanonScope) all() bool { return len(s.Fields) == 0 && !s.Body }
+func (s CanonScope) all() bool { return len(s.Fields) == 0 && !s.Body && !s.Edges }
 
 // MarkCanon promotes the selected parts of an entry — tenet 4's human
 // blessing, in bulk or scoped form. Draft spans in the promoted body are
@@ -212,6 +213,11 @@ func (t *Tools) MarkCanon(ctx context.Context, id string, scope CanonScope) (Ent
 
 	var updated db.Entry
 	err = t.store.Tx(ctx, func(q *db.Queries) error {
+		if scope.all() || scope.Edges {
+			if err := q.PromoteEdgesFrom(ctx, eid); err != nil {
+				return err
+			}
+		}
 		var err error
 		updated, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
 			ID: eid, Title: row.Title, Fields: fieldsJSON, Body: body, Status: status,
@@ -224,7 +230,7 @@ func (t *Tools) MarkCanon(ctx context.Context, id string, scope CanonScope) (Ent
 	if err != nil {
 		return Entry{}, err
 	}
-	return entryOut(updated, et.Name)
+	return t.entryFull(ctx, updated, et.Name)
 }
 
 // RevisionDetail is a full snapshot for the history viewer.
@@ -302,7 +308,7 @@ func (t *Tools) RestoreRevision(ctx context.Context, entryID, revisionID string)
 	if err != nil {
 		return Entry{}, err
 	}
-	return entryOut(updated, et.Name)
+	return t.entryFull(ctx, updated, et.Name)
 }
 
 func (t *Tools) GetEntry(ctx context.Context, id string) (Entry, error) {
@@ -318,7 +324,7 @@ func (t *Tools) GetEntry(ctx context.Context, id string) (Entry, error) {
 	if err != nil {
 		return Entry{}, err
 	}
-	return entryOut(row, et.Name)
+	return t.entryFull(ctx, row, et.Name)
 }
 
 func (t *Tools) ListEntries(ctx context.Context, worldID string) ([]EntrySummary, error) {
@@ -426,6 +432,22 @@ func schemaWarnings(et db.EntryType, fields map[string]FieldValue) []string {
 		}
 	}
 	return warnings
+}
+
+// entryFull is entryOut plus relation and reverse sections — the shape
+// every read/write surface returns.
+func (t *Tools) entryFull(ctx context.Context, row db.Entry, typeName string) (Entry, error) {
+	out, err := entryOut(row, typeName)
+	if err != nil {
+		return Entry{}, err
+	}
+	relations, reverse, err := t.relationSections(ctx, row)
+	if err != nil {
+		return Entry{}, err
+	}
+	out.Relations = relations
+	out.Reverse = reverse
+	return out, nil
 }
 
 func entryOut(row db.Entry, typeName string) (Entry, error) {

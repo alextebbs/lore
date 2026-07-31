@@ -15,6 +15,7 @@ import {
   type Revision as RevisionType,
 } from "./api";
 import { BodyEditor } from "./editor";
+import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
 
@@ -213,6 +214,196 @@ const worldRoute = createRoute({
 });
 
 // ---------- Entry page ----------
+
+function RelationsPanel({
+  entry,
+  onChanged,
+}: {
+  entry: Entry;
+  onChanged: () => void;
+}) {
+  const allEntries = useQuery({
+    queryKey: ["entries", entry.world_id],
+    queryFn: () => api.listEntries(entry.world_id),
+  });
+  const [adding, setAdding] = useState<string | null>(null);
+  const [target, setTarget] = useState("");
+  const [note, setNote] = useState("");
+  const [warnings, setWarnings] = useState<string[]>([]);
+
+  const create = useMutation({
+    mutationFn: (field: string) => api.createEdge(entry.id, field, target, note),
+    onSuccess: ({ warnings }) => {
+      setWarnings(warnings ?? []);
+      setAdding(null);
+      setTarget("");
+      setNote("");
+      onChanged();
+    },
+  });
+  const remove = useMutation({
+    mutationFn: (edgeId: string) => api.deleteEdge(edgeId),
+    onSuccess: onChanged,
+  });
+
+  const sections = entry.relations ?? [];
+  if (sections.length === 0 && (entry.reverse ?? []).length === 0) return null;
+
+  return (
+    <div className="space-y-4">
+      {sections.map((sec) => {
+        const candidates = (allEntries.data ?? []).filter(
+          (c) =>
+            c.id !== entry.id &&
+            (!sec.config?.targets?.length ||
+              sec.config.targets.includes(c.type_name)),
+        );
+        return (
+          <div key={sec.field}>
+            <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
+              {sec.field}
+              {sec.config?.template && (
+                <span className="normal-case text-neutral-700">
+                  · {sec.config.template}
+                </span>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              {(sec.edges ?? []).map((edge) => (
+                <span
+                  key={edge.id}
+                  className={`group flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+                    edge.status === "draft"
+                      ? "border-amber-800 bg-amber-950/40"
+                      : "border-neutral-700"
+                  }`}
+                >
+                  <Link
+                    to="/e/$entryId"
+                    params={{ entryId: edge.to.id }}
+                    className="hover:underline"
+                  >
+                    {edge.to.title}
+                  </Link>
+                  {edge.annotation && (
+                    <span className="text-xs text-neutral-500">
+                      — {edge.annotation}
+                    </span>
+                  )}
+                  <button
+                    title="Remove relation"
+                    onClick={() => remove.mutate(edge.id)}
+                    className="hidden text-neutral-600 hover:text-red-400 group-hover:inline"
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+              {adding === sec.field ? (
+                <form
+                  className="flex items-center gap-1"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (target) create.mutate(sec.field);
+                  }}
+                >
+                  <select
+                    value={target}
+                    onChange={(e) => setTarget(e.target.value)}
+                    className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+                    autoFocus
+                  >
+                    <option value="">choose…</option>
+                    {candidates.map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.title} ({c.type_name})
+                      </option>
+                    ))}
+                  </select>
+                  {sec.config?.annotations && (
+                    <input
+                      value={note}
+                      onChange={(e) => setNote(e.target.value)}
+                      placeholder="annotation"
+                      className="w-40 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+                    />
+                  )}
+                  <button className="rounded bg-neutral-200 px-2 py-1 text-sm text-neutral-900">
+                    add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAdding(null)}
+                    className="px-1 text-neutral-500"
+                  >
+                    ×
+                  </button>
+                </form>
+              ) : (
+                <button
+                  onClick={() => {
+                    setAdding(sec.field);
+                    setTarget("");
+                    setNote("");
+                  }}
+                  className="rounded-full border border-dashed border-neutral-700 px-3 py-1 text-sm text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                >
+                  +
+                </button>
+              )}
+            </div>
+          </div>
+        );
+      })}
+
+      {warnings.length > 0 && (
+        <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-2 text-xs text-amber-300">
+          {warnings.map((w) => (
+            <li key={w}>⚠ {w}</li>
+          ))}
+        </ul>
+      )}
+
+      {(entry.reverse ?? []).length > 0 && (
+        <div className="space-y-3 rounded-lg border border-neutral-800 p-3">
+          {(entry.reverse ?? []).map((sec) => (
+            <div key={sec.label}>
+              <div className="mb-1 text-xs uppercase tracking-wide text-neutral-500">
+                {sec.label}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {sec.items.map((item) => (
+                  <span
+                    key={item.edge_id}
+                    className={`rounded-full border px-3 py-1 text-sm ${
+                      item.status === "draft"
+                        ? "border-amber-800 bg-amber-950/40"
+                        : "border-neutral-700"
+                    }`}
+                  >
+                    <Link
+                      to="/e/$entryId"
+                      params={{ entryId: item.from.id }}
+                      className="hover:underline"
+                    >
+                      {item.from.title}
+                    </Link>
+                    {item.annotation && (
+                      <span className="text-xs text-neutral-500">
+                        {" "}
+                        — {item.annotation}
+                      </span>
+                    )}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function RevisionRow({
   entryId,
@@ -428,6 +619,14 @@ function EntryPage() {
         })}
       </div>
 
+      <RelationsPanel
+        entry={e}
+        onChanged={() => {
+          qc.invalidateQueries({ queryKey: ["entry", entryId] });
+          qc.invalidateQueries({ queryKey: ["graph", entryId] });
+        }}
+      />
+
       <div className="space-y-2">
         <span className="text-xs uppercase tracking-wide text-neutral-500">
           Body — draft spans highlighted amber; select text to toggle
@@ -435,6 +634,8 @@ function EntryPage() {
         </span>
         <BodyEditor doc={bodyDoc} onChange={setBodyDoc} />
       </div>
+
+      <EgoGraph entryId={entryId} />
 
       {warnings.length > 0 && (
         <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-3 text-sm text-amber-300">

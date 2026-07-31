@@ -8,6 +8,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Edge struct {
+	ID         pgtype.UUID
+	WorldID    pgtype.UUID
+	FromEntry  pgtype.UUID
+	Field      string
+	ToEntry    pgtype.UUID
+	Annotation string
+	Status     string
+	Position   int32
+	CreatedAt  pgtype.Timestamptz
+}
+
 type Entry struct {
 	ID        pgtype.UUID
 	WorldID   pgtype.UUID

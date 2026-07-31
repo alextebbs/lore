@@ -49,9 +49,20 @@ func New(st *store.Store) *Tools {
 
 // FieldDef is one schema field (soft schema, ADR 0004).
 type FieldDef struct {
-	Name  string `json:"name"`
-	Kind  string `json:"kind"` // string | number | date | richtext | relation
-	Label string `json:"label,omitempty"`
+	Name     string          `json:"name"`
+	Kind     string          `json:"kind"` // string | number | date | richtext | relation
+	Label    string          `json:"label,omitempty"`
+	Relation *RelationConfig `json:"relation,omitempty"` // when Kind == "relation"
+}
+
+// RelationConfig is a relation field's schema-level config (ADR 0003):
+// the type registry lives on the schema, not in a global table.
+type RelationConfig struct {
+	Targets      []string `json:"targets,omitempty"` // allowed target type names; empty = any
+	Many         bool     `json:"many,omitempty"`
+	Template     string   `json:"template,omitempty"`      // "A is the hometown of B"
+	InverseLabel string   `json:"inverse_label,omitempty"` // target page section title
+	Annotations  bool     `json:"annotations,omitempty"`   // per-edge freeform notes
 }
 
 // FieldValue is one entry field's value plus its draft/canon status.
@@ -93,6 +104,8 @@ type Entry struct {
 	BodyDoc   richtext.Node         `json:"body_doc"` // structured doc, draft as span mark
 	Status    string                `json:"status"`
 	UpdatedAt time.Time             `json:"updated_at"`
+	Relations []RelationSection     `json:"relations"` // outgoing edges by field
+	Reverse   []ReverseSection      `json:"reverse"`   // auto inverse sections
 }
 
 type Revision struct {

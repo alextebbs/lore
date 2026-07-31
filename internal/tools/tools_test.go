@@ -156,3 +156,116 @@ func TestWorldEntryLifecycle(t *testing.T) {
 		t.Errorf("revision detail title = %q", detail.Title)
 	}
 }
+
+func TestEdgesAndGraph(t *testing.T) {
+	tl := testTools(t)
+	ctx := context.Background()
+
+	w, err := tl.CreateWorld(ctx, "Edgeland")
+	if err != nil {
+		t.Fatalf("CreateWorld: %v", err)
+	}
+	types, _ := tl.ListTypes(ctx, w.ID)
+	typeID := map[string]string{}
+	for _, et := range types {
+		typeID[et.Name] = et.ID
+	}
+
+	john, _ := tl.CreateEntry(ctx, w.ID, typeID["Character"], "John", AuthorHuman)
+	jane, _ := tl.CreateEntry(ctx, w.ID, typeID["Character"], "Jane", AuthorHuman)
+	chicago, _ := tl.CreateEntry(ctx, w.ID, typeID["Place"], "Chicago", AuthorHuman)
+	guild, _ := tl.CreateEntry(ctx, w.ID, typeID["Faction"], "Thieves Guild", AuthorHuman)
+
+	// Human edge is canon; annotation carried.
+	fam, warns, err := tl.CreateEdge(ctx, john.ID, "family", jane.ID, "Jane is John's older sister", AuthorHuman)
+	if err != nil {
+		t.Fatalf("CreateEdge: %v", err)
+	}
+	if fam.Status != StatusCanon || len(warns) != 0 {
+		t.Errorf("family edge status=%s warns=%v", fam.Status, warns)
+	}
+
+	// Cardinality one: second hometown replaces the first.
+	if _, _, err := tl.CreateEdge(ctx, john.ID, "hometown", chicago.ID, "", AuthorHuman); err != nil {
+		t.Fatalf("hometown edge: %v", err)
+	}
+	springfield, _ := tl.CreateEntry(ctx, w.ID, typeID["Place"], "Springfield", AuthorHuman)
+	if _, _, err := tl.CreateEdge(ctx, john.ID, "hometown", springfield.ID, "", AuthorHuman); err != nil {
+		t.Fatalf("hometown replace: %v", err)
+	}
+
+	// AI edge is draft; off-target type warns but succeeds.
+	aiEdge, warns, err := tl.CreateEdge(ctx, guild.ID, "members", chicago.ID, "", AuthorAI)
+	if err != nil {
+		t.Fatalf("AI CreateEdge: %v", err)
+	}
+	if aiEdge.Status != StatusDraft {
+		t.Errorf("AI edge status = %s, want draft", aiEdge.Status)
+	}
+	if len(warns) == 0 {
+		t.Errorf("expected off-target warning for Place in members")
+	}
+
+	// Entry payload: outgoing sections + reverse sections.
+	johnFull, err := tl.GetEntry(ctx, john.ID)
+	if err != nil {
+		t.Fatalf("GetEntry: %v", err)
+	}
+	var hometownEdges, familyEdges int
+	for _, sec := range johnFull.Relations {
+		switch sec.Field {
+		case "hometown":
+			hometownEdges = len(sec.Edges)
+			if len(sec.Edges) == 1 && sec.Edges[0].To.Title != "Springfield" {
+				t.Errorf("hometown = %s, want Springfield (replaced)", sec.Edges[0].To.Title)
+			}
+		case "family":
+			familyEdges = len(sec.Edges)
+		}
+	}
+	if hometownEdges != 1 || familyEdges != 1 {
+		t.Errorf("john sections: hometown=%d family=%d, want 1/1", hometownEdges, familyEdges)
+	}
+	janeFull, _ := tl.GetEntry(ctx, jane.ID)
+	foundReverse := false
+	for _, sec := range janeFull.Reverse {
+		if sec.Label == "Family" && len(sec.Items) == 1 && sec.Items[0].From.Title == "John" {
+			foundReverse = true
+		}
+	}
+	if !foundReverse {
+		t.Errorf("jane reverse sections missing Family<-John: %+v", janeFull.Reverse)
+	}
+
+	// AI cannot delete the canon family edge.
+	if err := tl.DeleteEdge(ctx, fam.ID, AuthorAI); err == nil {
+		t.Errorf("AI deleted a canon edge — tenet 5 violated")
+	}
+	// AI can delete its own draft edge.
+	if err := tl.DeleteEdge(ctx, aiEdge.ID, AuthorAI); err != nil {
+		t.Errorf("AI could not delete draft edge: %v", err)
+	}
+
+	// Graph: 1 hop from John covers Jane + Springfield; depth 2 nothing new.
+	g, err := tl.Traverse(ctx, john.ID, 1)
+	if err != nil {
+		t.Fatalf("Traverse: %v", err)
+	}
+	if len(g.Nodes) != 3 || len(g.Edges) != 2 {
+		t.Errorf("graph nodes=%d edges=%d, want 3/2", len(g.Nodes), len(g.Edges))
+	}
+
+	// MarkCanon(all) promotes draft edges too.
+	draftEdge, _, _ := tl.CreateEdge(ctx, john.ID, "family", guild.ID, "", AuthorAI)
+	if _, err := tl.MarkCanon(ctx, john.ID, CanonScope{}); err != nil {
+		t.Fatalf("MarkCanon: %v", err)
+	}
+	johnFull, _ = tl.GetEntry(ctx, john.ID)
+	for _, sec := range johnFull.Relations {
+		for _, e := range sec.Edges {
+			if e.ID == draftEdge.ID && e.Status != StatusCanon {
+				t.Errorf("edge not promoted by MarkCanon: %+v", e)
+			}
+		}
+	}
+}

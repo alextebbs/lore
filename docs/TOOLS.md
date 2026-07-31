@@ -30,6 +30,9 @@ MCP column fills in when M3 lands.
 | ListRevisions | GET /api/entries/{id}/revisions | (M3) |
 | GetRevision (full snapshot) | GET /api/entries/{id}/revisions/{rid} | (M3) |
 | RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | (M3) |
+| CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | (M3) |
+| DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | (M3) |
+| Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | (M3) |
 
 ## Query
 

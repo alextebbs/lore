@@ -25,6 +25,9 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("GET /api/entries/{id}/revisions", s.listRevisions)
 	mux.HandleFunc("GET /api/entries/{id}/revisions/{rid}", s.getRevision)
 	mux.HandleFunc("POST /api/entries/{id}/revisions/{rid}/restore", s.restoreRevision)
+	mux.HandleFunc("POST /api/entries/{id}/edges", s.createEdge)
+	mux.HandleFunc("DELETE /api/edges/{id}", s.deleteEdge)
+	mux.HandleFunc("GET /api/entries/{id}/graph", s.getGraph)
 }
 
 func (s *Server) listWorlds(w http.ResponseWriter, r *http.Request) {
@@ -107,6 +110,33 @@ func (s *Server) restoreRevision(w http.ResponseWriter, r *http.Request) {
 func (s *Server) listRevisions(w http.ResponseWriter, r *http.Request) {
 	revs, err := s.Tools.ListRevisions(r.Context(), r.PathValue("id"))
 	respond(w, revs, err)
+}
+
+func (s *Server) createEdge(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Field      string `json:"field"`
+		To         string `json:"to"`
+		Annotation string `json:"annotation"`
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	edge, warnings, err := s.Tools.CreateEdge(r.Context(), r.PathValue("id"), in.Field, in.To, in.Annotation, tools.AuthorHuman)
+	respond(w, map[string]any{"edge": edge, "warnings": warnings}, err)
+}
+
+func (s *Server) deleteEdge(w http.ResponseWriter, r *http.Request) {
+	err := s.Tools.DeleteEdge(r.Context(), r.PathValue("id"), tools.AuthorHuman)
+	respond(w, map[string]bool{"deleted": err == nil}, err)
+}
+
+func (s *Server) getGraph(w http.ResponseWriter, r *http.Request) {
+	depth := 1
+	if r.URL.Query().Get("depth") == "2" {
+		depth = 2
+	}
+	graph, err := s.Tools.Traverse(r.Context(), r.PathValue("id"), depth)
+	respond(w, graph, err)
 }
 
 func decode(w http.ResponseWriter, r *http.Request, v any) bool {
