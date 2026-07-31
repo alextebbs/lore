@@ -41,8 +41,8 @@ func TestWorldEntryLifecycle(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ListTypes: %v", err)
 	}
-	if len(types) != 5 {
-		t.Fatalf("seeded types = %d, want 5", len(types))
+	if len(types) != 6 { // 5 content types + the World meta type
+		t.Fatalf("seeded types = %d, want 6", len(types))
 	}
 	var character EntryType
 	for _, et := range types {
