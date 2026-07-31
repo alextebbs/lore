@@ -22,14 +22,8 @@ const Draft = Mark.create({
 const extensions = [
   StarterKit.configure({
     heading: { levels: [1, 2, 3] },
-    blockquote: false,
-    codeBlock: false,
-    code: false,
-    horizontalRule: false,
     strike: false,
-    orderedList: false,
     hardBreak: false,
-    link: false,
     underline: false,
   }),
   Draft,

@@ -17,13 +17,16 @@ const (
 	MarkBold   = "bold"
 	MarkItalic = "italic"
 	MarkDraft  = "draft"
+	MarkCode   = "code"
+	MarkLink   = "link"
 
 	DraftOpen  = "{~draft}"
 	DraftClose = "{/~}"
 )
 
 type Mark struct {
-	Type string `json:"type"`
+	Type  string         `json:"type"`
+	Attrs map[string]any `json:"attrs,omitempty"` // link: {href}
 }
 
 type Node struct {
@@ -61,9 +64,14 @@ func (n Node) hasMark(mark string) bool {
 var (
 	allowedNodes = map[string]bool{
 		"doc": true, "paragraph": true, "heading": true,
-		"bullet_list": true, "list_item": true, "text": true,
+		"bullet_list": true, "ordered_list": true, "list_item": true,
+		"code_block": true, "blockquote": true, "horizontal_rule": true,
+		"text": true,
 	}
-	allowedMarks = map[string]bool{MarkBold: true, MarkItalic: true, MarkDraft: true}
+	allowedMarks = map[string]bool{
+		MarkBold: true, MarkItalic: true, MarkDraft: true,
+		MarkCode: true, MarkLink: true,
+	}
 )
 
 // Validate rejects docs containing node or mark types outside the

@@ -12,11 +12,17 @@ export type DocNode = {
 
 const toTipTapName: Record<string, string> = {
   bullet_list: "bulletList",
+  ordered_list: "orderedList",
   list_item: "listItem",
+  code_block: "codeBlock",
+  horizontal_rule: "horizontalRule",
 };
 const fromTipTapName: Record<string, string> = {
   bulletList: "bullet_list",
+  orderedList: "ordered_list",
   listItem: "list_item",
+  codeBlock: "code_block",
+  horizontalRule: "horizontal_rule",
 };
 
 function rename(node: DocNode, table: Record<string, string>): DocNode {

@@ -14,9 +14,18 @@ func TestMarkdownRoundTrip(t *testing.T) {
 		{"## Section\n\nWith **bold** and *italic* runs.", "## Section\n\nWith **bold** and *italic* runs."},
 		{"Zara rules the coast. {~draft}She fears the sea god.{/~}", "Zara rules the coast. {~draft}She fears the sea god.{/~}"},
 		{"{~draft}An entirely draft paragraph.{/~}", "{~draft}An entirely draft paragraph.{/~}"},
-		{"Mixed **bold {~draft}draft-bold{/~}** tail.", "Mixed **bold **{~draft}**draft-bold**{/~} tail."},
+		{"Mixed **bold {~draft}draft-bold{/~}** tail.", "Mixed **bold {~draft}draft-bold**{/~} tail."},
 		{"- first\n- second **strong**\n- {~draft}speculative item{/~}", "- first\n- second **strong**\n- {~draft}speculative item{/~}"},
 		{"# H1\n\n## H2\n\n### H3\n\npara", "# H1\n\n## H2\n\n### H3\n\npara"},
+		// CommonMark constructs (lore-1zb)
+		{"1. first\n2. second", "1. first\n2. second"},
+		{"A [link](https://example.com) here.", "A [link](https://example.com) here."},
+		{"Inline `code` span.", "Inline `code` span."},
+		{"```go\nfunc main() {}\n```", "```go\nfunc main() {}\n```"},
+		{"> quoted wisdom\n> more wisdom", "> quoted wisdom more wisdom"},
+		{"---", "---"},
+		{"- outer\n  - inner one\n  - inner two", "- outer\n  - inner one\n  - inner two"},
+		{"{~draft}Draft with a [link](https://x.io) inside.{/~}", "{~draft}Draft with a [link](https://x.io) inside.{/~}"},
 	}
 	for _, c := range cases {
 		doc := FromMarkdown(c.in)
