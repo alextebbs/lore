@@ -104,7 +104,9 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
 ## Build & Test
 
 Nothing is "done" because the code is written. Each task's acceptance
-criteria say how to verify; run them. Defaults once the scaffolds exist:
+criteria say how to verify; run them. **Headless-first (SPEC tenet 2):**
+a capability is done only when it works on every applicable surface —
+JSON API (curl), MCP, and UI. Defaults once the scaffolds exist:
 
 ```bash
 go test ./...          # backend

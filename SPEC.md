@@ -8,18 +8,38 @@ human-blessed canon until a human promotes it.
 ## Core tenets
 
 1. All content is authorable by direct human input as well as through AI.
-2. Every capability is exposed through an MCP server. If you can do it in the
-   app, you can do it via MCP.
+2. **The app is headless-first, with three first-class surfaces: the JSON
+   API, the MCP server, and the UI.** Every capability is exposed through
+   all three. Each surface stands alone — you can interact with the app
+   fully using only the API, only MCP, or only the UI, or any mix. If you
+   can do it in the app, you can do it via MCP; if you can do it in the
+   UI, you can do it with curl.
 3. All content carries **draft** / **canon** status metadata.
 4. AI always authors in **draft**; only a human promotes content to canon.
 5. AI may freely modify draft content; canon content is untouchable by AI
    unless explicitly ordered.
 
-A corollary of tenet 2, made explicit for the AI system: **capabilities are
+Tenet 2's structural consequence: the API, MCP server, and UI are all thin
+adapters over one shared tool layer — none of them owns capability logic,
+so surface parity holds by construction. A capability that exists on one
+surface and not the others is a bug. Concretely: **every API endpoint has
+a corresponding MCP tool** (both adapt the same tool-layer function), and
+`docs/TOOLS.md` documents each capability with its tool name and its HTTP
+route — a row missing either is a parity gap.
+
+A second corollary, made explicit for the AI system: **capabilities are
 exposed; orchestration is not.** Every engine (retrieval, serialization,
 tray) is a public tool. The in-app agent is just a privileged MCP-shaped
 client whose harness pre-calls those tools automatically. There is no
 private API that outperforms what an external MCP client can reach.
+
+The one deliberate exception to surface parity: **the in-app chat harness
+is a UI-only feature.** It's a custom agent harness that happens to call
+the same tools every other surface uses — there are no public API
+endpoints or MCP tools to drive chats *inside* the in-app harness,
+because an API or MCP consumer already has direct access to the same
+tools and brings its own agent loop. Parity applies to capabilities, not
+to harnesses.
 
 ## Stack
 

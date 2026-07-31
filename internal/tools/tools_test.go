@@ -96,8 +96,20 @@ func TestWorldEntryLifecycle(t *testing.T) {
 		t.Errorf("untouched field status = %s, want canon", e3.Fields["gender"].Status)
 	}
 
+	// Scoped promotion: just one field first.
+	ePart, err := tl.MarkCanon(ctx, e.ID, CanonScope{Fields: []string{"occupation"}})
+	if err != nil {
+		t.Fatalf("scoped MarkCanon: %v", err)
+	}
+	if ePart.Fields["occupation"].Status != StatusCanon {
+		t.Errorf("scoped promotion failed: %+v", ePart.Fields["occupation"])
+	}
+	if ePart.Status != StatusMixed {
+		t.Errorf("status after scoped promotion = %s, want mixed (draft body span remains)", ePart.Status)
+	}
+
 	// Mark canon promotes everything and strips markers.
-	e4, err := tl.MarkCanon(ctx, e.ID)
+	e4, err := tl.MarkCanon(ctx, e.ID, CanonScope{})
 	if err != nil {
 		t.Fatalf("MarkCanon: %v", err)
 	}
@@ -111,15 +123,36 @@ func TestWorldEntryLifecycle(t *testing.T) {
 		t.Errorf("body after MarkCanon = %q, want %q", e4.BodyMD, want)
 	}
 
-	// Every write recorded a revision: create + 2 updates + canon = 4.
+	// Every write recorded a revision:
+	// create + 2 updates + scoped canon + full canon = 5.
 	revs, err := tl.ListRevisions(ctx, e.ID)
 	if err != nil {
 		t.Fatalf("ListRevisions: %v", err)
 	}
-	if len(revs) != 4 {
-		t.Errorf("revisions = %d, want 4", len(revs))
+	if len(revs) != 5 {
+		t.Errorf("revisions = %d, want 5", len(revs))
 	}
-	if revs[1].Author != string(AuthorAI) {
-		t.Errorf("second-newest revision author = %s, want ai", revs[1].Author)
+
+	// Restore an old snapshot: content comes back, history grows.
+	oldest := revs[len(revs)-1]
+	restored, err := tl.RestoreRevision(ctx, e.ID, oldest.ID)
+	if err != nil {
+		t.Fatalf("RestoreRevision: %v", err)
+	}
+	if restored.BodyMD != "" {
+		t.Errorf("restored body = %q, want empty (creation snapshot)", restored.BodyMD)
+	}
+	revs2, _ := tl.ListRevisions(ctx, e.ID)
+	if len(revs2) != 6 {
+		t.Errorf("revisions after restore = %d, want 6", len(revs2))
+	}
+
+	// Revision detail exposes the snapshot.
+	detail, err := tl.GetRevision(ctx, revs[0].ID)
+	if err != nil {
+		t.Fatalf("GetRevision: %v", err)
+	}
+	if detail.Title != "John Doe" {
+		t.Errorf("revision detail title = %q", detail.Title)
 	}
 }

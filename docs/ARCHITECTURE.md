@@ -34,9 +34,14 @@ internal/
 ## Load-bearing rules
 
 - **Everything routes through `internal/tools`.** The API, the MCP server,
-  and the agent loop are adapters over the same registry. If a capability
-  isn't a tool, it doesn't exist (SPEC tenet 2). The one exception: auth
-  and session management, which sit in front of the tool layer.
+  the UI (via the API), and the agent loop are adapters over the same
+  registry. If a capability isn't a tool, it doesn't exist (SPEC tenet 2).
+  The one exception: auth and session management, which sit in front of
+  the tool layer.
+- **Headless-first, three first-class surfaces.** API, MCP, and UI must
+  each support full interaction alone (SPEC tenet 2). A feature is not
+  done when the UI works — it's done when the same capability is
+  reachable via curl and via an MCP client. Surface gaps are bugs.
 - **The harness is orchestration, not capability.** `internal/agent` may
   only compose public tools (pre-calling `find_relevant`, serializing the
   tray). It gets no private entry points into store/.

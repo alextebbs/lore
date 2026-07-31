@@ -17,6 +17,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 
+	"github.com/alextebbs/lore/internal/richtext"
 	"github.com/alextebbs/lore/internal/store"
 )
 
@@ -88,7 +89,8 @@ type Entry struct {
 	TypeName  string                `json:"type_name"`
 	Title     string                `json:"title"`
 	Fields    map[string]FieldValue `json:"fields"`
-	BodyMD    string                `json:"body_md"` // markdown with {~draft} markers
+	BodyMD    string                `json:"body_md"`  // markdown with {~draft} markers
+	BodyDoc   richtext.Node         `json:"body_doc"` // structured doc, draft as span mark
 	Status    string                `json:"status"`
 	UpdatedAt time.Time             `json:"updated_at"`
 }

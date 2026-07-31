@@ -58,6 +58,37 @@ func (n Node) hasMark(mark string) bool {
 	return false
 }
 
+var (
+	allowedNodes = map[string]bool{
+		"doc": true, "paragraph": true, "heading": true,
+		"bullet_list": true, "list_item": true, "text": true,
+	}
+	allowedMarks = map[string]bool{MarkBold: true, MarkItalic: true, MarkDraft: true}
+)
+
+// Validate rejects docs containing node or mark types outside the
+// supported set — the one hard check on client-supplied docs.
+func Validate(doc Node) error {
+	var walk func(Node) error
+	walk = func(n Node) error {
+		if !allowedNodes[n.Type] {
+			return fmt.Errorf("unsupported node type %q", n.Type)
+		}
+		for _, m := range n.Marks {
+			if !allowedMarks[m.Type] {
+				return fmt.Errorf("unsupported mark type %q", m.Type)
+			}
+		}
+		for _, c := range n.Content {
+			if err := walk(c); err != nil {
+				return err
+			}
+		}
+		return nil
+	}
+	return walk(doc)
+}
+
 // BodyState reports the draft/canon composition of a doc's text:
 // "none" (no text), "canon", "draft", or "mixed".
 func BodyState(doc Node) string {

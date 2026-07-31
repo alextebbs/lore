@@ -52,10 +52,12 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 }
 
 // EntryPatch carries partial updates; nil means "leave unchanged".
+// BodyDoc takes precedence over BodyMD when both are set.
 type EntryPatch struct {
-	Title  *string        `json:"title"`
-	Fields map[string]any `json:"fields"` // value nil deletes the field
-	BodyMD *string        `json:"body_md"`
+	Title   *string        `json:"title"`
+	Fields  map[string]any `json:"fields"` // value nil deletes the field
+	BodyMD  *string        `json:"body_md"`
+	BodyDoc *richtext.Node `json:"body_doc"`
 }
 
 // UpdateEntry applies a patch. Fields touched by a human become canon;
@@ -97,8 +99,16 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 	}
 
 	body := row.Body
-	if patch.BodyMD != nil {
-		doc := richtext.FromMarkdown(*patch.BodyMD)
+	if patch.BodyDoc != nil || patch.BodyMD != nil {
+		var doc richtext.Node
+		if patch.BodyDoc != nil {
+			doc = *patch.BodyDoc
+			if err := richtext.Validate(doc); err != nil {
+				return Entry{}, nil, err
+			}
+		} else {
+			doc = richtext.FromMarkdown(*patch.BodyMD)
+		}
 		if author == AuthorAI {
 			doc = richtext.MarkAllDraft(doc)
 		}
@@ -135,9 +145,18 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 	return out, schemaWarnings(et, fields), err
 }
 
-// MarkCanon promotes everything in the entry: all fields canon, all
-// draft spans stripped (tenet 4's human blessing, bulk form).
-func (t *Tools) MarkCanon(ctx context.Context, id string) (Entry, error) {
+// CanonScope selects what MarkCanon promotes. Zero value = everything.
+type CanonScope struct {
+	Fields []string `json:"fields"` // specific fields to promote
+	Body   bool     `json:"body"`   // strip draft spans from the body
+}
+
+func (s CanonScope) all() bool { return len(s.Fields) == 0 && !s.Body }
+
+// MarkCanon promotes the selected parts of an entry — tenet 4's human
+// blessing, in bulk or scoped form. Draft spans in the promoted body are
+// stripped.
+func (t *Tools) MarkCanon(ctx context.Context, id string, scope CanonScope) (Entry, error) {
 	eid, err := parseID(id)
 	if err != nil {
 		return Entry{}, err
@@ -155,19 +174,38 @@ func (t *Tools) MarkCanon(ctx context.Context, id string) (Entry, error) {
 	if err := json.Unmarshal(row.Fields, &fields); err != nil {
 		return Entry{}, err
 	}
-	for name, fv := range fields {
-		fv.Status = StatusCanon
-		fields[name] = fv
+	promote := func(name string) {
+		if fv, ok := fields[name]; ok {
+			fv.Status = StatusCanon
+			fields[name] = fv
+		}
+	}
+	if scope.all() {
+		for name := range fields {
+			promote(name)
+		}
+	} else {
+		for _, name := range scope.Fields {
+			promote(name)
+		}
 	}
 	fieldsJSON, err := json.Marshal(fields)
 	if err != nil {
 		return Entry{}, err
 	}
-	doc, err := richtext.ParseDoc(row.Body)
-	if err != nil {
-		return Entry{}, err
+
+	body := row.Body
+	if scope.all() || scope.Body {
+		doc, err := richtext.ParseDoc(row.Body)
+		if err != nil {
+			return Entry{}, err
+		}
+		if body, err = json.Marshal(richtext.StripDraftMarks(doc)); err != nil {
+			return Entry{}, err
+		}
 	}
-	body, err := json.Marshal(richtext.StripDraftMarks(doc))
+
+	status, err := deriveStatus(fields, body)
 	if err != nil {
 		return Entry{}, err
 	}
@@ -176,7 +214,85 @@ func (t *Tools) MarkCanon(ctx context.Context, id string) (Entry, error) {
 	err = t.store.Tx(ctx, func(q *db.Queries) error {
 		var err error
 		updated, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
-			ID: eid, Title: row.Title, Fields: fieldsJSON, Body: body, Status: StatusCanon,
+			ID: eid, Title: row.Title, Fields: fieldsJSON, Body: body, Status: status,
+		})
+		if err != nil {
+			return err
+		}
+		return recordRevision(ctx, q, updated, AuthorHuman)
+	})
+	if err != nil {
+		return Entry{}, err
+	}
+	return entryOut(updated, et.Name)
+}
+
+// RevisionDetail is a full snapshot for the history viewer.
+type RevisionDetail struct {
+	Revision
+	Title  string                `json:"title"`
+	Fields map[string]FieldValue `json:"fields"`
+	BodyMD string                `json:"body_md"`
+}
+
+func (t *Tools) GetRevision(ctx context.Context, revisionID string) (RevisionDetail, error) {
+	rid, err := parseID(revisionID)
+	if err != nil {
+		return RevisionDetail{}, err
+	}
+	r, err := t.store.Queries.GetRevision(ctx, rid)
+	if err != nil {
+		return RevisionDetail{}, notFound(err)
+	}
+	fields := map[string]FieldValue{}
+	if err := json.Unmarshal(r.Fields, &fields); err != nil {
+		return RevisionDetail{}, err
+	}
+	doc, err := richtext.ParseDoc(r.Body)
+	if err != nil {
+		return RevisionDetail{}, err
+	}
+	return RevisionDetail{
+		Revision: Revision{
+			ID: idStr(r.ID), Author: r.Author, Status: r.Status,
+			CreatedAt: r.CreatedAt.Time,
+		},
+		Title: r.Title, Fields: fields, BodyMD: richtext.ToMarkdown(doc, true),
+	}, nil
+}
+
+// RestoreRevision writes a past snapshot back as a new human revision —
+// history is append-only (ADR 0011), so restoring never rewrites it.
+func (t *Tools) RestoreRevision(ctx context.Context, entryID, revisionID string) (Entry, error) {
+	eid, err := parseID(entryID)
+	if err != nil {
+		return Entry{}, err
+	}
+	rid, err := parseID(revisionID)
+	if err != nil {
+		return Entry{}, err
+	}
+	rev, err := t.store.Queries.GetRevision(ctx, rid)
+	if err != nil {
+		return Entry{}, notFound(err)
+	}
+	if rev.EntryID != eid {
+		return Entry{}, fmt.Errorf("%w: revision does not belong to entry", ErrNotFound)
+	}
+	row, err := t.store.Queries.GetEntry(ctx, eid)
+	if err != nil {
+		return Entry{}, notFound(err)
+	}
+	et, err := t.store.Queries.GetEntryType(ctx, row.TypeID)
+	if err != nil {
+		return Entry{}, err
+	}
+
+	var updated db.Entry
+	err = t.store.Tx(ctx, func(q *db.Queries) error {
+		var err error
+		updated, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
+			ID: eid, Title: rev.Title, Fields: rev.Fields, Body: rev.Body, Status: rev.Status,
 		})
 		if err != nil {
 			return err
@@ -324,7 +440,7 @@ func entryOut(row db.Entry, typeName string) (Entry, error) {
 	return Entry{
 		ID: idStr(row.ID), WorldID: idStr(row.WorldID), TypeID: idStr(row.TypeID),
 		TypeName: typeName, Title: row.Title, Fields: fields,
-		BodyMD: richtext.ToMarkdown(doc, true), Status: row.Status,
+		BodyMD: richtext.ToMarkdown(doc, true), BodyDoc: doc, Status: row.Status,
 		UpdatedAt: row.UpdatedAt.Time,
 	}, nil
 }

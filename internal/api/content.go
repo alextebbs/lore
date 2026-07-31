@@ -23,6 +23,8 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("PATCH /api/entries/{id}", s.updateEntry)
 	mux.HandleFunc("POST /api/entries/{id}/canon", s.markCanon)
 	mux.HandleFunc("GET /api/entries/{id}/revisions", s.listRevisions)
+	mux.HandleFunc("GET /api/entries/{id}/revisions/{rid}", s.getRevision)
+	mux.HandleFunc("POST /api/entries/{id}/revisions/{rid}/restore", s.restoreRevision)
 }
 
 func (s *Server) listWorlds(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +86,21 @@ func (s *Server) updateEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) markCanon(w http.ResponseWriter, r *http.Request) {
-	entry, err := s.Tools.MarkCanon(r.Context(), r.PathValue("id"))
+	var scope tools.CanonScope
+	if r.ContentLength > 0 && !decode(w, r, &scope) {
+		return
+	}
+	entry, err := s.Tools.MarkCanon(r.Context(), r.PathValue("id"), scope)
+	respond(w, entry, err)
+}
+
+func (s *Server) getRevision(w http.ResponseWriter, r *http.Request) {
+	rev, err := s.Tools.GetRevision(r.Context(), r.PathValue("rid"))
+	respond(w, rev, err)
+}
+
+func (s *Server) restoreRevision(w http.ResponseWriter, r *http.Request) {
+	entry, err := s.Tools.RestoreRevision(r.Context(), r.PathValue("id"), r.PathValue("rid"))
 	respond(w, entry, err)
 }
 

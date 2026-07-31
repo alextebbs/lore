@@ -7,7 +7,16 @@ import {
   useNavigate,
 } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, type Entry, type EntrySummary, type FieldValue } from "./api";
+import {
+  api,
+  type Entry,
+  type EntrySummary,
+  type FieldValue,
+  type Revision as RevisionType,
+} from "./api";
+import { BodyEditor } from "./editor";
+import { diffWords } from "./diff";
+import { emptyDoc, type DocNode } from "./doc";
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -205,32 +214,86 @@ const worldRoute = createRoute({
 
 // ---------- Entry page ----------
 
-// Renders body markdown with draft spans highlighted amber.
-function BodyPreview({ md }: { md: string }) {
-  const parts = md.split(/(\{~draft\}|\{\/~\})/);
-  let draft = false;
+function RevisionRow({
+  entryId,
+  rev,
+  currentBody,
+  onRestored,
+}: {
+  entryId: string;
+  rev: RevisionType;
+  currentBody: string;
+  onRestored: (e: Entry) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const detail = useQuery({
+    queryKey: ["revision", rev.id],
+    queryFn: () => api.getRevision(entryId, rev.id),
+    enabled: open,
+  });
+  const restore = useMutation({
+    mutationFn: () => api.restoreRevision(entryId, rev.id),
+    onSuccess: onRestored,
+  });
+
   return (
-    <div className="whitespace-pre-wrap rounded-lg border border-neutral-800 bg-neutral-900 p-4 text-sm leading-relaxed">
-      {parts.map((p, i) => {
-        if (p === "{~draft}") {
-          draft = true;
-          return null;
-        }
-        if (p === "{/~}") {
-          draft = false;
-          return null;
-        }
-        if (!p) return null;
-        return draft ? (
-          <span key={i} className="rounded bg-amber-950 text-amber-200">
-            {p}
+    <li className="rounded-lg border border-neutral-800">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm"
+      >
+        <span className="flex items-center gap-2">
+          <span
+            className={
+              rev.author === "ai" ? "text-violet-300" : "text-neutral-300"
+            }
+          >
+            {rev.author}
           </span>
-        ) : (
-          <span key={i}>{p}</span>
-        );
-      })}
-      {md === "" && <span className="text-neutral-600">No content yet.</span>}
-    </div>
+          <StatusBadge status={rev.status} />
+        </span>
+        <span className="text-xs text-neutral-500">
+          {new Date(rev.created_at).toLocaleString()}
+        </span>
+      </button>
+      {open && detail.data && (
+        <div className="space-y-3 border-t border-neutral-800 p-3 text-sm">
+          <div className="whitespace-pre-wrap rounded bg-neutral-900 p-2 leading-relaxed">
+            {diffWords(currentBody, detail.data.body_md).map((p, i) =>
+              p.type === "same" ? (
+                <span key={i}>{p.text}</span>
+              ) : p.type === "add" ? (
+                <span key={i} className="rounded bg-emerald-950 text-emerald-300">
+                  {p.text}
+                </span>
+              ) : (
+                <span
+                  key={i}
+                  className="rounded bg-red-950 text-red-400 line-through"
+                >
+                  {p.text}
+                </span>
+              ),
+            )}
+            {detail.data.body_md === "" && currentBody === "" && (
+              <span className="text-neutral-600">empty body</span>
+            )}
+          </div>
+          <div className="flex justify-between">
+            <span className="text-xs text-neutral-500">
+              diff vs current (green = in revision, red = only in current)
+            </span>
+            <button
+              onClick={() => restore.mutate()}
+              disabled={restore.isPending}
+              className="rounded border border-neutral-700 px-2 py-1 text-xs hover:bg-neutral-800"
+            >
+              Restore this revision
+            </button>
+          </div>
+        </div>
+      )}
+    </li>
   );
 }
 
@@ -253,14 +316,15 @@ function EntryPage() {
 
   const [title, setTitle] = useState("");
   const [fields, setFields] = useState<Record<string, string>>({});
-  const [body, setBody] = useState("");
+  const [bodyDoc, setBodyDoc] = useState<DocNode>(emptyDoc);
   const [warnings, setWarnings] = useState<string[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   useEffect(() => {
     const e = entry.data;
     if (!e) return;
     setTitle(e.title);
-    setBody(e.body_md);
+    setBodyDoc(e.body_doc);
     const f: Record<string, string> = {};
     for (const [k, v] of Object.entries(e.fields)) f[k] = String(v.value ?? "");
     setFields(f);
@@ -274,14 +338,15 @@ function EntryPage() {
 
   const save = useMutation({
     mutationFn: () =>
-      api.updateEntry(entryId, { title, fields, body_md: body }),
+      api.updateEntry(entryId, { title, fields, body_doc: bodyDoc }),
     onSuccess: ({ entry: e, warnings }) => {
       refresh(e);
       setWarnings(warnings ?? []);
     },
   });
   const canonize = useMutation({
-    mutationFn: () => api.markCanon(entryId),
+    mutationFn: (scope: { fields?: string[]; body?: boolean }) =>
+      api.markCanon(entryId, scope),
     onSuccess: refresh,
   });
 
@@ -316,7 +381,7 @@ function EntryPage() {
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
             <button
-              onClick={() => canonize.mutate()}
+              onClick={() => canonize.mutate({})}
               className="rounded-lg border border-emerald-800 px-3 py-1 text-sm text-emerald-300 hover:bg-emerald-950"
             >
               Mark all canon
@@ -332,36 +397,43 @@ function EntryPage() {
       />
 
       <div className="grid grid-cols-2 gap-3">
-        {fieldNames.map((name) => (
-          <label key={name} className="block">
-            <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
-              {name}
-              {e.fields[name] && (
-                <StatusBadge status={(e.fields[name] as FieldValue).status} />
-              )}
-            </span>
-            <input
-              value={fields[name] ?? ""}
-              onChange={(ev) =>
-                setFields({ ...fields, [name]: ev.target.value })
-              }
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
-            />
-          </label>
-        ))}
+        {fieldNames.map((name) => {
+          const fv = e.fields[name] as FieldValue | undefined;
+          return (
+            <label key={name} className="block">
+              <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
+                {name}
+                {fv && fv.status === "draft" ? (
+                  <button
+                    type="button"
+                    title="Promote this field to canon"
+                    onClick={() => canonize.mutate({ fields: [name] })}
+                    className="rounded-full border border-amber-800 bg-amber-950 px-2 py-0.5 text-xs text-amber-300 hover:border-emerald-700 hover:text-emerald-300"
+                  >
+                    draft — click to canonize
+                  </button>
+                ) : (
+                  fv && <StatusBadge status={fv.status} />
+                )}
+              </span>
+              <input
+                value={fields[name] ?? ""}
+                onChange={(ev) =>
+                  setFields({ ...fields, [name]: ev.target.value })
+                }
+                className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+              />
+            </label>
+          );
+        })}
       </div>
 
       <div className="space-y-2">
         <span className="text-xs uppercase tracking-wide text-neutral-500">
-          Body — markdown, {"{~draft}"}…{"{/~}"} marks draft spans
+          Body — draft spans highlighted amber; select text to toggle
+          draft/canon
         </span>
-        <textarea
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          rows={8}
-          className="w-full rounded-lg border border-neutral-800 bg-neutral-900 p-3 font-mono text-sm outline-none focus:border-neutral-500"
-        />
-        <BodyPreview md={body} />
+        <BodyEditor doc={bodyDoc} onChange={setBodyDoc} />
       </div>
 
       {warnings.length > 0 && (
@@ -380,10 +452,28 @@ function EntryPage() {
         >
           Save
         </button>
-        <span className="text-xs text-neutral-600">
-          {revisions.data?.length ?? 0} revisions
-        </span>
+        <button
+          onClick={() => setShowHistory(!showHistory)}
+          className="text-xs text-neutral-500 hover:text-neutral-300"
+        >
+          {revisions.data?.length ?? 0} revisions{" "}
+          {showHistory ? "▾" : "▸"}
+        </button>
       </div>
+
+      {showHistory && (
+        <ul className="space-y-2">
+          {revisions.data?.map((rev) => (
+            <RevisionRow
+              key={rev.id}
+              entryId={entryId}
+              rev={rev}
+              currentBody={e.body_md}
+              onRestored={refresh}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

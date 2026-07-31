@@ -8,8 +8,28 @@
 
 Conventions: all tools are world-scoped (world resolved from auth
 context + explicit `world_id`). Rich text params/results are Markdown
-with `{~draft}...{/~}` markers. Writes by AI callers always land as
-draft. Errors are structured and agent-legible.
+with `{~draft}...{/~}` markers (structured `body_doc` also accepted on
+the API). Writes by AI callers always land as draft. Errors are
+structured and agent-legible.
+
+## Implemented capabilities (tool-layer function · HTTP route · MCP tool)
+
+Per SPEC tenet 2, every row must eventually have all three columns; the
+MCP column fills in when M3 lands.
+
+| Capability | HTTP | MCP tool |
+|---|---|---|
+| CreateWorld | POST /api/worlds | (M3) |
+| ListWorlds | GET /api/worlds | (M3) |
+| GetWorld + ListTypes | GET /api/worlds/{id} | (M3) |
+| ListEntries | GET /api/worlds/{id}/entries | (M3) |
+| CreateEntry | POST /api/worlds/{id}/entries | (M3) |
+| GetEntry | GET /api/entries/{id} | (M3) |
+| UpdateEntry (patch; soft warnings) | PATCH /api/entries/{id} | (M3) |
+| MarkCanon (scoped: fields/body or all) | POST /api/entries/{id}/canon | (M3) |
+| ListRevisions | GET /api/entries/{id}/revisions | (M3) |
+| GetRevision (full snapshot) | GET /api/entries/{id}/revisions/{rid} | (M3) |
+| RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | (M3) |
 
 ## Query
 
