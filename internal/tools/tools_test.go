@@ -226,15 +226,26 @@ func TestEdgesAndGraph(t *testing.T) {
 	if hometownEdges != 1 || familyEdges != 1 {
 		t.Errorf("john sections: hometown=%d family=%d, want 1/1", hometownEdges, familyEdges)
 	}
+	// Bidirectional presentation: Jane's own family section shows John
+	// (incoming edge merged in), with no duplicate Family reverse section.
 	janeFull, _ := tl.GetEntry(ctx, jane.ID)
-	foundReverse := false
-	for _, sec := range janeFull.Reverse {
-		if sec.Label == "Family" && len(sec.Items) == 1 && sec.Items[0].From.Title == "John" {
-			foundReverse = true
+	foundMerged := false
+	for _, sec := range janeFull.Relations {
+		if sec.Field == "family" {
+			for _, e := range sec.Edges {
+				if e.To.Title == "John" && e.Incoming {
+					foundMerged = true
+				}
+			}
 		}
 	}
-	if !foundReverse {
-		t.Errorf("jane reverse sections missing Family<-John: %+v", janeFull.Reverse)
+	if !foundMerged {
+		t.Errorf("jane's family section missing merged incoming John: %+v", janeFull.Relations)
+	}
+	for _, sec := range janeFull.Reverse {
+		if sec.Label == "Family" {
+			t.Errorf("duplicate Family reverse section should not exist: %+v", sec)
+		}
 	}
 
 	// AI cannot delete the canon family edge.
