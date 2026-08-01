@@ -27,7 +27,7 @@ var colorSanction = map[string][]string{
 	"sky-":     {}, // .entity in index.css is the only definition
 	"emerald-": {"revisions-drawer.tsx"}, // revision diff additions
 	"violet-":  {},
-	"amber-":   {"entry-page.tsx", "relations.tsx"}, // warnings
+	"amber-":   {"entry-page.tsx", "relations.tsx", "schema-editor.tsx"}, // warnings
 }
 
 func TestDesignLanguage(t *testing.T) {
