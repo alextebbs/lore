@@ -122,6 +122,26 @@ func (q *Queries) GetEntry(ctx context.Context, id pgtype.UUID) (Entry, error) {
 	return i, err
 }
 
+const getLatestRevision = `-- name: GetLatestRevision :one
+SELECT id, entry_id, author, title, fields, body, status, created_at FROM revisions WHERE entry_id = $1 ORDER BY created_at DESC LIMIT 1
+`
+
+func (q *Queries) GetLatestRevision(ctx context.Context, entryID pgtype.UUID) (Revision, error) {
+	row := q.db.QueryRow(ctx, getLatestRevision, entryID)
+	var i Revision
+	err := row.Scan(
+		&i.ID,
+		&i.EntryID,
+		&i.Author,
+		&i.Title,
+		&i.Fields,
+		&i.Body,
+		&i.Status,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getRevision = `-- name: GetRevision :one
 SELECT id, entry_id, author, title, fields, body, status, created_at FROM revisions WHERE id = $1
 `
@@ -323,4 +343,28 @@ func (q *Queries) UpdateEntry(ctx context.Context, arg UpdateEntryParams) (Entry
 		&i.UpdatedAt,
 	)
 	return i, err
+}
+
+const updateRevisionSnapshot = `-- name: UpdateRevisionSnapshot :exec
+UPDATE revisions SET title = $2, fields = $3, body = $4, status = $5, created_at = now()
+WHERE id = $1
+`
+
+type UpdateRevisionSnapshotParams struct {
+	ID     pgtype.UUID
+	Title  string
+	Fields []byte
+	Body   []byte
+	Status string
+}
+
+func (q *Queries) UpdateRevisionSnapshot(ctx context.Context, arg UpdateRevisionSnapshotParams) error {
+	_, err := q.db.Exec(ctx, updateRevisionSnapshot,
+		arg.ID,
+		arg.Title,
+		arg.Fields,
+		arg.Body,
+		arg.Status,
+	)
+	return err
 }

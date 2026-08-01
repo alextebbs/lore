@@ -2,6 +2,7 @@ package tools
 
 import (
 	"context"
+	"time"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -458,7 +459,22 @@ func (t *Tools) ListRevisions(ctx context.Context, entryID string) ([]Revision, 
 	return out, nil
 }
 
+// recordRevision snapshots the entry. Rapid same-author saves coalesce
+// into the latest revision (autosave fires every ~1.2s of typing — a
+// writing session is one revision, not forty).
+const revisionCoalesceWindow = 5 * time.Minute
+
 func recordRevision(ctx context.Context, q *db.Queries, e db.Entry, author Author) error {
+	if last, err := q.GetLatestRevision(ctx, e.ID); err == nil &&
+		last.Author == string(author) &&
+		time.Since(last.CreatedAt.Time) < revisionCoalesceWindow {
+		if err := q.UpdateRevisionSnapshot(ctx, db.UpdateRevisionSnapshotParams{
+			ID: last.ID, Title: e.Title, Fields: e.Fields, Body: e.Body, Status: e.Status,
+		}); err != nil {
+			return fmt.Errorf("coalescing revision: %w", err)
+		}
+		return nil
+	}
 	_, err := q.CreateRevision(ctx, db.CreateRevisionParams{
 		ID: newID(), EntryID: e.ID, Author: string(author),
 		Title: e.Title, Fields: e.Fields, Body: e.Body, Status: e.Status,

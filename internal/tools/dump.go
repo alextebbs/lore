@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"slices"
+	"strings"
 
 	"github.com/jackc/pgx/v5/pgtype"
 
@@ -61,6 +63,8 @@ func (t *Tools) DumpWorld(ctx context.Context, worldID string) (WorldDump, error
 		return WorldDump{}, notFound(err)
 	}
 	dump := WorldDump{Version: 1, World: world.Name}
+	// Deterministic ordering throughout: dumps are checked into git and
+	// re-dumped often — stable order keeps diffs local to real changes.
 
 	types, err := t.store.Queries.ListEntryTypes(ctx, wid)
 	if err != nil {
@@ -97,6 +101,26 @@ func (t *Tools) DumpWorld(ctx context.Context, worldID string) (WorldDump, error
 			ToEntry: idStr(e.ToEntry), Annotation: e.Annotation, Status: e.Status,
 		})
 	}
+	slices.SortFunc(dump.Types, func(a, b TypeDump) int { return strings.Compare(a.Name, b.Name) })
+	typeNameByID := map[string]string{}
+	for _, td := range dump.Types {
+		typeNameByID[td.ID] = td.Name
+	}
+	slices.SortFunc(dump.Entries, func(a, b EntryDump) int {
+		if c := strings.Compare(typeNameByID[a.TypeID], typeNameByID[b.TypeID]); c != 0 {
+			return c
+		}
+		return strings.Compare(a.Title, b.Title)
+	})
+	slices.SortFunc(dump.Edges, func(a, b EdgeDump) int {
+		if c := strings.Compare(a.FromEntry, b.FromEntry); c != 0 {
+			return c
+		}
+		if c := strings.Compare(a.Field, b.Field); c != 0 {
+			return c
+		}
+		return strings.Compare(a.ToEntry, b.ToEntry)
+	})
 	return dump, nil
 }
 
@@ -104,7 +128,10 @@ func (t *Tools) DumpWorld(ctx context.Context, worldID string) (WorldDump, error
 // All IDs are freshly minted and remapped; statuses, annotations, and
 // draft marks come through verbatim. Each entry gets one initial
 // revision and fresh derived rows.
-func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (World, error) {
+// preserveIDs keeps every dumped id verbatim (types, entries, edges) so
+// re-imports don't churn URLs — the prod swap path. Collides (and
+// fails) if any of those ids still exist; delete the old world first.
+func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string, preserveIDs bool) (World, error) {
 	if dump.Version != 1 {
 		return World{}, fmt.Errorf("unsupported dump version %d", dump.Version)
 	}
@@ -137,6 +164,11 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 					}
 				}
 				id := newID()
+				if preserveIDs {
+					if u, err := parseID(td.ID); err == nil {
+						id = u
+					}
+				}
 				parent := pgtype.UUID{}
 				if td.ParentID != "" {
 					parent = typeMap[td.ParentID]
@@ -180,6 +212,11 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 				return fmt.Errorf("entry %q references unknown type %s", ed.Title, ed.TypeID)
 			}
 			id := newID()
+			if preserveIDs {
+				if u, err := parseID(ed.ID); err == nil {
+					id = u
+				}
+			}
 			row, err := q.CreateEntry(ctx, db.CreateEntryParams{
 				ID: id, WorldID: w.ID, TypeID: tid, Title: ed.Title,
 				Fields: ed.Fields, Body: ed.Body, Status: ed.Status,

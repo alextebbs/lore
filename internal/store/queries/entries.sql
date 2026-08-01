@@ -19,6 +19,13 @@ SET title = $2, fields = $3, body = $4, status = $5, updated_at = now()
 WHERE id = $1
 RETURNING *;
 
+-- name: GetLatestRevision :one
+SELECT * FROM revisions WHERE entry_id = $1 ORDER BY created_at DESC LIMIT 1;
+
+-- name: UpdateRevisionSnapshot :exec
+UPDATE revisions SET title = $2, fields = $3, body = $4, status = $5, created_at = now()
+WHERE id = $1;
+
 -- name: CreateRevision :one
 INSERT INTO revisions (id, entry_id, author, title, fields, body, status)
 VALUES ($1, $2, $3, $4, $5, $6, $7)

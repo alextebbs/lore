@@ -97,13 +97,14 @@ func (s *Server) dumpWorld(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) importWorld(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		Name string          `json:"name"`
-		Dump tools.WorldDump `json:"dump"`
+		Name        string          `json:"name"`
+		Dump        tools.WorldDump `json:"dump"`
+		PreserveIDs bool            `json:"preserve_ids"`
 	}
 	if !decode(w, r, &in) {
 		return
 	}
-	world, err := s.Tools.ImportWorld(r.Context(), in.Dump, in.Name)
+	world, err := s.Tools.ImportWorld(r.Context(), in.Dump, in.Name, in.PreserveIDs)
 	respond(w, world, err)
 }
 

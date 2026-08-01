@@ -163,11 +163,11 @@ func New(t *tools.Tools) *mcp.Server {
 	})
 
 	type updateEntryIn struct {
-		EntryID string         `json:"entry_id" jsonschema:"the entry's id"`
-		Title   *string        `json:"title,omitempty" jsonschema:"new title (optional)"`
-		Fields  map[string]any `json:"fields,omitempty" jsonschema:"field values to set; null value deletes a field"`
-		BodyMD  *string        `json:"body_md,omitempty" jsonschema:"full replacement body markdown; your text will be marked draft. Use [[Entry Title]] to link entries"`
-		CanonOverride bool     `json:"canon_override,omitempty" jsonschema:"permit touching canon content — set ONLY when the user explicitly ordered this edit"`
+		EntryID       string         `json:"entry_id" jsonschema:"the entry's id"`
+		Title         *string        `json:"title,omitempty" jsonschema:"new title (optional)"`
+		Fields        map[string]any `json:"fields,omitempty" jsonschema:"field values to set; null value deletes a field"`
+		BodyMD        *string        `json:"body_md,omitempty" jsonschema:"full replacement body markdown; your text will be marked draft. Use [[Entry Title]] to link entries"`
+		CanonOverride bool           `json:"canon_override,omitempty" jsonschema:"permit touching canon content — set ONLY when the user explicitly ordered this edit"`
 	}
 	type updateEntryOut struct {
 		Entry    entryView `json:"entry"`
@@ -368,8 +368,9 @@ func New(t *tools.Tools) *mcp.Server {
 	})
 
 	type importIn struct {
-		Name     string `json:"name,omitempty" jsonschema:"name for the imported world (defaults to the dump's name)"`
-		DumpJSON string `json:"dump_json" jsonschema:"a fixture produced by dump_world"`
+		Name        string `json:"name,omitempty" jsonschema:"name for the imported world (defaults to the dump's name)"`
+		DumpJSON    string `json:"dump_json" jsonschema:"a fixture produced by dump_world"`
+		PreserveIDs bool   `json:"preserve_ids,omitempty" jsonschema:"keep dumped ids verbatim (prod swap); delete the old world first"`
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "import_world",
@@ -379,7 +380,7 @@ func New(t *tools.Tools) *mcp.Server {
 		if err := json.Unmarshal([]byte(in.DumpJSON), &dump); err != nil {
 			return nil, tools.World{}, fmt.Errorf("bad dump json: %w", err)
 		}
-		out, err := t.ImportWorld(ctx, dump, in.Name)
+		out, err := t.ImportWorld(ctx, dump, in.Name, in.PreserveIDs)
 		return nil, out, err
 	})
 
