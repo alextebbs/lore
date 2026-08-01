@@ -115,4 +115,15 @@ body {
   .panel {
     @apply rounded border border-neutral-700 bg-neutral-900 shadow-xl;
   }
+  /* Entity link: how a reference to another entry looks, everywhere —
+     rich-text mention chips and relation chips alike. */
+  .entity {
+    @apply cursor-pointer rounded bg-sky-950/60 px-1 text-sky-300;
+  }
+  .entity:hover {
+    @apply bg-sky-900/60;
+  }
+  .entity-draft {
+    @apply bg-neutral-900 text-neutral-500;
+  }
 }

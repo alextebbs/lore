@@ -62,8 +62,7 @@ const Mention = Node.create({
       "span",
       {
         "data-mention-id": node.attrs.id,
-        class:
-          "rounded bg-sky-950/60 px-1 text-sky-300 cursor-pointer hover:bg-sky-900/60",
+        class: "entity",
       },
       node.attrs.label || "…",
     ];

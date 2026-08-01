@@ -24,7 +24,7 @@ var forbidden = []*regexp.Regexp{
 // Color families are permitted only where listed; red is the danger
 // color and allowed everywhere.
 var colorSanction = map[string][]string{
-	"sky-":     {"editor.tsx"},                      // mention chips
+	"sky-":     {}, // .entity in index.css is the only definition
 	"emerald-": {"entry-page.tsx"}, // revision diff additions
 	"violet-":  {},
 	"amber-":   {"entry-page.tsx", "relations.tsx"}, // warnings

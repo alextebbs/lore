@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Lock, LockOpen, TriangleAlert, X } from "lucide-react";
 import { PreviewCard } from "@base-ui/react/preview-card";
 import { api, type Entry } from "./api";
-import { Button, Picker, surface, titleCase } from "./ui";
+import { Button, EntityChip, Picker, surface, titleCase } from "./ui";
 
 export function RelationsPanel({
   entry,
@@ -108,19 +107,12 @@ export function RelationsPanel({
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               {(sec.edges ?? []).map((edge) => {
                 const pill = (
-                  <span
-                    className={`chip group relative min-w-0 max-w-full flex-nowrap overflow-hidden whitespace-nowrap ${
-                      edge.status === "draft" ? "chip-draft" : "text-white"
-                    }`}
-                  >
-                    <Link
-                      to="/e/$entryId"
-                      params={{ entryId: edge.to.id }}
-                      className="max-w-56 shrink-0 truncate hover:underline"
+                  <span className="group relative inline-flex h-7 min-w-0 max-w-full flex-nowrap items-center gap-1.5 overflow-hidden whitespace-nowrap">
+                    <EntityChip
+                      id={edge.to.id}
                       title={edge.to.title}
-                    >
-                      {edge.to.title}
-                    </Link>
+                      draft={edge.status === "draft"}
+                    />
                     {edge.annotation && (
                       <span
                         className="min-w-0 truncate text-neutral-500"

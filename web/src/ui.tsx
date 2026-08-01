@@ -1,4 +1,5 @@
 // Shared UI atoms and doc helpers.
+import { Link } from "@tanstack/react-router";
 import type { DocNode } from "./doc";
 
 // Fields-as-docs: richtext values are docs; legacy strings wrap into a
@@ -17,6 +18,29 @@ export const asFieldDoc = (v: unknown): DocNode =>
 
 export const titleCase = (s: string) =>
   s.replace(/_/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase());
+
+// A reference to another entry — identical styling to rich-text
+// mention chips (the .entity class both share).
+export function EntityChip({
+  id,
+  title,
+  draft = false,
+}: {
+  id: string;
+  title: string;
+  draft?: boolean;
+}) {
+  return (
+    <Link
+      to="/e/$entryId"
+      params={{ entryId: id }}
+      className={`entity max-w-56 shrink-0 truncate ${draft ? "entity-draft" : ""}`}
+      title={title}
+    >
+      {title}
+    </Link>
+  );
+}
 
 export function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
