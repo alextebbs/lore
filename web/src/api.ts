@@ -3,7 +3,11 @@
 import type { DocNode } from "./doc";
 
 export type FieldDef = { name: string; kind: string; label?: string };
-export type FieldValue = { value: unknown; status: "draft" | "canon" };
+export type FieldValue = {
+  value: unknown;
+  value_doc?: unknown; // doc (or doc[]) for richtext kinds
+  status: "draft" | "canon";
+};
 export type WorldSettings = {
   vibe?: string;
   style_prompt?: string;

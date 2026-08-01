@@ -103,7 +103,8 @@ Faction** — all user-extensible.
 ### Schemas
 
 - A schema defines an entry type's fields. Field kinds: string, number,
-  date, **richtext** (markdown w/ draft markers + mentions),
+  date, **richtext** (structured doc, same model as bodies — mention
+  nodes persist through IDs; markdown at the API boundary, ADR 0014),
   **richtext_list** (a list of rich-text segments, e.g. Character
   "goals"), **relation**, (extensible).
 - **Soft validation:** schemas scaffold the UI, prompt the AI, and produce

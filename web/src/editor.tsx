@@ -382,56 +382,19 @@ export function BodyEditor({
 }
 
 // --- Inline field editor -------------------------------------------------
-// Richtext fields (origin, goals items, …) store plain Markdown strings
-// server-side; this editor renders their [[Title]] links as the same
-// mention chips the body uses. Only mentions are structured — all other
-// text passes through verbatim, so the string round-trips exactly.
-
-const inlineMentionRe = /\[\[([^[\]]+)\]\]/g;
-
-function parseInlineMd(value: string, entries: EntrySummary[]): DocNode {
-  const byTitle = new Map(entries.map((e) => [e.title.toLowerCase(), e.id]));
-  const paras = value.split("\n").map((line): DocNode => {
-    const content: DocNode[] = [];
-    let last = 0;
-    for (const m of line.matchAll(inlineMentionRe)) {
-      if (m.index! > last)
-        content.push({ type: "text", text: line.slice(last, m.index) });
-      const label = m[1].trim();
-      content.push({
-        type: "mention",
-        attrs: { id: byTitle.get(label.toLowerCase()) ?? "", label },
-      });
-      last = m.index! + m[0].length;
-    }
-    if (last < line.length)
-      content.push({ type: "text", text: line.slice(last) });
-    return { type: "paragraph", content: content.length ? content : undefined };
-  });
-  return { type: "doc", content: paras };
-}
-
-function serializeInlineMd(doc: DocNode): string {
-  const para = (p: DocNode) =>
-    (p.content ?? [])
-      .map((n) =>
-        n.type === "mention"
-          ? `[[${(n.attrs?.label as string) ?? ""}]]`
-          : (n.text ?? ""),
-      )
-      .join("");
-  return (doc.content ?? []).map(para).join("\n");
-}
+// Richtext fields (origin, goals items, …) store structured docs
+// server-side, exactly like bodies (fields-as-docs, ADR 0014). This
+// editor works on the doc directly — no client-side markdown parsing.
 
 export function InlineField({
-  value,
+  doc,
   entries,
   onChange,
   placeholder,
 }: {
-  value: string;
+  doc: DocNode;
   entries: EntrySummary[];
-  onChange: (value: string) => void;
+  onChange: (doc: DocNode) => void;
   placeholder?: string;
 }) {
   const [menu, setMenu] = useState<MenuState | null>(null);
@@ -442,7 +405,7 @@ export function InlineField({
   useEffect(() => {
     menuRef.current = menu;
   }, [menu]);
-  const valueRef = useRef(value);
+  const docRef = useRef(JSON.stringify(doc));
 
   const extensions = useMemo(() => {
     const render = suggestionRender(setMenu, selectedRef, menuRef);
@@ -472,29 +435,29 @@ export function InlineField({
 
   const editor = useEditor({
     extensions,
-    content: toTipTap(parseInlineMd(value, entries)),
+    content: toTipTap(doc),
     editorProps: {
       attributes: {
         class:
-          "w-full rounded px-1 py-0.5 text-sm outline-none hover:bg-neutral-900 focus:bg-neutral-900",
+          "w-full rounded px-1 py-0.5 outline-none hover:bg-neutral-900 focus:bg-neutral-900",
       },
       handleClickOn: mentionNavigate,
     },
     onUpdate: ({ editor }) => {
-      const next = serializeInlineMd(fromTipTap(editor.getJSON() as DocNode));
-      valueRef.current = next;
+      const next = fromTipTap(editor.getJSON() as DocNode);
+      docRef.current = JSON.stringify(next);
       onChange(next);
     },
   });
 
   // Sync in external changes without looping on our own updates.
   useEffect(() => {
-    if (!editor || value === valueRef.current) return;
-    valueRef.current = value;
-    editor.commands.setContent(
-      toTipTap(parseInlineMd(value, entriesRef.current)),
-    );
-  }, [value, editor]);
+    if (!editor) return;
+    const incoming = JSON.stringify(doc);
+    if (incoming === docRef.current) return;
+    docRef.current = incoming;
+    editor.commands.setContent(toTipTap(doc));
+  }, [doc, editor]);
 
   if (!editor) return null;
 

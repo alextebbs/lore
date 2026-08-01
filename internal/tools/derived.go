@@ -24,8 +24,8 @@ func buildDerived(row db.Entry, typeName string, edges []db.ListEdgesFromRow) (c
 	var fieldBits []string
 	var fieldText []string
 	for name, fv := range fields {
-		v := fmt.Sprintf("%v", fv.Value)
-		if v == "" || v == "<nil>" {
+		v := fieldValueText(fv.Value)
+		if v == "" {
 			continue
 		}
 		fieldBits = append(fieldBits, name+": "+v)

@@ -58,7 +58,7 @@ func (t *Tools) entrySerialization(ctx context.Context, entryID, level string) (
 	}
 	text := fmt.Sprintf("# %s (%s, %s) [id: %s]\n", e.Title, e.TypeName, e.Status, e.ID)
 	for name, fv := range e.Fields {
-		text += fmt.Sprintf("- %s: %v (%s)\n", name, fv.Value, fv.Status)
+		text += fmt.Sprintf("- %s: %s (%s)\n", name, fieldValueText(fv.Value), fv.Status)
 	}
 	for _, sec := range e.Relations {
 		arrow := "→"

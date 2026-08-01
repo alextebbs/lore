@@ -60,31 +60,35 @@ func collectMentions(row db.Entry) []mention {
 	}
 	fields := map[string]FieldValue{}
 	if err := jsonUnmarshal(row.Fields, &fields); err == nil {
-		for name, fv := range fields {
-			switch v := fv.Value.(type) {
+		var scan func(v any, section string)
+		scan = func(v any, section string) {
+			if doc, ok := asDoc(v); ok {
+				for _, ref := range richtext.MentionRefs(doc) {
+					addRef(ref[0], ref[1], section)
+				}
+				return
+			}
+			switch vv := v.(type) {
 			case string:
-				add(v, name)
+				add(vv, section) // legacy textual [[links]]
 			case []any:
-				for _, item := range v {
-					if s, ok := item.(string); ok {
-						add(s, name)
-					}
+				for _, item := range vv {
+					scan(item, section)
 				}
 			}
+		}
+		for name, fv := range fields {
+			scan(fv.Value, name)
 		}
 	}
 	return out
 }
 
-// syncMentions rebuilds an entry's mention edges from its content.
-// Mention edges inherit the author's status semantics (AI draft,
-// human per world policy).
+// syncMentions reconciles an entry's mention edges with its content:
+// unchanged mentions keep their edge (id and any human-set status),
+// vanished ones are deleted, new ones inserted with the author's
+// status semantics (AI draft, human per world policy).
 func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, author Author) error {
-	if err := q.DeleteEdgesByField(ctx, db.DeleteEdgesByFieldParams{
-		FromEntry: row.ID, Field: MentionField,
-	}); err != nil {
-		return err
-	}
 	settings := WorldSettings{}
 	if w, err := q.GetWorld(ctx, row.WorldID); err == nil {
 		settings = parseSettings(w.Settings)
@@ -93,6 +97,12 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 	if author == AuthorHuman {
 		status = settings.humanStatus()
 	}
+
+	type desired struct {
+		target     pgtype.UUID
+		annotation string
+	}
+	want := map[pgtype.UUID]desired{}
 	for _, m := range collectMentions(row) {
 		var target pgtype.UUID
 		if m.id != "" {
@@ -118,11 +128,36 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 		if section != "body" {
 			section = strings.ReplaceAll(section, "_", " ")
 		}
+		if _, ok := want[target]; !ok { // first section mentioning wins
+			want[target] = desired{
+				target:     target,
+				annotation: fmt.Sprintf("mentioned in %s of %s", section, row.Title),
+			}
+		}
+	}
+
+	existing, err := q.ListEdgesFrom(ctx, row.ID)
+	if err != nil {
+		return err
+	}
+	for _, e := range existing {
+		if e.Field != MentionField {
+			continue
+		}
+		if _, still := want[e.ToEntry]; still {
+			// Edge survives as-is — id and status stable across saves.
+			delete(want, e.ToEntry)
+			continue
+		}
+		if err := q.DeleteEdge(ctx, e.ID); err != nil {
+			return err
+		}
+	}
+	for _, d := range want {
 		if _, err := q.CreateEdge(ctx, db.CreateEdgeParams{
 			ID: newID(), WorldID: row.WorldID, FromEntry: row.ID,
-			Field: MentionField, ToEntry: target,
-			Annotation: fmt.Sprintf("mentioned in %s of %s", section, row.Title),
-			Status:     status,
+			Field: MentionField, ToEntry: d.target,
+			Annotation: d.annotation, Status: status,
 		}); err != nil {
 			return err
 		}
@@ -188,25 +223,36 @@ func (t *Tools) propagateRename(ctx context.Context, q *db.Queries, renamed db.E
 		fields := map[string]FieldValue{}
 		if err := json.Unmarshal(src.Fields, &fields); err == nil {
 			fieldsChanged := false
-			for name, fv := range fields {
-				switch v := fv.Value.(type) {
-				case string:
-					if strings.Contains(v, oldLink) {
-						fv.Value = strings.ReplaceAll(v, oldLink, newLink)
-						fields[name] = fv
+			renamedID := idStr(renamed.ID)
+			var rewrite func(v any) any
+			rewrite = func(v any) any {
+				if doc, ok := asDoc(v); ok {
+					doc = richtext.TransformMentions(doc, func(id, label string) (string, string) {
+						if id == renamedID || (id == "" && strings.EqualFold(label, oldTitle)) {
+							fieldsChanged = true
+							return renamedID, newTitle
+						}
+						return id, label
+					})
+					return doc
+				}
+				switch vv := v.(type) {
+				case string: // legacy textual [[links]]
+					if strings.Contains(vv, oldLink) {
 						fieldsChanged = true
+						return strings.ReplaceAll(vv, oldLink, newLink)
 					}
 				case []any:
-					for i, item := range v {
-						if s, ok := item.(string); ok && strings.Contains(s, oldLink) {
-							v[i] = strings.ReplaceAll(s, oldLink, newLink)
-							fieldsChanged = true
-						}
+					for i, item := range vv {
+						vv[i] = rewrite(item)
 					}
-					if fieldsChanged {
-						fields[name] = fv
-					}
+					return vv
 				}
+				return v
+			}
+			for name, fv := range fields {
+				fv.Value = rewrite(fv.Value)
+				fields[name] = fv
 			}
 			if fieldsChanged {
 				changed = true

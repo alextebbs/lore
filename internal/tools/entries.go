@@ -90,11 +90,11 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		return Entry{}, nil, err
 	}
 
+	pol := t.mayTouchCanon(ctx, row.WorldID, author, patch.CanonOverride)
 	settings := WorldSettings{}
 	if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
 		settings = parseSettings(w.Settings)
 	}
-	aiMayTouchCanon := settings.AICanEditCanon || patch.CanonOverride
 
 	title := row.Title
 	if patch.Title != nil && *patch.Title != "" {
@@ -109,7 +109,7 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 	if author == AuthorAI {
 		touchedStatus = StatusDraft
 	}
-	if author == AuthorAI && !aiMayTouchCanon {
+	if !pol.allowed {
 		var protected []string
 		for name, value := range patch.Fields {
 			if fv, ok := fields[name]; ok && fv.Status == StatusCanon && value != nil {
@@ -117,26 +117,35 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 			}
 		}
 		if len(protected) > 0 {
-			return Entry{}, nil, fmt.Errorf("canon fields %v are protected: ask the user to permit the edit (canon_override) or promote a different draft", protected)
+			return Entry{}, nil, pol.refuseCanon(fmt.Sprintf("canon fields %v", protected))
+		}
+	}
+	kinds := map[string]string{}
+	if effFields, err := t.effectiveFields(ctx, row.WorldID, row.TypeID); err == nil {
+		for _, f := range effFields {
+			kinds[f.Name] = f.Kind
 		}
 	}
 	for name, value := range patch.Fields {
 		if value == nil {
-			if fv, ok := fields[name]; ok && fv.Status == StatusCanon && author == AuthorAI && !aiMayTouchCanon {
-				return Entry{}, nil, fmt.Errorf("canon field %q cannot be deleted by AI without user permission", name)
+			if fv, ok := fields[name]; ok && fv.Status == StatusCanon && !pol.allowed {
+				return Entry{}, nil, pol.refuseCanon(fmt.Sprintf("canon field %q", name))
 			}
 			delete(fields, name)
 			continue
 		}
+		// Fields-as-docs (ADR 0014): richtext values normalize to
+		// mention-resolved docs whether they arrive as markdown or doc.
+		value = t.coerceFieldValue(ctx, t.store.Queries, row.WorldID, kinds[name], value)
 		fields[name] = FieldValue{Value: value, Status: touchedStatus}
 	}
 
 	body := row.Body
 	if patch.BodyDoc != nil || patch.BodyMD != nil {
-		if author == AuthorAI && !aiMayTouchCanon {
+		if !pol.allowed {
 			if existing, err := richtext.ParseDoc(row.Body); err == nil {
 				if st := richtext.BodyState(existing); st == "canon" || st == "mixed" {
-					return Entry{}, nil, fmt.Errorf("the body contains canon text and is protected: ask the user to permit the edit (canon_override)")
+					return Entry{}, nil, pol.refuseCanon("the body contains canon text and")
 				}
 			}
 		}
@@ -306,13 +315,9 @@ func (t *Tools) DeleteEntry(ctx context.Context, id string, author Author, canon
 	if err != nil {
 		return notFound(err)
 	}
-	if author == AuthorAI && row.Status != StatusDraft {
-		settings := WorldSettings{}
-		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
-			settings = parseSettings(w.Settings)
-		}
-		if !settings.AICanEditCanon && !canonOverride {
-			return fmt.Errorf("entry %q is %s and protected: only drafts may be deleted by AI without user permission", row.Title, row.Status)
+	if row.Status != StatusDraft {
+		if err := t.mayTouchCanon(ctx, row.WorldID, author, canonOverride).refuseCanon(fmt.Sprintf("entry %q is %s and", row.Title, row.Status)); err != nil {
+			return err
 		}
 	}
 	return t.store.Queries.DeleteEntry(ctx, eid)
@@ -541,6 +546,10 @@ func entryOut(row db.Entry, typeName string) (Entry, error) {
 	fields := map[string]FieldValue{}
 	if err := json.Unmarshal(row.Fields, &fields); err != nil {
 		return Entry{}, fmt.Errorf("bad fields on entry: %w", err)
+	}
+	for name, fv := range fields {
+		fv.Value, fv.ValueDoc = presentFieldValue(fv.Value)
+		fields[name] = fv
 	}
 	doc, err := richtext.ParseDoc(row.Body)
 	if err != nil {

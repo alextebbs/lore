@@ -90,8 +90,9 @@ type RelationConfig struct {
 
 // FieldValue is one entry field's value plus its draft/canon status.
 type FieldValue struct {
-	Value  any    `json:"value"`
-	Status string `json:"status"`
+	Value    any    `json:"value"`
+	ValueDoc any    `json:"value_doc,omitempty"` // structured form for richtext kinds
+	Status   string `json:"status"`
 }
 
 type World struct {

@@ -23,7 +23,16 @@ func RenderEntry(e tools.Entry) string {
 	sb.WriteString("---\n")
 	fmt.Fprintf(&sb, "id: %s\ntype: %s\nstatus: %s\n", e.ID, e.TypeName, e.Status)
 	for name, fv := range e.Fields {
+		// Richtext fields arrive with Value already rendered to markdown
+		// (fields-as-docs, ADR 0014); lists join with semicolons.
 		v := fmt.Sprintf("%v", fv.Value)
+		if list, ok := fv.Value.([]any); ok {
+			parts := make([]string, 0, len(list))
+			for _, item := range list {
+				parts = append(parts, fmt.Sprintf("%v", item))
+			}
+			v = strings.Join(parts, "; ")
+		}
 		if strings.ContainsAny(v, ":#{}[]|>&*!%@`\"'\n") {
 			v = fmt.Sprintf("%q", v)
 		}

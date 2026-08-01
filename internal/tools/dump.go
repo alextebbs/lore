@@ -211,19 +211,38 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 			if err != nil {
 				return err
 			}
+			body := row.Body
 			if doc, err := richtext.ParseDoc(row.Body); err == nil {
 				doc = t.resolveMentionDoc(ctx, q, w.ID, doc)
-				raw, err := json.Marshal(doc)
-				if err != nil {
+				if body, err = json.Marshal(doc); err != nil {
 					return err
 				}
-				row, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
-					ID: row.ID, Title: row.Title, Fields: row.Fields,
-					Body: raw, Status: row.Status,
-				})
-				if err != nil {
-					return err
+			}
+			// Fields-as-docs (ADR 0014): normalize richtext field values
+			// to mention-resolved docs; statuses come through verbatim.
+			fieldsJSON := row.Fields
+			fields := map[string]FieldValue{}
+			if err := json.Unmarshal(row.Fields, &fields); err == nil {
+				kinds := map[string]string{}
+				if eff, err := t.effectiveFieldsQ(ctx, q, w.ID, row.TypeID); err == nil {
+					for _, f := range eff {
+						kinds[f.Name] = f.Kind
+					}
 				}
+				for name, fv := range fields {
+					fv.Value = t.coerceFieldValue(ctx, q, w.ID, kinds[name], fv.Value)
+					fields[name] = fv
+				}
+				if raw, err := json.Marshal(fields); err == nil {
+					fieldsJSON = raw
+				}
+			}
+			row, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
+				ID: row.ID, Title: row.Title, Fields: fieldsJSON,
+				Body: body, Status: row.Status,
+			})
+			if err != nil {
+				return err
 			}
 			if err := t.refreshDerived(ctx, q, row, typeName[row.TypeID]); err != nil {
 				return err

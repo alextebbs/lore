@@ -47,7 +47,11 @@ type RelationSection struct {
 
 // effectiveFields resolves a type's fields through its inheritance chain.
 func (t *Tools) effectiveFields(ctx context.Context, worldID, typeID pgtype.UUID) ([]FieldDef, error) {
-	rows, err := t.store.Queries.ListEntryTypes(ctx, worldID)
+	return t.effectiveFieldsQ(ctx, t.store.Queries, worldID, typeID)
+}
+
+func (t *Tools) effectiveFieldsQ(ctx context.Context, q *db.Queries, worldID, typeID pgtype.UUID) ([]FieldDef, error) {
+	rows, err := q.ListEntryTypes(ctx, worldID)
 	if err != nil {
 		return nil, err
 	}
@@ -172,13 +176,9 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 			}
 			for _, e := range existing {
 				if e.Field == field {
-					if author == AuthorAI && e.Status == StatusCanon {
-						settings := WorldSettings{}
-						if w, err := q.GetWorld(ctx, from.WorldID); err == nil {
-							settings = parseSettings(w.Settings)
-						}
-						if !settings.AICanEditCanon {
-							return fmt.Errorf("field %q holds a canon relation to %s; replacing it needs user permission", field, e.ToTitle)
+					if e.Status == StatusCanon {
+						if err := t.mayTouchCanon(ctx, from.WorldID, author, false).refuseCanon(fmt.Sprintf("field %q holds a canon relation to %s; replacing it", field, e.ToTitle)); err != nil {
+							return err
 						}
 					}
 					if err := q.DeleteEdge(ctx, e.ID); err != nil {
@@ -225,13 +225,9 @@ func (t *Tools) DeleteEdge(ctx context.Context, id string, author Author) error 
 	if err != nil {
 		return notFound(err)
 	}
-	if author == AuthorAI && row.Status == StatusCanon {
-		settings := WorldSettings{}
-		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
-			settings = parseSettings(w.Settings)
-		}
-		if !settings.AICanEditCanon {
-			return fmt.Errorf("canon edge cannot be deleted by AI without user permission")
+	if row.Status == StatusCanon {
+		if err := t.mayTouchCanon(ctx, row.WorldID, author, false).refuseCanon("this canon edge"); err != nil {
+			return err
 		}
 	}
 	if err := t.store.Queries.DeleteEdge(ctx, eid); err != nil {
@@ -259,13 +255,9 @@ func (t *Tools) UpdateEdgeStatus(ctx context.Context, id, status string, author 
 	if err != nil {
 		return Edge{}, notFound(err)
 	}
-	if author == AuthorAI && row.Status == StatusCanon {
-		settings := WorldSettings{}
-		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
-			settings = parseSettings(w.Settings)
-		}
-		if !settings.AICanEditCanon {
-			return Edge{}, fmt.Errorf("canon edge cannot be modified by AI without user permission")
+	if row.Status == StatusCanon {
+		if err := t.mayTouchCanon(ctx, row.WorldID, author, false).refuseCanon("this canon edge"); err != nil {
+			return Edge{}, err
 		}
 	}
 	updated, err := t.store.Queries.SetEdgeStatus(ctx, db.SetEdgeStatusParams{

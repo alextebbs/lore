@@ -155,6 +155,11 @@ func (t *Tools) UpdateWorldSettings(ctx context.Context, worldID string, s World
 	if s.HumansAuthorAs != "" && s.HumansAuthorAs != StatusDraft && s.HumansAuthorAs != StatusCanon {
 		return World{}, fmt.Errorf("humans_author_as must be draft or canon")
 	}
+	if w, err := t.store.Queries.GetWorld(ctx, wid); err == nil {
+		if err := t.checkWorldOwner(w); err != nil {
+			return World{}, err
+		}
+	}
 	raw, err := json.Marshal(s)
 	if err != nil {
 		return World{}, err
@@ -175,6 +180,11 @@ func (t *Tools) DeleteWorld(ctx context.Context, worldID string) error {
 	wid, err := parseID(worldID)
 	if err != nil {
 		return err
+	}
+	if w, err := t.store.Queries.GetWorld(ctx, wid); err == nil {
+		if err := t.checkWorldOwner(w); err != nil {
+			return err
+		}
 	}
 	return t.store.Queries.DeleteWorld(ctx, wid)
 }

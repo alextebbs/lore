@@ -44,6 +44,20 @@ const rootRoute = createRootRoute({
   ),
 });
 
+// Fields-as-docs: richtext values are docs; legacy strings wrap into a
+// minimal doc until their next save migrates them server-side.
+const strToDoc = (s: string): DocNode => ({
+  type: "doc",
+  content: (s ? s.split("\n") : [""]).map((line) => ({
+    type: "paragraph",
+    content: line ? [{ type: "text", text: line }] : undefined,
+  })),
+});
+const asFieldDoc = (v: unknown): DocNode =>
+  v && typeof v === "object" && (v as DocNode).type === "doc"
+    ? (v as DocNode)
+    : strToDoc(typeof v === "string" ? v : "");
+
 const titleCase = (s: string) =>
   s.replace(/_/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
@@ -879,13 +893,13 @@ function EntryPage() {
   });
 
   const [title, setTitle] = useState("");
-  const [fields, setFields] = useState<Record<string, string | string[]>>({});
+  const [fields, setFields] = useState<Record<string, unknown>>({});
   const [bodyDoc, setBodyDoc] = useState<DocNode>(emptyDoc);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const [dirty, setDirty] = useState(0);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
-  const latest = useRef<{ title: string; fields: Record<string, string | string[]>; bodyDoc: DocNode }>({
+  const latest = useRef<{ title: string; fields: Record<string, unknown>; bodyDoc: DocNode }>({
     title: "",
     fields: {},
     bodyDoc: emptyDoc,
@@ -897,11 +911,20 @@ function EntryPage() {
     if (!e) return;
     setTitle(e.title);
     setBodyDoc(e.body_doc);
-    const f: Record<string, string | string[]> = {};
+    const f: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(e.fields)) {
-      f[k] = Array.isArray(v.value)
-        ? (v.value as unknown[]).map(String)
-        : String(v.value ?? "");
+      if (Array.isArray(v.value_doc)) {
+        const mds = Array.isArray(v.value) ? (v.value as unknown[]) : [];
+        f[k] = (v.value_doc as (DocNode | null)[]).map(
+          (d, i) => d ?? strToDoc(String(mds[i] ?? "")),
+        );
+      } else if (v.value_doc) {
+        f[k] = v.value_doc;
+      } else if (Array.isArray(v.value)) {
+        f[k] = (v.value as unknown[]).map(String);
+      } else {
+        f[k] = String(v.value ?? "");
+      }
     }
     setFields(f);
   }, [entry.data]);
@@ -1106,10 +1129,8 @@ function EntryPage() {
           );
           if (kind === "richtext_list") {
             const items = Array.isArray(fields[name])
-              ? (fields[name] as string[])
-              : fields[name]
-                ? [String(fields[name])]
-                : [];
+              ? (fields[name] as unknown[])
+              : [];
             return (
               <div key={name} className="flex gap-3">
                 {label}
@@ -1118,14 +1139,14 @@ function EntryPage() {
                     <div key={idx} className="mb-1 flex gap-1">
                       <div className={`w-full ${tone}`}>
                         <InlineField
-                          value={item}
+                          doc={asFieldDoc(item)}
                           entries={fieldLinkTargets}
                           placeholder="— ('[[' links an entry)"
-                          onChange={(v) => {
+                          onChange={(d) => {
                             const next = [...items];
-                            next[idx] = v;
+                            next[idx] = d;
                             setFields({ ...fields, [name]: next });
-                            setDirty((d) => d + 1);
+                            setDirty((n) => n + 1);
                           }}
                         />
                       </div>
@@ -1145,7 +1166,9 @@ function EntryPage() {
                   ))}
                   <button
                     type="button"
-                    onClick={() => setFields({ ...fields, [name]: [...items, ""] })}
+                    onClick={() =>
+                      setFields({ ...fields, [name]: [...items, strToDoc("")] })
+                    }
                     className="rounded border border-dashed border-neutral-700 px-2 py-0.5 text-xs text-neutral-500 hover:text-neutral-300"
                   >
                     + add
@@ -1160,12 +1183,12 @@ function EntryPage() {
                 {label}
                 <div className={`min-w-0 flex-1 ${tone}`}>
                   <InlineField
-                    value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
+                    doc={asFieldDoc(fields[name])}
                     entries={fieldLinkTargets}
                     placeholder="— ('[[' links an entry)"
-                    onChange={(v) => {
-                      setFields({ ...fields, [name]: v });
-                      setDirty((d) => d + 1);
+                    onChange={(d) => {
+                      setFields({ ...fields, [name]: d });
+                      setDirty((n) => n + 1);
                     }}
                   />
                 </div>
