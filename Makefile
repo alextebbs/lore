@@ -51,3 +51,6 @@ fixture-dump:
 	@test -n "$(world)" || (echo "usage: make fixture-dump world=<world-id>" && exit 1)
 	@curl -s localhost:8080/api/worlds/$(world)/dump | python3 -m json.tool > fixtures/emberfall.json
 	@echo "fixtures/emberfall.json updated ($$(wc -c < fixtures/emberfall.json) bytes)"
+
+tools-docs: ## regenerate the TOOLS.md capability table from the registry
+	go run ./cmd/gentools

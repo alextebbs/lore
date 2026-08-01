@@ -41,8 +41,7 @@ func (s *Server) Router() http.Handler {
 		s.registerContent(mux)
 	}
 	if s.Store != nil && s.Agent != nil {
-		s.registerChat(mux)
-	}
+		}
 	if s.MCP != nil {
 		mux.Handle("/mcp", s.MCP)
 	}

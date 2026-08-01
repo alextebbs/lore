@@ -61,6 +61,21 @@ export type RelationSection = {
   config?: RelationConfig;
   edges: EdgeType[] | null;
 };
+export type SearchResult = {
+  id: string;
+  title: string;
+  type_name: string;
+  status: string;
+  card: string;
+  score: number;
+};
+export type EntryTypeDef = {
+  id: string;
+  name: string;
+  parent_id?: string;
+  fields: FieldDef[] | null;
+  builtin: boolean;
+};
 export type Graph = {
   nodes: null | {
     id: string;
@@ -166,6 +181,32 @@ export const api = {
     req<Graph>(`/api/entries/${id}/graph?depth=${depth}`),
   updateWorldSettings: (id: string, settings: WorldSettings) =>
     req<World>(`/api/worlds/${id}`, { ...json(settings), method: "PATCH" }),
+  search: (worldId: string, q: string, canonOnly = false, near: string[] = []) =>
+    req<SearchResult[]>(
+      `/api/worlds/${worldId}/search?q=${encodeURIComponent(q)}&canon_only=${canonOnly}&near=${near.join(",")}`,
+    ),
+  createEntryType: (
+    worldId: string,
+    name: string,
+    fields: unknown[],
+    parentId = "",
+  ) =>
+    req<{ type: EntryTypeDef; warnings: string[] | null }>(
+      `/api/worlds/${worldId}/types`,
+      json({ name, fields, parent_id: parentId }),
+    ),
+  updateEntryType: (
+    worldId: string,
+    typeId: string,
+    patch: { name?: string; fields?: unknown[]; renames?: Record<string, string> },
+  ) =>
+    req<{ type: EntryTypeDef; warnings: string[] | null }>(
+      `/api/worlds/${worldId}/types/${typeId}`,
+      { ...json(patch), method: "PATCH" },
+    ),
+  dumpWorld: (id: string) => req<unknown>(`/api/worlds/${id}/dump`),
+  importWorld: (dump: unknown, name = "", preserveIds = false) =>
+    req<World>(`/api/worlds/import`, json({ dump, name, preserve_ids: preserveIds })),
   deleteWorld: (id: string) =>
     req<{ deleted: boolean }>(`/api/worlds/${id}`, { method: "DELETE" }),
   deleteEntry: (id: string) =>

@@ -18,36 +18,41 @@ Per SPEC tenet 2, every row has all three surfaces. /mcp is streamable
 HTTP; when MCP_TOKEN is set it requires `Authorization: Bearer`. AI
 callers (MCP + agent) write as draft; the UI/API write as the human.
 
-| Capability | HTTP | MCP tool |
-|---|---|---|
-| CreateWorld | POST /api/worlds | create_world |
-| ListWorlds | GET /api/worlds | list_worlds |
-| GetWorld + ListTypes | GET /api/worlds/{id} | get_world |
-| ListEntries | GET /api/worlds/{id}/entries | list_entries |
-| CreateEntry | POST /api/worlds/{id}/entries | create_entry |
-| GetEntry | GET /api/entries/{id} | get_entry |
-| UpdateEntry (patch; soft warnings) | PATCH /api/entries/{id} | update_entry |
-| MarkCanon (scoped: fields/body/edges or all) | POST /api/entries/{id}/canon | mark_canon (human-gated) |
-| ListRevisions | GET /api/entries/{id}/revisions | list_revisions |
-| GetRevision (full snapshot) | GET /api/entries/{id}/revisions/{rid} | get_revision |
-| RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | restore_revision (human-gated) |
-| CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | create_edge |
-| DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | delete_edge |
-| UpdateEdgeStatus (draft/canon; AI: canon needs policy) | PATCH /api/edges/{id} | update_edge_status |
-| Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | traverse |
-| FindRelevant (hybrid scorer — THE search path) | GET /api/worlds/{id}/search?q=&near=&canon_only= | find_relevant |
-| Serializations (card/digest) | GET /api/entries/{id}?detail=card\|digest | get_entry(detail) |
-| GetContextTray (pins+current+auto, ladder) | GET /api/worlds/{id}/tray?current=&q= | get_context_tray |
-| PinEntry / UnpinEntry | POST/DELETE /api/worlds/{id}/tray/pins | pin_entry / unpin_entry |
-| ExportEntry (clean vault markdown) | GET /api/entries/{id}/export | export_entry |
-| ExportWorld (Obsidian vault) | GET /api/worlds/{id}/export (zip) | export_world (file list) |
-| CreateEntryType (single inheritance, soft warnings) | POST /api/worlds/{id}/types | create_entry_type |
-| DumpWorld (full-fidelity fixture) | GET /api/worlds/{id}/dump | dump_world |
-| ImportWorld (rebuild from fixture) | POST /api/worlds/import | import_world |
-| UpdateWorldSettings (vibe/style/policies) | PATCH /api/worlds/{id} | update_world_settings |
-| DeleteEntry (AI: draft-only unless permitted) | DELETE /api/entries/{id} | delete_entry |
-| DeleteWorld | DELETE /api/worlds/{id} | delete_world (human-gated) |
-| UpdateEntryType (renames migrate edges+values) | PATCH /api/worlds/{id}/types/{typeId} | update_entry_type |
+| Capability | HTTP | MCP tool | TS client |
+|---|---|---|---|
+| ListWorlds | GET /api/worlds | list_worlds | listWorlds |
+| CreateWorld | POST /api/worlds | create_world | createWorld |
+| GetWorld — includes entry types | GET /api/worlds/{id} | get_world | getWorld |
+| UpdateWorldSettings | PATCH /api/worlds/{id} | update_world_settings | updateWorldSettings |
+| DeleteWorld | DELETE /api/worlds/{id} | delete_world | deleteWorld |
+| ListEntries | GET /api/worlds/{id}/entries | list_entries | listEntries |
+| CreateEntry | POST /api/worlds/{id}/entries | create_entry | createEntry |
+| GetEntry — detail=card|digest|full | GET /api/entries/{id} | get_entry | getEntry |
+| UpdateEntry — fields accept markdown or docs (ADR 0014) | PATCH /api/entries/{id} | update_entry | updateEntry |
+| DeleteEntry — AI: draft only | DELETE /api/entries/{id} | delete_entry | deleteEntry |
+| MarkCanon — scoped: fields/body/edges | POST /api/entries/{id}/canon | mark_canon | markCanon |
+| ListRevisions | GET /api/entries/{id}/revisions | list_revisions | listRevisions |
+| GetRevision | GET /api/entries/{id}/revisions/{rid} | get_revision | getRevision |
+| RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | restore_revision | restoreRevision |
+| CreateEdge — cardinality-one replaces + warns | POST /api/entries/{id}/edges | create_edge | createEdge |
+| DeleteEdge — AI: draft only | DELETE /api/edges/{id} | delete_edge | deleteEdge |
+| UpdateEdgeStatus — draft/canon per edge | PATCH /api/edges/{id} | update_edge_status | updateEdgeStatus |
+| Traverse — 1–2 hop ego network | GET /api/entries/{id}/graph | traverse | getGraph |
+| FindRelevant — hybrid scorer (ADR 0010) | GET /api/worlds/{id}/search | find_relevant | search |
+| ExportEntry — markdown download; TS uses a plain href | GET /api/entries/{id}/export | export_entry | — |
+| ExportWorld — vault zip; TS uses a plain href | GET /api/worlds/{id}/export | export_world | — |
+| CreateEntryType | POST /api/worlds/{id}/types | create_entry_type | createEntryType |
+| UpdateEntryType — field identity survives renames (ADR 0015) | PATCH /api/worlds/{id}/types/{typeId} | update_entry_type | updateEntryType |
+| DumpWorld — fixture format | GET /api/worlds/{id}/dump | dump_world | dumpWorld |
+| ImportWorld — preserve_ids keeps URLs stable | POST /api/worlds/import | import_world | importWorld |
+| GetContextTray | GET /api/worlds/{id}/tray | get_context_tray | getTray |
+| PinEntry | POST /api/worlds/{id}/tray/pins | pin_entry | createPin |
+| UnpinEntry | DELETE /api/worlds/{id}/tray/pins/{entryId} | unpin_entry | deletePin |
+| ListConversations — UI-only harness | GET /api/worlds/{id}/conversations | — | listConversations |
+| CreateConversation — UI-only harness | POST /api/worlds/{id}/conversations | — | createConversation |
+| GetConversation — UI-only harness | GET /api/conversations/{id} | — | getConversation |
+| SendMessage — UI-only harness (SSE) | POST /api/conversations/{id}/messages | — | sendMessage |
+| EvictAutoItem — UI-only harness | POST /api/conversations/{id}/evict | — | evictAutoItem |
 
 UI-only (SPEC tenet 2 exception — orchestration, not capability): the
 chat harness (conversations/messages/evict endpoints) drives the agent

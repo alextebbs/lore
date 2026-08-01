@@ -14,6 +14,7 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 
 	"github.com/alextebbs/lore/internal/export"
+	"github.com/alextebbs/lore/internal/toolreg"
 	"github.com/alextebbs/lore/internal/tools"
 )
 
@@ -56,7 +57,15 @@ func view(e tools.Entry) entryView {
 	}
 }
 
+// addTool registers and records — New asserts the recorded set matches
+// the tool registry (ADR 0016) so surface drift fails at startup.
+func addTool[In, Out any](s *mcp.Server, registered *[]string, t *mcp.Tool, h mcp.ToolHandlerFor[In, Out]) {
+	*registered = append(*registered, t.Name)
+	mcp.AddTool(s, t, h)
+}
+
 func New(t *tools.Tools) *mcp.Server {
+	var registered []string
 	s := mcp.NewServer(&mcp.Implementation{
 		Name:    "lore",
 		Title:   "Lore Worldbuilding",
@@ -70,7 +79,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID string `json:"entry_id" jsonschema:"the entry's id"`
 	}
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "list_worlds",
 		Description: "List all worlds you can access.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, _ any) (*mcp.CallToolResult, []tools.World, error) {
@@ -81,7 +90,7 @@ func New(t *tools.Tools) *mcp.Server {
 	type createWorldIn struct {
 		Name string `json:"name" jsonschema:"name of the new world"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "create_world",
 		Description: "Create a new world, seeded with the built-in entry types (Character, Place, Event, Item, Faction).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in createWorldIn) (*mcp.CallToolResult, tools.World, error) {
@@ -93,7 +102,7 @@ func New(t *tools.Tools) *mcp.Server {
 		World tools.World       `json:"world"`
 		Types []tools.EntryType `json:"types"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "get_world",
 		Description: "Get a world and its entry types (with effective fields, including relation field configs).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, worldOut, error) {
@@ -105,7 +114,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, worldOut{World: w, Types: types}, err
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "list_entries",
 		Description: "List all entries in a world (id, title, type, draft/canon status).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, []tools.EntrySummary, error) {
@@ -118,7 +127,7 @@ func New(t *tools.Tools) *mcp.Server {
 		TypeID  string `json:"type_id" jsonschema:"the entry type's id (see get_world)"`
 		Title   string `json:"title" jsonschema:"title of the new entry"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "create_entry",
 		Description: "Create a new entry. It is born as DRAFT until a human promotes it. Fill content with update_entry afterwards.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in createEntryIn) (*mcp.CallToolResult, entryView, error) {
@@ -130,7 +139,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID string `json:"entry_id" jsonschema:"the entry's id"`
 		Detail  string `json:"detail,omitempty" jsonschema:"card (one line), digest (paragraph), or full (default). Use card/digest to save tokens."`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "get_entry",
 		Description: "Get an entry. detail=full (default) returns fields with statuses, body markdown ({~draft} spans), and a unified relations list (sections with reverse=true group edges pointing at this entry); card/digest return compact summaries at lower token cost.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in getEntryIn) (*mcp.CallToolResult, any, error) {
@@ -154,7 +163,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Near      []string `json:"near,omitempty" jsonschema:"entry ids to boost graph neighbors of (e.g. the entry being discussed)"`
 		Limit     int      `json:"limit,omitempty" jsonschema:"max results, default 10"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "find_relevant",
 		Description: "THE search tool: hybrid ranking (lexical + semantic when available + graph proximity + canon weighting) over a world's entries. Returns cards with scores. Call before authoring to load relevant context.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in findRelevantIn) (*mcp.CallToolResult, []tools.SearchResult, error) {
@@ -173,7 +182,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Entry    entryView `json:"entry"`
 		Warnings []string  `json:"warnings,omitempty"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "update_entry",
 		Description: "Update an entry's title, fields, or body. Everything you write becomes DRAFT. Canon spans you resend are preserved as canon only if unchanged... they are re-marked draft, so prefer minimal edits. Soft-schema warnings are advisory.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in updateEntryIn) (*mcp.CallToolResult, updateEntryOut, error) {
@@ -190,7 +199,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Body    bool     `json:"body,omitempty" jsonschema:"promote the body's draft spans"`
 		Edges   bool     `json:"edges,omitempty" jsonschema:"promote the entry's outgoing edges"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "mark_canon",
 		Description: "HUMAN-GATED: promote draft content to canon. Call ONLY when the user explicitly instructs promotion. Empty scope promotes everything in the entry.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in markCanonIn) (*mcp.CallToolResult, entryView, error) {
@@ -200,7 +209,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, view(out), err
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "list_revisions",
 		Description: "List an entry's revision history (author human/ai, status, timestamp).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in entryID) (*mcp.CallToolResult, []tools.Revision, error) {
@@ -211,7 +220,7 @@ func New(t *tools.Tools) *mcp.Server {
 	type revisionIn struct {
 		RevisionID string `json:"revision_id" jsonschema:"the revision's id"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "get_revision",
 		Description: "Get a full revision snapshot (title, fields, body markdown).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in revisionIn) (*mcp.CallToolResult, tools.RevisionDetail, error) {
@@ -223,7 +232,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID    string `json:"entry_id" jsonschema:"the entry's id"`
 		RevisionID string `json:"revision_id" jsonschema:"the revision to restore"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "restore_revision",
 		Description: "HUMAN-GATED: restore an entry to a past revision. Call ONLY when the user explicitly instructs it. History is append-only; restoring adds a new revision.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in restoreIn) (*mcp.CallToolResult, entryView, error) {
@@ -241,7 +250,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Edge     tools.Edge `json:"edge"`
 		Warnings []string   `json:"warnings,omitempty"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "create_edge",
 		Description: "Relate two entries through a relation field. Your edges are born DRAFT. Cardinality-one fields replace the existing edge. Warnings are advisory (soft schema).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in createEdgeIn) (*mcp.CallToolResult, createEdgeOut, error) {
@@ -252,7 +261,7 @@ func New(t *tools.Tools) *mcp.Server {
 	type edgeIDIn struct {
 		EdgeID string `json:"edge_id" jsonschema:"the edge's id"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "delete_edge",
 		Description: "Delete a relation edge. You may only delete DRAFT edges; canon edges require a human.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in edgeIDIn) (*mcp.CallToolResult, any, error) {
@@ -264,7 +273,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EdgeID string `json:"edge_id" jsonschema:"the edge's id"`
 		Status string `json:"status" jsonschema:"draft or canon"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "update_edge_status",
 		Description: "Promote or demote a single relation edge (draft/canon). You may not modify canon edges unless world policy allows it.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in edgeStatusIn) (*mcp.CallToolResult, tools.Edge, error) {
@@ -277,7 +286,7 @@ func New(t *tools.Tools) *mcp.Server {
 		CurrentEntryID string `json:"current_entry_id,omitempty" jsonschema:"entry currently being discussed (optional)"`
 		Query          string `json:"query,omitempty" jsonschema:"topic to auto-retrieve relevant entries for (optional)"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "get_context_tray",
 		Description: "Get the user's persistent context tray for a world: pinned entries, the current entry, and auto-retrieved items, each with serialized text and token estimates. Call before authoring to load the user's working set.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in trayIn) (*mcp.CallToolResult, tools.Tray, error) {
@@ -290,7 +299,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID       string `json:"entry_id" jsonschema:"entry to pin"`
 		WithNeighbors bool   `json:"with_neighbors,omitempty" jsonschema:"also include the entry's graph neighbors"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "pin_entry",
 		Description: "Pin an entry to the user's context tray (persists across sessions and surfaces).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in pinIn) (*mcp.CallToolResult, any, error) {
@@ -302,7 +311,7 @@ func New(t *tools.Tools) *mcp.Server {
 		WorldID string `json:"world_id" jsonschema:"the world's id"`
 		EntryID string `json:"entry_id" jsonschema:"entry to unpin"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "unpin_entry",
 		Description: "Remove an entry from the user's context tray.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in unpinIn) (*mcp.CallToolResult, any, error) {
@@ -314,7 +323,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID string `json:"entry_id" jsonschema:"center of the ego network"`
 		Depth   int    `json:"depth,omitempty" jsonschema:"hops out from the entry, 1 or 2 (default 1)"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "traverse",
 		Description: "Get the ego network around an entry: nodes and typed edges 1-2 hops out. Use to load related context before authoring.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in traverseIn) (*mcp.CallToolResult, tools.Graph, error) {
@@ -332,7 +341,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Type     tools.EntryType `json:"type"`
 		Warnings []string        `json:"warnings,omitempty"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "create_entry_type",
 		Description: "Define a new entry type (schema) in a world, optionally inheriting from a parent type. Soft-validated: warnings, not rejections.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in createTypeIn) (*mcp.CallToolResult, createTypeOut, error) {
@@ -347,7 +356,7 @@ func New(t *tools.Tools) *mcp.Server {
 		Fields  []tools.FieldDef  `json:"fields,omitempty" jsonschema:"replacement field list (optional; omit to keep)"`
 		Renames map[string]string `json:"renames,omitempty" jsonschema:"old field name -> new field name; existing edges and field values migrate automatically"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "update_entry_type",
 		Description: "Edit an entry type: rename it, replace fields, and rename fields with automatic migration of edges and stored values (type + subtypes).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in updateTypeIn) (*mcp.CallToolResult, createTypeOut, error) {
@@ -355,7 +364,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, createTypeOut{Type: et, Warnings: warnings}, err
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "dump_world",
 		Description: "Export a world as a full-fidelity fixture (JSON string): types, entries with statuses and draft marks, edges with annotations. Re-importable via import_world.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, any, error) {
@@ -372,7 +381,7 @@ func New(t *tools.Tools) *mcp.Server {
 		DumpJSON    string `json:"dump_json" jsonschema:"a fixture produced by dump_world"`
 		PreserveIDs bool   `json:"preserve_ids,omitempty" jsonschema:"keep dumped ids verbatim (prod swap); delete the old world first"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "import_world",
 		Description: "Rebuild a world from a dump_world fixture. IDs are remapped; statuses, draft marks, and annotations come through verbatim.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in importIn) (*mcp.CallToolResult, tools.World, error) {
@@ -388,7 +397,7 @@ func New(t *tools.Tools) *mcp.Server {
 		WorldID  string              `json:"world_id" jsonschema:"the world's id"`
 		Settings tools.WorldSettings `json:"settings" jsonschema:"vibe (world context), style_prompt (writer priming), humans_author_as (draft|canon), ai_can_edit_canon"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "update_world_settings",
 		Description: "Replace a world's settings: vibe/context prompt, writing-style primer, and authoring policies (humans_author_as, ai_can_edit_canon).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in settingsIn) (*mcp.CallToolResult, tools.World, error) {
@@ -400,7 +409,7 @@ func New(t *tools.Tools) *mcp.Server {
 		EntryID       string `json:"entry_id" jsonschema:"the entry's id"`
 		CanonOverride bool   `json:"canon_override,omitempty" jsonschema:"permit deleting canon — ONLY on explicit user instruction"`
 	}
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "delete_entry",
 		Description: "Delete an entry and its relations. You may freely delete DRAFT entries; canon needs the world's permission or explicit user instruction.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in deleteEntryIn) (*mcp.CallToolResult, any, error) {
@@ -408,7 +417,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, map[string]bool{"deleted": err == nil}, err
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "delete_world",
 		Description: "HUMAN-GATED: permanently delete a world and everything in it. Call ONLY when the user explicitly instructs it, naming the world.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, any, error) {
@@ -416,7 +425,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, map[string]bool{"deleted": err == nil}, err
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "export_entry",
 		Description: "Export one entry as clean vault Markdown (frontmatter, [[wikilinks]], draft markers stripped).",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in entryID) (*mcp.CallToolResult, any, error) {
@@ -427,7 +436,7 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, map[string]string{"markdown": export.RenderEntry(e)}, nil
 	})
 
-	mcp.AddTool(s, &mcp.Tool{
+	addTool(s, &registered, &mcp.Tool{
 		Name:        "export_world",
 		Description: "Export a whole world as an Obsidian-style vault: a list of {path, content} Markdown files, folders per type.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, []export.File, error) {
@@ -435,6 +444,19 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, files, err
 	})
 
+	declared := toolreg.MCPNames()
+	seen := map[string]bool{}
+	for _, name := range registered {
+		if !declared[name] {
+			panic(fmt.Sprintf("mcp tool %q is not in the tool registry (internal/toolreg)", name))
+		}
+		seen[name] = true
+	}
+	for name := range declared {
+		if !seen[name] {
+			panic(fmt.Sprintf("tool registry declares MCP tool %q but it is not registered", name))
+		}
+	}
 	return s
 }
 

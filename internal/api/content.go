@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/alextebbs/lore/internal/export"
+	"github.com/alextebbs/lore/internal/toolreg"
 	"github.com/alextebbs/lore/internal/tools"
 )
 
@@ -17,32 +18,53 @@ import (
 // The UI is a human surface, so writes here carry AuthorHuman; the agent
 // and MCP surfaces (M3/M6) pass AuthorAI through the same tools.
 
+// registerContent wires every content route from the tool registry
+// (ADR 0016): the registry is the single declaration of the surface,
+// and a capability without a handler here is a startup panic — drift
+// fails fast instead of shipping.
 func (s *Server) registerContent(mux *http.ServeMux) {
-	mux.HandleFunc("GET /api/worlds", s.listWorlds)
-	mux.HandleFunc("POST /api/worlds", s.createWorld)
-	mux.HandleFunc("GET /api/worlds/{id}", s.getWorld)
-	mux.HandleFunc("GET /api/worlds/{id}/entries", s.listEntries)
-	mux.HandleFunc("POST /api/worlds/{id}/entries", s.createEntry)
-	mux.HandleFunc("GET /api/entries/{id}", s.getEntry)
-	mux.HandleFunc("PATCH /api/entries/{id}", s.updateEntry)
-	mux.HandleFunc("POST /api/entries/{id}/canon", s.markCanon)
-	mux.HandleFunc("GET /api/entries/{id}/revisions", s.listRevisions)
-	mux.HandleFunc("GET /api/entries/{id}/revisions/{rid}", s.getRevision)
-	mux.HandleFunc("POST /api/entries/{id}/revisions/{rid}/restore", s.restoreRevision)
-	mux.HandleFunc("POST /api/entries/{id}/edges", s.createEdge)
-	mux.HandleFunc("DELETE /api/edges/{id}", s.deleteEdge)
-	mux.HandleFunc("PATCH /api/edges/{id}", s.updateEdge)
-	mux.HandleFunc("GET /api/entries/{id}/graph", s.getGraph)
-	mux.HandleFunc("GET /api/worlds/{id}/search", s.search)
-	mux.HandleFunc("GET /api/entries/{id}/export", s.exportEntry)
-	mux.HandleFunc("GET /api/worlds/{id}/export", s.exportWorld)
-	mux.HandleFunc("POST /api/worlds/{id}/types", s.createEntryType)
-	mux.HandleFunc("PATCH /api/worlds/{id}/types/{typeId}", s.updateEntryType)
-	mux.HandleFunc("GET /api/worlds/{id}/dump", s.dumpWorld)
-	mux.HandleFunc("POST /api/worlds/import", s.importWorld)
-	mux.HandleFunc("PATCH /api/worlds/{id}", s.updateWorldSettings)
-	mux.HandleFunc("DELETE /api/worlds/{id}", s.deleteWorld)
-	mux.HandleFunc("DELETE /api/entries/{id}", s.deleteEntry)
+	handlers := map[string]http.HandlerFunc{
+		"ListWorlds":          s.listWorlds,
+		"CreateWorld":         s.createWorld,
+		"GetWorld":            s.getWorld,
+		"UpdateWorldSettings": s.updateWorldSettings,
+		"DeleteWorld":         s.deleteWorld,
+		"ListEntries":         s.listEntries,
+		"CreateEntry":         s.createEntry,
+		"GetEntry":            s.getEntry,
+		"UpdateEntry":         s.updateEntry,
+		"DeleteEntry":         s.deleteEntry,
+		"MarkCanon":           s.markCanon,
+		"ListRevisions":       s.listRevisions,
+		"GetRevision":         s.getRevision,
+		"RestoreRevision":     s.restoreRevision,
+		"CreateEdge":          s.createEdge,
+		"DeleteEdge":          s.deleteEdge,
+		"UpdateEdgeStatus":    s.updateEdge,
+		"Traverse":            s.getGraph,
+		"FindRelevant":        s.search,
+		"ExportEntry":         s.exportEntry,
+		"ExportWorld":         s.exportWorld,
+		"CreateEntryType":     s.createEntryType,
+		"UpdateEntryType":     s.updateEntryType,
+		"DumpWorld":           s.dumpWorld,
+		"ImportWorld":         s.importWorld,
+		"GetContextTray":      s.getTray,
+		"PinEntry":            s.createPin,
+		"UnpinEntry":          s.deletePin,
+		"ListConversations":   s.listConversations,
+		"CreateConversation":  s.createConversation,
+		"GetConversation":     s.getConversation,
+		"SendMessage":         s.postMessage,
+		"EvictAutoItem":       s.evictAutoItem,
+	}
+	for cap, route := range toolreg.HTTPRoutes() {
+		h, ok := handlers[cap]
+		if !ok {
+			panic(fmt.Sprintf("toolreg: capability %s has no HTTP handler", cap))
+		}
+		mux.HandleFunc(route, h)
+	}
 }
 
 func (s *Server) updateWorldSettings(w http.ResponseWriter, r *http.Request) {
