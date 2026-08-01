@@ -405,14 +405,20 @@ export function EntryPage({ entryId }: { entryId: string }) {
         }}
       />
 
-      <BodyEditor
-        doc={bodyDoc}
-        entries={(worldEntries.data ?? []).filter((c) => c.id !== e.id)}
-        onChange={(d) => {
-          setBodyDoc(d);
-          setDirty((n) => n + 1);
-        }}
-      />
+      {/* Body aligns with the field-value column. */}
+      <div className="flex gap-3">
+        <div className="w-44 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <BodyEditor
+            doc={bodyDoc}
+            entries={(worldEntries.data ?? []).filter((c) => c.id !== e.id)}
+            onChange={(d) => {
+              setBodyDoc(d);
+              setDirty((n) => n + 1);
+            }}
+          />
+        </div>
+      </div>
 
       <EgoGraph entryId={entryId} />
 
