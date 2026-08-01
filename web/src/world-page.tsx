@@ -5,6 +5,7 @@ import { ChevronRight, Download } from "lucide-react";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { api } from "./api";
 import { Button, EntrySkeleton, Picker } from "./ui";
+import { TypeManager } from "./schema-editor";
 
 // The world has no separate listing page — its home IS the World meta
 // entry. WorldAdmin renders the world-scoped controls (new entry,
@@ -151,6 +152,7 @@ export function WorldAdmin({ worldId }: { worldId: string }) {
           <Download size={12} /> export dump
         </a>
       </div>
+      <TypeManager worldId={worldId} />
       <WorldSettingsPanel worldId={worldId} />
     </div>
   );
