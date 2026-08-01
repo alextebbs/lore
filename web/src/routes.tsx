@@ -480,7 +480,7 @@ function RelationsPanel({
     );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-1">
       {sections.map((sec) => {
         const system = sec.field === "mentions";
         const declaring = sec.reverse ? typesDeclaring(sec.field) : null;
@@ -493,11 +493,14 @@ function RelationsPanel({
         );
         const secKey = sec.label + "|" + sec.field;
         return (
-          <div key={secKey}>
-            <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
+          <div key={secKey} className="flex gap-3">
+            <div
+              className="w-44 shrink-0 truncate pt-2 text-xs uppercase tracking-wide text-neutral-500"
+              title={sec.label || sec.field}
+            >
               {sec.label || sec.field}
             </div>
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               {(sec.edges ?? []).map((edge) => (
                 <span
                   key={edge.id}
@@ -850,7 +853,7 @@ function EntryPage() {
         className="w-full rounded bg-transparent px-1 text-2xl font-semibold outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
       />
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="space-y-1">
         {fieldNames.map((name) => {
           const fv = e.fields[name] as FieldValue | undefined;
           const kind = schemaFields.find((f) => f.name === name)?.kind ?? "string";
@@ -858,21 +861,21 @@ function EntryPage() {
           // status distinction the content itself makes).
           const tone = fv?.status === "draft" ? "text-neutral-500" : "";
           const label = (
-            <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
-              {name}
-              {fv && fv.status === "draft" ? (
+            <div className="flex w-44 shrink-0 items-start gap-2 pt-1 text-xs uppercase tracking-wide text-neutral-500">
+              <span className="truncate" title={name}>
+                {name}
+              </span>
+              {fv && fv.status === "draft" && (
                 <button
                   type="button"
                   title="Promote this field to canon"
                   onClick={() => canonize.mutate({ fields: [name] })}
-                  className="rounded-full border border-neutral-800 px-2 py-0.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-white"
+                  className="shrink-0 rounded-full border border-neutral-800 px-1.5 text-xs lowercase text-neutral-500 hover:border-neutral-400 hover:text-white"
                 >
-                  draft — click to canonize
+                  draft
                 </button>
-              ) : (
-                fv && <StatusBadge status={fv.status} />
               )}
-            </span>
+            </div>
           );
           if (kind === "richtext_list") {
             const items = Array.isArray(fields[name])
@@ -881,65 +884,69 @@ function EntryPage() {
                 ? [String(fields[name])]
                 : [];
             return (
-              <div key={name} className="col-span-2">
+              <div key={name} className="flex gap-3">
                 {label}
-                {items.map((item, idx) => (
-                  <div key={idx} className="mb-1 flex gap-1">
-                    <div className={`w-full ${tone}`}>
-                      <InlineField
-                        value={item}
-                        entries={fieldLinkTargets}
-                        placeholder="— ('[[' links an entry)"
-                        onChange={(v) => {
-                          const next = [...items];
-                          next[idx] = v;
-                          setFields({ ...fields, [name]: next });
-                          setDirty((d) => d + 1);
-                        }}
-                      />
+                <div className="min-w-0 flex-1">
+                  {items.map((item, idx) => (
+                    <div key={idx} className="mb-1 flex gap-1">
+                      <div className={`w-full ${tone}`}>
+                        <InlineField
+                          value={item}
+                          entries={fieldLinkTargets}
+                          placeholder="— ('[[' links an entry)"
+                          onChange={(v) => {
+                            const next = [...items];
+                            next[idx] = v;
+                            setFields({ ...fields, [name]: next });
+                            setDirty((d) => d + 1);
+                          }}
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFields({
+                            ...fields,
+                            [name]: items.filter((_, i) => i !== idx),
+                          })
+                        }
+                        className="text-neutral-600 hover:text-red-400"
+                      >
+                        ×
+                      </button>
                     </div>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFields({
-                          ...fields,
-                          [name]: items.filter((_, i) => i !== idx),
-                        })
-                      }
-                      className="text-neutral-600 hover:text-red-400"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => setFields({ ...fields, [name]: [...items, ""] })}
-                  className="rounded border border-dashed border-neutral-700 px-2 py-0.5 text-xs text-neutral-500 hover:text-neutral-300"
-                >
-                  + add
-                </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setFields({ ...fields, [name]: [...items, ""] })}
+                    className="rounded border border-dashed border-neutral-700 px-2 py-0.5 text-xs text-neutral-500 hover:text-neutral-300"
+                  >
+                    + add
+                  </button>
+                </div>
               </div>
             );
           }
           if (kind === "richtext") {
             return (
-              <div key={name} className={`col-span-2 ${tone}`}>
+              <div key={name} className="flex gap-3">
                 {label}
-                <InlineField
-                  value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
-                  entries={fieldLinkTargets}
-                  placeholder="— ('[[' links an entry)"
-                  onChange={(v) => {
-                    setFields({ ...fields, [name]: v });
-                    setDirty((d) => d + 1);
-                  }}
-                />
+                <div className={`min-w-0 flex-1 ${tone}`}>
+                  <InlineField
+                    value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
+                    entries={fieldLinkTargets}
+                    placeholder="— ('[[' links an entry)"
+                    onChange={(v) => {
+                      setFields({ ...fields, [name]: v });
+                      setDirty((d) => d + 1);
+                    }}
+                  />
+                </div>
               </div>
             );
           }
           return (
-            <label key={name} className="block">
+            <label key={name} className="flex gap-3">
               {label}
               <input
                 value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
@@ -948,7 +955,7 @@ function EntryPage() {
                   setDirty((d) => d + 1);
                 }}
                 placeholder="—"
-                className={`w-full rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
+                className={`min-w-0 flex-1 rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
               />
             </label>
           );
