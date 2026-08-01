@@ -67,6 +67,9 @@ export function WorldSidebar({
   const q = query.trim().toLowerCase();
   const grouped = new Map<string, EntrySummary[]>();
   for (const e of entries.data ?? []) {
+    // The World meta entry is the home link above — one per world,
+    // never listed as a group.
+    if (e.type_name === "World") continue;
     if (q && !e.title.toLowerCase().includes(q)) continue;
     grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
   }
@@ -106,17 +109,27 @@ export function WorldSidebar({
       />
       <Link
         to="/"
-        className="mb-4 block text-lg font-semibold tracking-wide text-neutral-100 hover:text-white"
+        className="mb-4 block text-lg font-semibold tracking-wide text-white hover:text-white"
       >
         Lore
       </Link>
-      <Link
-        to="/w/$worldId"
-        params={{ worldId }}
-        className="mb-3 flex items-center gap-1.5 font-semibold text-neutral-200 hover:text-white"
-      >
-        <Home size={14} /> Overview
-      </Link>
+      {(() => {
+        // The world's own page IS its meta entry — no separate listing.
+        const meta = (entries.data ?? []).find((e) => e.type_name === "World");
+        return meta ? (
+          <Link
+            to="/e/$entryId"
+            params={{ entryId: meta.id }}
+            className={`mb-3 flex items-center gap-1.5 rounded px-2 py-0.5 font-semibold ${
+              meta.id === currentEntryId
+                ? "bg-neutral-800 text-white"
+                : "text-white hover:text-white"
+            }`}
+          >
+            <Home size={14} /> {meta.title}
+          </Link>
+        ) : null;
+      })()}
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
@@ -124,7 +137,7 @@ export function WorldSidebar({
           if (e.key === "Escape") setQuery("");
         }}
         placeholder="search…"
-        className="mb-3 w-full rounded bg-neutral-900 px-2 py-1 text-sm outline-none placeholder:text-neutral-600 focus:bg-neutral-800"
+        className="input mb-3 w-full"
       />
       {q && typeNames.length === 0 && (
         <div className="text-neutral-600">no matches</div>
@@ -148,7 +161,7 @@ export function WorldSidebar({
                     className={`block truncate rounded px-2 py-0.5 ${
                       e.id === currentEntryId
                         ? "bg-neutral-800 text-white"
-                        : "text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                        : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
                     }`}
                     title={e.title}
                   >

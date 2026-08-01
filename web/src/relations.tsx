@@ -108,21 +108,23 @@ export function RelationsPanel({
               {(sec.edges ?? []).map((edge) => {
                 const pill = (
                   <span
-                    className={`group relative flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
-                      edge.status === "draft"
-                        ? "border-neutral-800 text-neutral-500"
-                        : "border-neutral-700"
+                    className={`chip group relative min-w-0 max-w-full flex-nowrap overflow-hidden whitespace-nowrap ${
+                      edge.status === "draft" ? "chip-draft" : "text-white"
                     }`}
                   >
                     <Link
                       to="/e/$entryId"
                       params={{ entryId: edge.to.id }}
-                      className="hover:underline"
+                      className="max-w-56 shrink-0 truncate hover:underline"
+                      title={edge.to.title}
                     >
                       {edge.to.title}
                     </Link>
                     {edge.annotation && (
-                      <span className="text-xs text-neutral-500">
+                      <span
+                        className="min-w-0 truncate text-neutral-500"
+                        title={edge.annotation}
+                      >
                         — {edge.annotation}
                       </span>
                     )}
@@ -205,16 +207,14 @@ export function RelationsPanel({
                       value={note}
                       onChange={(e) => setNote(e.target.value)}
                       placeholder="annotation"
-                      className="w-40 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+                      className="input w-40"
                     />
                   )}
-                  <button className="rounded bg-neutral-200 px-2 py-1 text-sm text-neutral-900">
-                    add
-                  </button>
+                  <button className="btn btn-solid">add</button>
                   <button
                     type="button"
                     onClick={() => setAdding(null)}
-                    className="px-1 text-neutral-500"
+                    className="btn btn-icon"
                   >
                     <X size={13} />
                   </button>
@@ -231,7 +231,7 @@ export function RelationsPanel({
                       ? `Relate an entry to this one via ${sec.field}`
                       : `Add ${sec.field}`
                   }
-                  className="rounded-full border border-dashed border-neutral-700 px-3 py-1 text-sm text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
+                  className="btn btn-icon btn-add"
                 >
                   +
                 </button>
@@ -242,7 +242,7 @@ export function RelationsPanel({
       })}
 
       {warnings.length > 0 && (
-        <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-2 text-xs text-amber-300">
+        <ul className="rounded border border-amber-900 bg-amber-950/40 p-2 text-amber-300">
           {warnings.map((w) => (
             <li key={w} className="flex items-center gap-1.5">
               <TriangleAlert size={12} /> {w}

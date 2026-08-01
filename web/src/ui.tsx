@@ -20,17 +20,11 @@ export const titleCase = (s: string) =>
 
 export function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    canon: "border-neutral-500 text-neutral-100",
-    draft: "border-neutral-800 text-neutral-500",
-    mixed: "border-neutral-700 text-neutral-400",
+    canon: "chip-canon",
+    draft: "chip-draft",
+    mixed: "",
   };
-  return (
-    <span
-      className={`rounded-full border px-2 py-0.5 text-xs ${styles[status] ?? ""}`}
-    >
-      {status}
-    </span>
-  );
+  return <span className={`chip ${styles[status] ?? ""}`}>{status}</span>;
 }
 
 // Content-area skeleton: same layout bones as the entry page, so a
@@ -69,8 +63,7 @@ import { Select } from "@base-ui/react/select";
 import { Tooltip } from "@base-ui/react/tooltip";
 import type { ReactElement, ReactNode } from "react";
 
-export const surface =
-  "rounded-lg border border-neutral-700 bg-neutral-900 shadow-xl";
+export const surface = "panel";
 
 // Confirm replaces window.confirm: a real focus-trapped dialog.
 export function Confirm({
@@ -92,7 +85,7 @@ export function Confirm({
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
         <AlertDialog.Popup
-          className={`fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 ${surface}`}
+          className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4"
         >
           <AlertDialog.Title className="font-semibold">
             {title}
@@ -103,12 +96,10 @@ export function Confirm({
             </AlertDialog.Description>
           )}
           <div className="mt-4 flex justify-end gap-2">
-            <AlertDialog.Close className="rounded border border-neutral-700 px-3 py-1 text-neutral-400 hover:text-neutral-200">
-              cancel
-            </AlertDialog.Close>
+            <AlertDialog.Close className="btn">cancel</AlertDialog.Close>
             <AlertDialog.Close
               onClick={onConfirm}
-              className="rounded border border-red-900 px-3 py-1 text-red-400 hover:bg-red-950"
+              className="btn btn-danger text-red-400"
             >
               {actionLabel}
             </AlertDialog.Close>
@@ -164,7 +155,7 @@ export function Picker<T extends string>({
     >
       <Select.Trigger
         autoFocus={autoFocus}
-        className="flex min-w-40 items-center justify-between gap-2 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 data-[popup-open]:border-neutral-500"
+        className="btn min-w-40 justify-between data-[popup-open]:border-neutral-500"
       >
         <Select.Value className="truncate">
           {(v: T | null) =>

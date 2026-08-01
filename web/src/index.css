@@ -54,3 +54,52 @@ samp {
 .tiptap blockquote { border-left: 2px solid oklch(0.35 0 0); padding-left: 0.75rem; color: oklch(0.75 0 0); }
 .tiptap pre { background: oklch(0.2 0 0); border-radius: 0.5rem; padding: 0.6rem 0.8rem; margin: 0.5rem 0; overflow-x: auto; }
 .tiptap hr { border-color: oklch(0.3 0 0); margin: 1rem 0; }
+
+/* ---- Control system ----------------------------------------------------
+   One height (28px), one radius, one border scale. Every interactive
+   control is a .btn or an .input; every static token is a .chip. No
+   per-site sizing — if it doesn't fit these, it's a design smell. */
+@layer components {
+  .btn {
+    @apply inline-flex h-7 cursor-pointer items-center gap-1.5 rounded border border-neutral-800 bg-transparent px-2 text-neutral-400;
+  }
+  .btn:hover {
+    @apply border-neutral-600 text-white;
+  }
+  .btn-solid {
+    @apply border-neutral-500 text-white;
+  }
+  .btn-solid:hover {
+    @apply bg-neutral-800;
+  }
+  .btn-danger:hover {
+    @apply border-red-900 bg-transparent text-red-400;
+  }
+  .btn-icon {
+    @apply w-7 justify-center px-0;
+  }
+  .btn-add {
+    @apply border-dashed;
+  }
+  .chip {
+    @apply inline-flex h-7 items-center gap-1.5 rounded border border-neutral-800 px-2 text-neutral-400;
+  }
+  .chip-canon {
+    @apply border-neutral-500 text-white;
+  }
+  .chip-draft {
+    @apply text-neutral-600;
+  }
+  .input {
+    @apply h-7 rounded bg-neutral-900 px-2 outline-none;
+  }
+  .input::placeholder {
+    @apply text-neutral-600;
+  }
+  .input:focus {
+    @apply bg-neutral-800;
+  }
+  .panel {
+    @apply rounded border border-neutral-700 bg-neutral-900 shadow-xl;
+  }
+}

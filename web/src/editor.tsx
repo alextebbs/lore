@@ -213,7 +213,7 @@ function SuggestionPopup({
   if (!menu || menu.items.length === 0) return null;
   return (
     <div
-      className="fixed z-50 min-w-52 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 py-1 shadow-2xl"
+      className="panel fixed z-50 min-w-52 overflow-hidden py-1"
       style={{ left: menu.rect.left, top: menu.rect.bottom + 6 }}
     >
       {menu.items.map((item, i) => (
@@ -351,7 +351,7 @@ export function BodyEditor({
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
       className={`px-2 py-1 text-xs ${
-        active ? "text-white" : "text-neutral-400 hover:text-neutral-200"
+        active ? "text-white" : "text-neutral-400 hover:text-white"
       }`}
     >
       {label}
@@ -362,7 +362,7 @@ export function BodyEditor({
     <div className="relative">
       <BubbleMenu
         editor={editor}
-        className="flex items-center overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-xl"
+        className="panel flex items-center overflow-hidden"
       >
         {bubbleBtn(editor.isActive("bold"), () => editor.chain().focus().toggleBold().run(), <b>B</b>, "Bold")}
         {bubbleBtn(editor.isActive("italic"), () => editor.chain().focus().toggleItalic().run(), <i>I</i>, "Italic")}

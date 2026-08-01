@@ -74,13 +74,13 @@ function TrayPanel({
                 onClick={() =>
                   setExpanded(expanded === item.entry_id ? null : item.entry_id)
                 }
-                className="flex-1 truncate text-left text-neutral-300 hover:text-neutral-100"
+                className="flex-1 truncate text-left text-neutral-300 hover:text-white"
                 title="Show exact serialized text"
               >
                 {item.title}
               </button>
               <span
-                className={`rounded-full border px-1.5 ${sourceStyle[item.source]}`}
+                className={`rounded border px-1.5 ${sourceStyle[item.source]}`}
               >
                 {item.source}
               </span>
@@ -220,7 +220,7 @@ export function ChatPanel({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="fixed bottom-5 right-5 rounded-full bg-neutral-100 px-4 py-2.5 font-medium text-neutral-900 shadow-lg hover:bg-white"
+        className="btn btn-solid panel"
       >
         <Sparkles size={14} /> Assistant
       </button>
@@ -271,7 +271,7 @@ export function ChatPanel({
         )}
         {items.map((item, i) =>
           item.kind === "user" ? (
-            <div key={i} className="ml-6 rounded-lg bg-neutral-800 px-3 py-2">
+            <div key={i} className="ml-6 rounded bg-neutral-800 px-3 py-2">
               {item.text}
             </div>
           ) : item.kind === "text" ? (
@@ -314,7 +314,7 @@ export function ChatPanel({
           onChange={(e) => setInput(e.target.value)}
           placeholder={busy ? "working…" : "Ask the assistant…"}
           disabled={busy}
-          className="w-full rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+          className="input w-full"
         />
       </form>
     </div>

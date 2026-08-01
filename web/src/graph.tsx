@@ -131,7 +131,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
       </div>
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="w-full rounded-lg border border-neutral-800 bg-neutral-900"
+        className="w-full rounded border border-neutral-800 bg-neutral-900"
       >
         {edges.map((e) => {
           const a = positions.get(e.from);

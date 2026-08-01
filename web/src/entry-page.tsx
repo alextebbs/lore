@@ -21,8 +21,10 @@ import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
+import { Popover } from "@base-ui/react/popover";
 import { Confirm, EntrySkeleton, IconTip, StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
 import { WorldSidebar } from "./sidebar";
+import { WorldAdmin } from "./world-page";
 import { RelationsPanel } from "./relations";
 
 function RevisionRow({
@@ -48,7 +50,7 @@ function RevisionRow({
   });
 
   return (
-    <li className="rounded-lg border border-neutral-800">
+    <li className="rounded border border-neutral-800">
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between px-3 py-2 text-left text-sm"
@@ -321,25 +323,57 @@ export function EntryPage({ entryId }: { entryId: string }) {
     <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
       <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-5 p-6">
-      <div className="flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <Link
-            to="/w/$worldId"
-            params={{ worldId: e.world_id }}
-            className="text-sm text-neutral-500 hover:text-neutral-300"
-          >
-            ← {world.data?.world.name ?? "world"}
-          </Link>
-          <span className="text-xs text-neutral-600">
-            {e.type_name}
+      <div className="flex items-center justify-end gap-2">
+          <span className="text-neutral-600">
+            {saveState === "saving"
+              ? "saving…"
+              : saveState === "saved"
+                ? "saved"
+                : ""}
           </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <IconTip label="Export as Markdown">
-            <a
-              href={`/api/entries/${e.id}/export`}
-              className="rounded-lg border border-neutral-700 px-2 py-1 text-sm text-neutral-500 hover:text-neutral-300"
+          {saveState === "error" && (
+            <button
+              type="button"
+              onClick={() => {
+                setSaveState("saving");
+                save.mutate();
+              }}
+              className="btn btn-danger text-red-400"
             >
+              save failed — retry
+            </button>
+          )}
+          {warnings.length > 0 && (
+            <Popover.Root>
+              <Popover.Trigger
+                aria-label={`${warnings.length} warnings`}
+                className="btn btn-icon text-amber-400"
+              >
+                <TriangleAlert size={14} />
+              </Popover.Trigger>
+              <Popover.Portal>
+                <Popover.Positioner side="bottom" align="end" sideOffset={6} className="z-40">
+                  <Popover.Popup className="panel max-w-md space-y-1 p-3 text-amber-300">
+                    {warnings.map((w) => (
+                      <div key={w} className="flex items-center gap-1.5">
+                        <TriangleAlert size={12} /> {w}
+                      </div>
+                    ))}
+                  </Popover.Popup>
+                </Popover.Positioner>
+              </Popover.Portal>
+            </Popover.Root>
+          )}
+          <button
+            onClick={() => setShowHistory(!showHistory)}
+            className="btn"
+            title="Revision history"
+          >
+            {revisions.data?.length ?? 0} revisions{" "}
+            {showHistory ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
+          </button>
+          <IconTip label="Export as Markdown">
+            <a href={`/api/entries/${e.id}/export`} className="btn btn-icon">
               <Download size={14} />
             </a>
           </IconTip>
@@ -352,7 +386,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
               navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
             }}
             trigger={
-              <button className="rounded-lg border border-neutral-800 px-2 py-1 text-sm text-neutral-600 hover:border-red-900 hover:text-red-400">
+              <button className="btn btn-icon btn-danger">
                 <Trash2 size={14} />
               </button>
             }
@@ -360,25 +394,24 @@ export function EntryPage({ entryId }: { entryId: string }) {
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
-            <button
-              onClick={() => canonize.mutate({})}
-              className="rounded-lg border border-neutral-500 px-3 py-1 text-sm text-neutral-100 hover:bg-neutral-800"
-            >
+            <button onClick={() => canonize.mutate({})} className="btn btn-solid">
               Mark all canon
             </button>
           )}
-        </div>
       </div>
 
-      <input
-        value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
-          setDirty((d) => d + 1);
-        }}
-        placeholder="Untitled"
-        className="w-full rounded bg-transparent px-1 text-2xl font-semibold outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
-      />
+      <div>
+        <div className="px-1 text-neutral-600">{e.type_name}</div>
+        <input
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setDirty((d) => d + 1);
+          }}
+          placeholder="Untitled"
+          className="w-full rounded bg-transparent px-1 font-bold outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
+        />
+      </div>
 
       <div className="space-y-1">
         {fieldNames.map((name) => {
@@ -397,7 +430,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
                   type="button"
                   title="Promote this field to canon"
                   onClick={() => canonize.mutate({ fields: [name] })}
-                  className="shrink-0 rounded-full border border-neutral-800 px-1.5 text-xs lowercase text-neutral-500 hover:border-neutral-400 hover:text-white"
+                  className="btn h-5 shrink-0 px-1.5 text-xs lowercase"
                 >
                   draft
                 </button>
@@ -446,7 +479,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
                     onClick={() =>
                       setFields({ ...fields, [name]: [...items, strToDoc("")] })
                     }
-                    className="rounded border border-dashed border-neutral-700 px-2 py-0.5 text-xs text-neutral-500 hover:text-neutral-300"
+                    className="btn btn-add"
                   >
                     + add
                   </button>
@@ -508,49 +541,6 @@ export function EntryPage({ entryId }: { entryId: string }) {
 
       <EgoGraph entryId={entryId} />
 
-      {warnings.length > 0 && (
-        <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-3 text-sm text-amber-300">
-          {warnings.map((w) => (
-            <li key={w} className="flex items-center gap-1.5">
-              <TriangleAlert size={12} /> {w}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="flex items-center justify-between text-xs text-neutral-600">
-        <span>
-          {saveState === "saving" ? (
-            "saving…"
-          ) : saveState === "saved" ? (
-            "saved"
-          ) : saveState === "error" ? (
-            <span className="flex items-center gap-2 text-red-400">
-              save failed
-              <button
-                type="button"
-                onClick={() => {
-                  setSaveState("saving");
-                  save.mutate();
-                }}
-                className="rounded border border-red-900 px-2 hover:bg-red-950"
-              >
-                retry
-              </button>
-            </span>
-          ) : (
-            ""
-          )}
-        </span>
-        <button
-          onClick={() => setShowHistory(!showHistory)}
-          className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-300"
-        >
-          {revisions.data?.length ?? 0} revisions{" "}
-          {showHistory ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-        </button>
-      </div>
-
       {showHistory && (
         <ul className="space-y-2">
           {revisions.data?.map((rev) => (
@@ -564,6 +554,8 @@ export function EntryPage({ entryId }: { entryId: string }) {
           ))}
         </ul>
       )}
+
+      {e.type_name === "World" && <WorldAdmin worldId={e.world_id} />}
 
       <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
       </div>
@@ -591,11 +583,7 @@ function PinButton({ worldId, entryId }: { worldId: string; entryId: string }) {
     <button
       onClick={() => toggle.mutate()}
       title={pinned ? "Unpin from AI context" : "Pin to AI context"}
-      className={`rounded-lg border px-2 py-1 text-sm ${
-        pinned
-          ? "border-sky-700 text-sky-300"
-          : "border-neutral-700 text-neutral-500 hover:text-neutral-300"
-      }`}
+      className={`btn btn-icon ${pinned ? "btn-solid" : ""}`}
     >
       <Pin size={14} />
     </button>

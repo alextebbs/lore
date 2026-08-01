@@ -16,7 +16,7 @@ import { EntryPage } from "./entry-page";
 const rootRoute = createRootRoute({
   component: () => (
     <Tooltip.Provider delay={400}>
-      <div className="min-h-screen bg-neutral-950 text-neutral-100">
+      <div className="min-h-screen bg-neutral-950 text-white">
         <main>
           <Outlet />
         </main>
@@ -50,7 +50,7 @@ function WorldsPage() {
             <Link
               to="/w/$worldId"
               params={{ worldId: w.id }}
-              className="block rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-3 hover:border-neutral-600"
+              className="block rounded border border-neutral-800 bg-neutral-900 px-3 py-2 hover:border-neutral-600"
             >
               {w.name}
             </Link>
@@ -71,12 +71,9 @@ function WorldsPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="New world name"
-          className="flex-1 rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2 outline-none focus:border-neutral-500"
+          className="input flex-1"
         />
-        <button
-          className="rounded-lg bg-neutral-100 px-4 py-2 font-medium text-neutral-900 disabled:opacity-50"
-          disabled={create.isPending}
-        >
+        <button className="btn btn-solid" disabled={create.isPending}>
           Create
         </button>
       </form>

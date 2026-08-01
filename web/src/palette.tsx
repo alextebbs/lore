@@ -97,7 +97,7 @@ export function CommandPalette() {
       <Dialog.Portal>
         <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
         <Dialog.Popup
-          className="fixed left-1/2 top-[15vh] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-2xl outline-none"
+          className="panel fixed left-1/2 top-[15vh] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden outline-none"
           aria-label="Command palette"
         >
         <input
