@@ -612,8 +612,8 @@ function RelationsPanel({
                           type="button"
                           title={
                             edge.status === "draft"
-                              ? "Promote this relation to canon"
-                              : "Demote this relation to draft"
+                              ? "Lock as canon"
+                              : "Unlock to draft"
                           }
                           onClick={() =>
                             setStatus.mutate({
@@ -624,7 +624,7 @@ function RelationsPanel({
                           }
                           className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
                         >
-                          {edge.status === "draft" ? "✓ canon" : "draft"}
+                          {edge.status === "draft" ? "🔒" : "🔓"}
                         </button>
                         <span className="h-4 w-px bg-neutral-700" />
                         <button
@@ -633,7 +633,7 @@ function RelationsPanel({
                           onClick={() => remove.mutate(edge.id)}
                           className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
                         >
-                          × remove
+                          ×
                         </button>
                       </span>
                     </span>
