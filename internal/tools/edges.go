@@ -245,6 +245,49 @@ func (t *Tools) DeleteEdge(ctx context.Context, id string, author Author) error 
 	return nil
 }
 
+// UpdateEdgeStatus promotes or demotes a single relation. AI may not
+// touch a canon edge without world policy permission (tenet 5).
+func (t *Tools) UpdateEdgeStatus(ctx context.Context, id, status string, author Author) (Edge, error) {
+	if status != StatusDraft && status != StatusCanon {
+		return Edge{}, fmt.Errorf("status must be draft or canon, got %q", status)
+	}
+	eid, err := parseID(id)
+	if err != nil {
+		return Edge{}, err
+	}
+	row, err := t.store.Queries.GetEdge(ctx, eid)
+	if err != nil {
+		return Edge{}, notFound(err)
+	}
+	if author == AuthorAI && row.Status == StatusCanon {
+		settings := WorldSettings{}
+		if w, err := t.store.Queries.GetWorld(ctx, row.WorldID); err == nil {
+			settings = parseSettings(w.Settings)
+		}
+		if !settings.AICanEditCanon {
+			return Edge{}, fmt.Errorf("canon edge cannot be modified by AI without user permission")
+		}
+	}
+	updated, err := t.store.Queries.SetEdgeStatus(ctx, db.SetEdgeStatusParams{
+		ID: eid, Status: status,
+	})
+	if err != nil {
+		return Edge{}, err
+	}
+	to, err := t.store.Queries.GetEntry(ctx, updated.ToEntry)
+	if err != nil {
+		return Edge{}, err
+	}
+	toType, _ := t.store.Queries.GetEntryType(ctx, to.TypeID)
+	return Edge{
+		ID: idStr(updated.ID), Field: updated.Field, Annotation: updated.Annotation,
+		Status: updated.Status,
+		To: EntryRef{
+			ID: idStr(to.ID), Title: to.Title, TypeName: toType.Name, Status: to.Status,
+		},
+	}, nil
+}
+
 // relationSections builds the unified relation view for an entry.
 func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationSection, error) {
 	fields, err := t.effectiveFields(ctx, row.WorldID, row.TypeID)

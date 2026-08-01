@@ -153,6 +153,11 @@ export const api = {
     ),
   deleteEdge: (edgeId: string) =>
     req<{ deleted: boolean }>(`/api/edges/${edgeId}`, { method: "DELETE" }),
+  updateEdgeStatus: (edgeId: string, status: "draft" | "canon") =>
+    req<EdgeType>(`/api/edges/${edgeId}`, {
+      ...json({ status }),
+      method: "PATCH",
+    }),
   getGraph: (id: string, depth: 1 | 2) =>
     req<Graph>(`/api/entries/${id}/graph?depth=${depth}`),
   updateWorldSettings: (id: string, settings: WorldSettings) =>

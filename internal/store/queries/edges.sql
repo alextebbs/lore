@@ -36,6 +36,9 @@ WHERE from_entry = ANY($1::uuid[]) OR to_entry = ANY($1::uuid[]);
 -- name: PromoteEdgesFrom :exec
 UPDATE edges SET status = 'canon' WHERE from_entry = $1;
 
+-- name: SetEdgeStatus :one
+UPDATE edges SET status = $2 WHERE id = $1 RETURNING *;
+
 -- name: GetEntriesByIDs :many
 SELECT e.id, e.title, e.status, ty.name AS type_name
 FROM entries e

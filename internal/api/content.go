@@ -31,6 +31,7 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 	mux.HandleFunc("POST /api/entries/{id}/revisions/{rid}/restore", s.restoreRevision)
 	mux.HandleFunc("POST /api/entries/{id}/edges", s.createEdge)
 	mux.HandleFunc("DELETE /api/edges/{id}", s.deleteEdge)
+	mux.HandleFunc("PATCH /api/edges/{id}", s.updateEdge)
 	mux.HandleFunc("GET /api/entries/{id}/graph", s.getGraph)
 	mux.HandleFunc("GET /api/worlds/{id}/search", s.search)
 	mux.HandleFunc("GET /api/entries/{id}/export", s.exportEntry)
@@ -262,6 +263,17 @@ func (s *Server) createEdge(w http.ResponseWriter, r *http.Request) {
 func (s *Server) deleteEdge(w http.ResponseWriter, r *http.Request) {
 	err := s.Tools.DeleteEdge(r.Context(), r.PathValue("id"), tools.AuthorHuman)
 	respond(w, map[string]bool{"deleted": err == nil}, err)
+}
+
+func (s *Server) updateEdge(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Status string `json:"status"`
+	}
+	if !decode(w, r, &in) {
+		return
+	}
+	edge, err := s.Tools.UpdateEdgeStatus(r.Context(), r.PathValue("id"), in.Status, tools.AuthorHuman)
+	respond(w, edge, err)
 }
 
 func (s *Server) getGraph(w http.ResponseWriter, r *http.Request) {

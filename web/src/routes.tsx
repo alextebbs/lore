@@ -480,6 +480,11 @@ function RelationsPanel({
     mutationFn: (edgeId: string) => api.deleteEdge(edgeId),
     onSuccess: onChanged,
   });
+  const setStatus = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "draft" | "canon" }) =>
+      api.updateEdgeStatus(id, status),
+    onSuccess: onChanged,
+  });
 
   const world = useQuery({
     queryKey: ["world", entry.world_id],
@@ -542,7 +547,7 @@ function RelationsPanel({
               {(sec.edges ?? []).map((edge) => (
                 <span
                   key={edge.id}
-                  className={`group flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+                  className={`group relative flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
                     edge.status === "draft"
                       ? "border-neutral-800 text-neutral-500"
                       : "border-neutral-700"
@@ -560,14 +565,40 @@ function RelationsPanel({
                       — {edge.annotation}
                     </span>
                   )}
+                  {/* Hover controls float below the pill — no layout
+                      shift. The pt-1 wrapper bridges the hover gap. */}
                   {!system && (
-                    <button
-                      title="Remove relation"
-                      onClick={() => remove.mutate(edge.id)}
-                      className="hidden text-neutral-600 hover:text-red-400 group-hover:inline"
-                    >
-                      ×
-                    </button>
+                    <span className="invisible absolute left-0 top-full z-20 pt-1 group-hover:visible">
+                      <span className="flex items-center overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 text-xs shadow-xl">
+                        <button
+                          type="button"
+                          title={
+                            edge.status === "draft"
+                              ? "Promote this relation to canon"
+                              : "Demote this relation to draft"
+                          }
+                          onClick={() =>
+                            setStatus.mutate({
+                              id: edge.id,
+                              status:
+                                edge.status === "draft" ? "canon" : "draft",
+                            })
+                          }
+                          className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                        >
+                          {edge.status === "draft" ? "✓ canon" : "draft"}
+                        </button>
+                        <span className="h-4 w-px bg-neutral-700" />
+                        <button
+                          type="button"
+                          title="Remove relation"
+                          onClick={() => remove.mutate(edge.id)}
+                          className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
+                        >
+                          × remove
+                        </button>
+                      </span>
+                    </span>
                   )}
                 </span>
               ))}

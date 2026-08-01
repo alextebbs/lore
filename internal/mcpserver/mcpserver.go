@@ -260,6 +260,18 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, map[string]bool{"deleted": err == nil}, err
 	})
 
+	type edgeStatusIn struct {
+		EdgeID string `json:"edge_id" jsonschema:"the edge's id"`
+		Status string `json:"status" jsonschema:"draft or canon"`
+	}
+	mcp.AddTool(s, &mcp.Tool{
+		Name:        "update_edge_status",
+		Description: "Promote or demote a single relation edge (draft/canon). You may not modify canon edges unless world policy allows it.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in edgeStatusIn) (*mcp.CallToolResult, tools.Edge, error) {
+		out, err := t.UpdateEdgeStatus(ctx, in.EdgeID, in.Status, tools.AuthorAI)
+		return nil, out, err
+	})
+
 	type trayIn struct {
 		WorldID        string `json:"world_id" jsonschema:"the world's id"`
 		CurrentEntryID string `json:"current_entry_id,omitempty" jsonschema:"entry currently being discussed (optional)"`

@@ -33,6 +33,7 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | RestoreRevision | POST /api/entries/{id}/revisions/{rid}/restore | restore_revision (human-gated) |
 | CreateEdge (soft warnings; cardinality-one replaces) | POST /api/entries/{id}/edges | create_edge |
 | DeleteEdge (AI: draft only) | DELETE /api/edges/{id} | delete_edge |
+| UpdateEdgeStatus (draft/canon; AI: canon needs policy) | PATCH /api/edges/{id} | update_edge_status |
 | Traverse (ego graph, depth 1–2) | GET /api/entries/{id}/graph?depth=N | traverse |
 | FindRelevant (hybrid scorer — THE search path) | GET /api/worlds/{id}/search?q=&near=&canon_only= | find_relevant |
 | Serializations (card/digest) | GET /api/entries/{id}?detail=card\|digest | get_entry(detail) |
