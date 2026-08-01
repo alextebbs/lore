@@ -1,6 +1,6 @@
 -- name: CreateEdge :one
-INSERT INTO edges (id, world_id, from_entry, field, to_entry, annotation, status, position)
-VALUES ($1, $2, $3, $4, $5, $6, $7,
+INSERT INTO edges (id, world_id, from_entry, field, field_id, to_entry, annotation, status, position)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
         (SELECT COALESCE(MAX(position) + 1, 0) FROM edges
          WHERE from_entry = $3 AND field = $4))
 RETURNING *;

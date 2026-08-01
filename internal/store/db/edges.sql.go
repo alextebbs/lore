@@ -12,11 +12,11 @@ import (
 )
 
 const createEdge = `-- name: CreateEdge :one
-INSERT INTO edges (id, world_id, from_entry, field, to_entry, annotation, status, position)
-VALUES ($1, $2, $3, $4, $5, $6, $7,
+INSERT INTO edges (id, world_id, from_entry, field, field_id, to_entry, annotation, status, position)
+VALUES ($1, $2, $3, $4, $5, $6, $7, $8,
         (SELECT COALESCE(MAX(position) + 1, 0) FROM edges
          WHERE from_entry = $3 AND field = $4))
-RETURNING id, world_id, from_entry, field, to_entry, annotation, status, position, created_at
+RETURNING id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id
 `
 
 type CreateEdgeParams struct {
@@ -24,6 +24,7 @@ type CreateEdgeParams struct {
 	WorldID    pgtype.UUID
 	FromEntry  pgtype.UUID
 	Field      string
+	FieldID    string
 	ToEntry    pgtype.UUID
 	Annotation string
 	Status     string
@@ -35,6 +36,7 @@ func (q *Queries) CreateEdge(ctx context.Context, arg CreateEdgeParams) (Edge, e
 		arg.WorldID,
 		arg.FromEntry,
 		arg.Field,
+		arg.FieldID,
 		arg.ToEntry,
 		arg.Annotation,
 		arg.Status,
@@ -50,6 +52,7 @@ func (q *Queries) CreateEdge(ctx context.Context, arg CreateEdgeParams) (Edge, e
 		&i.Status,
 		&i.Position,
 		&i.CreatedAt,
+		&i.FieldID,
 	)
 	return i, err
 }
@@ -78,7 +81,7 @@ func (q *Queries) DeleteEdgesByField(ctx context.Context, arg DeleteEdgesByField
 }
 
 const getEdge = `-- name: GetEdge :one
-SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE id = $1
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id FROM edges WHERE id = $1
 `
 
 func (q *Queries) GetEdge(ctx context.Context, id pgtype.UUID) (Edge, error) {
@@ -94,6 +97,7 @@ func (q *Queries) GetEdge(ctx context.Context, id pgtype.UUID) (Edge, error) {
 		&i.Status,
 		&i.Position,
 		&i.CreatedAt,
+		&i.FieldID,
 	)
 	return i, err
 }
@@ -138,7 +142,7 @@ func (q *Queries) GetEntriesByIDs(ctx context.Context, dollar_1 []pgtype.UUID) (
 }
 
 const listEdgeRows = `-- name: ListEdgeRows :many
-SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id FROM edges WHERE world_id = $1 ORDER BY from_entry, field, position
 `
 
 func (q *Queries) ListEdgeRows(ctx context.Context, worldID pgtype.UUID) ([]Edge, error) {
@@ -160,6 +164,7 @@ func (q *Queries) ListEdgeRows(ctx context.Context, worldID pgtype.UUID) ([]Edge
 			&i.Status,
 			&i.Position,
 			&i.CreatedAt,
+			&i.FieldID,
 		); err != nil {
 			return nil, err
 		}
@@ -172,7 +177,7 @@ func (q *Queries) ListEdgeRows(ctx context.Context, worldID pgtype.UUID) ([]Edge
 }
 
 const listEdgesFrom = `-- name: ListEdgesFrom :many
-SELECT e.id, e.world_id, e.from_entry, e.field, e.to_entry, e.annotation, e.status, e.position, e.created_at, t.title AS to_title, t.status AS to_entry_status,
+SELECT e.id, e.world_id, e.from_entry, e.field, e.to_entry, e.annotation, e.status, e.position, e.created_at, e.field_id, t.title AS to_title, t.status AS to_entry_status,
        ty.name AS to_type_name
 FROM edges e
 JOIN entries t ON t.id = e.to_entry
@@ -191,6 +196,7 @@ type ListEdgesFromRow struct {
 	Status        string
 	Position      int32
 	CreatedAt     pgtype.Timestamptz
+	FieldID       string
 	ToTitle       string
 	ToEntryStatus string
 	ToTypeName    string
@@ -215,6 +221,7 @@ func (q *Queries) ListEdgesFrom(ctx context.Context, fromEntry pgtype.UUID) ([]L
 			&i.Status,
 			&i.Position,
 			&i.CreatedAt,
+			&i.FieldID,
 			&i.ToTitle,
 			&i.ToEntryStatus,
 			&i.ToTypeName,
@@ -230,7 +237,7 @@ func (q *Queries) ListEdgesFrom(ctx context.Context, fromEntry pgtype.UUID) ([]L
 }
 
 const listEdgesTo = `-- name: ListEdgesTo :many
-SELECT e.id, e.world_id, e.from_entry, e.field, e.to_entry, e.annotation, e.status, e.position, e.created_at, f.title AS from_title, f.status AS from_entry_status,
+SELECT e.id, e.world_id, e.from_entry, e.field, e.to_entry, e.annotation, e.status, e.position, e.created_at, e.field_id, f.title AS from_title, f.status AS from_entry_status,
        f.type_id AS from_type_id, ty.name AS from_type_name
 FROM edges e
 JOIN entries f ON f.id = e.from_entry
@@ -249,6 +256,7 @@ type ListEdgesToRow struct {
 	Status          string
 	Position        int32
 	CreatedAt       pgtype.Timestamptz
+	FieldID         string
 	FromTitle       string
 	FromEntryStatus string
 	FromTypeID      pgtype.UUID
@@ -274,6 +282,7 @@ func (q *Queries) ListEdgesTo(ctx context.Context, toEntry pgtype.UUID) ([]ListE
 			&i.Status,
 			&i.Position,
 			&i.CreatedAt,
+			&i.FieldID,
 			&i.FromTitle,
 			&i.FromEntryStatus,
 			&i.FromTypeID,
@@ -290,7 +299,7 @@ func (q *Queries) ListEdgesTo(ctx context.Context, toEntry pgtype.UUID) ([]ListE
 }
 
 const listEdgesTouching = `-- name: ListEdgesTouching :many
-SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id FROM edges
 WHERE from_entry = ANY($1::uuid[]) OR to_entry = ANY($1::uuid[])
 `
 
@@ -313,6 +322,7 @@ func (q *Queries) ListEdgesTouching(ctx context.Context, dollar_1 []pgtype.UUID)
 			&i.Status,
 			&i.Position,
 			&i.CreatedAt,
+			&i.FieldID,
 		); err != nil {
 			return nil, err
 		}
@@ -325,7 +335,7 @@ func (q *Queries) ListEdgesTouching(ctx context.Context, dollar_1 []pgtype.UUID)
 }
 
 const listMentionEdgesTo = `-- name: ListMentionEdgesTo :many
-SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at FROM edges WHERE to_entry = $1 AND field = 'mentions'
+SELECT id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id FROM edges WHERE to_entry = $1 AND field = 'mentions'
 `
 
 func (q *Queries) ListMentionEdgesTo(ctx context.Context, toEntry pgtype.UUID) ([]Edge, error) {
@@ -347,6 +357,7 @@ func (q *Queries) ListMentionEdgesTo(ctx context.Context, toEntry pgtype.UUID) (
 			&i.Status,
 			&i.Position,
 			&i.CreatedAt,
+			&i.FieldID,
 		); err != nil {
 			return nil, err
 		}
@@ -385,7 +396,7 @@ func (q *Queries) RenameEdgeField(ctx context.Context, arg RenameEdgeFieldParams
 }
 
 const setEdgeStatus = `-- name: SetEdgeStatus :one
-UPDATE edges SET status = $2 WHERE id = $1 RETURNING id, world_id, from_entry, field, to_entry, annotation, status, position, created_at
+UPDATE edges SET status = $2 WHERE id = $1 RETURNING id, world_id, from_entry, field, to_entry, annotation, status, position, created_at, field_id
 `
 
 type SetEdgeStatusParams struct {
@@ -406,6 +417,7 @@ func (q *Queries) SetEdgeStatus(ctx context.Context, arg SetEdgeStatusParams) (E
 		&i.Status,
 		&i.Position,
 		&i.CreatedAt,
+		&i.FieldID,
 	)
 	return i, err
 }

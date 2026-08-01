@@ -26,6 +26,9 @@ const (
 	// RelatedField is the universal untyped relationship available on
 	// every entry regardless of schema.
 	RelatedField = "related"
+	// System relation fields carry fixed IDs (ADR 0015) — no schema row.
+	SysMentionFieldID = "sys:mentions"
+	SysRelatedFieldID = "sys:related"
 )
 
 var mentionRe = regexp.MustCompile(`\[\[([^\[\]{}]+)\]\]`)
@@ -156,7 +159,7 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 	for _, d := range want {
 		if _, err := q.CreateEdge(ctx, db.CreateEdgeParams{
 			ID: newID(), WorldID: row.WorldID, FromEntry: row.ID,
-			Field: MentionField, ToEntry: d.target,
+			Field: MentionField, FieldID: SysMentionFieldID, ToEntry: d.target,
 			Annotation: d.annotation, Status: status,
 		}); err != nil {
 			return err

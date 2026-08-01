@@ -71,8 +71,11 @@ func (t *Tools) SetSemantic(e Embedder, s SemanticSearcher) {
 	t.semantic = s
 }
 
-// FieldDef is one schema field (soft schema, ADR 0004).
+// FieldDef is one schema field (soft schema, ADR 0004). ID is the
+// stable identity edges reference (ADR 0015); Name is display + the
+// authoring handle and may be renamed freely.
 type FieldDef struct {
+	ID       string          `json:"id,omitempty"`
 	Name     string          `json:"name"`
 	Kind     string          `json:"kind"` // string | number | date | richtext | relation
 	Label    string          `json:"label,omitempty"`
@@ -159,6 +162,16 @@ type Revision struct {
 	Author    string    `json:"author"`
 	Status    string    `json:"status"`
 	CreatedAt time.Time `json:"created_at"`
+}
+
+// ensureFieldIDs assigns stable IDs (ADR 0015) to schema fields that
+// lack one; existing IDs are never rewritten.
+func ensureFieldIDs(fields []FieldDef) {
+	for i := range fields {
+		if fields[i].ID == "" {
+			fields[i].ID = idStr(newID())
+		}
+	}
 }
 
 func newID() pgtype.UUID {

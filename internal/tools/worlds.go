@@ -98,7 +98,9 @@ func (t *Tools) CreateWorld(ctx context.Context, name string) (World, error) {
 		}
 		var worldTypeID pgtype.UUID
 		for _, bt := range builtinTypes {
-			fields, err := json.Marshal(bt.Fields)
+			defs := append([]FieldDef(nil), bt.Fields...)
+			ensureFieldIDs(defs)
+			fields, err := json.Marshal(defs)
 			if err != nil {
 				return err
 			}

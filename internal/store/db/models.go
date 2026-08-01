@@ -35,6 +35,7 @@ type Edge struct {
 	Status     string
 	Position   int32
 	CreatedAt  pgtype.Timestamptz
+	FieldID    string
 }
 
 type Entry struct {

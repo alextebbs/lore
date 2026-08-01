@@ -52,6 +52,7 @@ func (t *Tools) CreateEntryType(ctx context.Context, worldID, name, parentID str
 		}
 	}
 
+	ensureFieldIDs(fields)
 	raw, err := json.Marshal(fields)
 	if err != nil {
 		return EntryType{}, nil, err
@@ -104,6 +105,31 @@ func (t *Tools) UpdateEntryType(ctx context.Context, worldID, typeID, name strin
 		if err := json.Unmarshal(row.Fields, &fields); err != nil {
 			return EntryType{}, nil, err
 		}
+	}
+	// Field identity survives edits (ADR 0015): incoming fields without
+	// an ID inherit the existing field's — matched through the rename
+	// map or by unchanged name — so edges keyed by field_id stay valid.
+	{
+		var existing []FieldDef
+		_ = json.Unmarshal(row.Fields, &existing)
+		byName := map[string]string{}
+		for _, f := range existing {
+			byName[f.Name] = f.ID
+		}
+		for i := range fields {
+			if fields[i].ID != "" {
+				continue
+			}
+			for oldName, newName := range renames {
+				if newName == fields[i].Name {
+					fields[i].ID = byName[oldName]
+				}
+			}
+			if fields[i].ID == "" {
+				fields[i].ID = byName[fields[i].Name]
+			}
+		}
+		ensureFieldIDs(fields)
 	}
 
 	// Self + all descendant type ids (single inheritance, ADR 0004).

@@ -44,6 +44,7 @@ type EntryDump struct {
 type EdgeDump struct {
 	FromEntry  string `json:"from_entry"`
 	Field      string `json:"field"`
+	FieldID    string `json:"field_id,omitempty"`
 	ToEntry    string `json:"to_entry"`
 	Annotation string `json:"annotation,omitempty"`
 	Status     string `json:"status"`
@@ -92,8 +93,8 @@ func (t *Tools) DumpWorld(ctx context.Context, worldID string) (WorldDump, error
 	}
 	for _, e := range edges {
 		dump.Edges = append(dump.Edges, EdgeDump{
-			FromEntry: idStr(e.FromEntry), Field: e.Field, ToEntry: idStr(e.ToEntry),
-			Annotation: e.Annotation, Status: e.Status,
+			FromEntry: idStr(e.FromEntry), Field: e.Field, FieldID: e.FieldID,
+			ToEntry: idStr(e.ToEntry), Annotation: e.Annotation, Status: e.Status,
 		})
 	}
 	return dump, nil
@@ -140,9 +141,17 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 				if td.ParentID != "" {
 					parent = typeMap[td.ParentID]
 				}
+				tdFields := td.Fields
+				var defs []FieldDef
+				if err := json.Unmarshal(td.Fields, &defs); err == nil {
+					ensureFieldIDs(defs)
+					if raw, err := json.Marshal(defs); err == nil {
+						tdFields = raw
+					}
+				}
 				if _, err := q.CreateEntryType(ctx, db.CreateEntryTypeParams{
 					ID: id, WorldID: w.ID, Name: td.Name, ParentID: parent,
-					Fields: td.Fields, Builtin: td.Builtin,
+					Fields: tdFields, Builtin: td.Builtin,
 				}); err != nil {
 					return fmt.Errorf("importing type %s: %w", td.Name, err)
 				}
@@ -156,6 +165,7 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 		}
 
 		entryMap := map[string]pgtype.UUID{}
+		entryTypeOf := map[string]pgtype.UUID{}
 		typeName := map[pgtype.UUID]string{}
 		for old, id := range typeMap {
 			for _, td := range dump.Types {
@@ -178,6 +188,7 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 				return fmt.Errorf("importing entry %q: %w", ed.Title, err)
 			}
 			entryMap[ed.ID] = id
+			entryTypeOf[ed.ID] = tid
 			author := AuthorHuman
 			if ed.Status == StatusDraft {
 				author = AuthorAI
@@ -196,9 +207,29 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 			if !ok {
 				return fmt.Errorf("edge references unknown entry %s", eg.ToEntry)
 			}
+			// Legacy dumps carry no field_id — resolve it from the
+			// declaring type so imported edges get stable identity.
+			fieldID := eg.FieldID
+			if fieldID == "" {
+				switch eg.Field {
+				case MentionField:
+					fieldID = SysMentionFieldID
+				case RelatedField:
+					fieldID = SysRelatedFieldID
+				default:
+					if tid, ok := entryTypeOf[eg.FromEntry]; ok {
+						if eff, err := t.effectiveFieldsQ(ctx, q, w.ID, tid); err == nil {
+							if def := fieldDefFor(eff, eg.Field); def != nil {
+								fieldID = def.ID
+							}
+						}
+					}
+				}
+			}
 			if _, err := q.CreateEdge(ctx, db.CreateEdgeParams{
 				ID: newID(), WorldID: w.ID, FromEntry: from, Field: eg.Field,
-				ToEntry: to, Annotation: eg.Annotation, Status: eg.Status,
+				FieldID: fieldID, ToEntry: to,
+				Annotation: eg.Annotation, Status: eg.Status,
 			}); err != nil {
 				return err
 			}

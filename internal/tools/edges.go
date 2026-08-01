@@ -24,6 +24,7 @@ type EntryRef struct {
 type Edge struct {
 	ID         string   `json:"id"`
 	Field      string   `json:"field"`
+	FieldID    string   `json:"field_id,omitempty"` // stable schema-field identity (ADR 0015)
 	To         EntryRef `json:"to"`
 	Annotation string   `json:"annotation,omitempty"`
 	Status     string   `json:"status"`
@@ -39,6 +40,7 @@ type Edge struct {
 // is stored in.
 type RelationSection struct {
 	Field   string          `json:"field"`
+	FieldID string          `json:"field_id,omitempty"`
 	Label   string          `json:"label"`
 	Reverse bool            `json:"reverse,omitempty"` // adds create the edge target→here
 	Config  *RelationConfig `json:"config,omitempty"`
@@ -68,6 +70,18 @@ func (t *Tools) effectiveFieldsQ(ctx context.Context, q *db.Queries, worldID, ty
 		return nil, err
 	}
 	return et.Fields, nil
+}
+
+func fieldDefByID(fields []FieldDef, id string) *FieldDef {
+	if id == "" {
+		return nil
+	}
+	for i := range fields {
+		if fields[i].ID == id {
+			return &fields[i]
+		}
+	}
+	return nil
 }
 
 func fieldDefFor(fields []FieldDef, name string) *FieldDef {
@@ -164,6 +178,16 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 	if author == AuthorAI {
 		status = StatusDraft
 	}
+	// Stable relation identity (ADR 0015).
+	fieldID := ""
+	switch {
+	case field == MentionField:
+		fieldID = SysMentionFieldID
+	case field == RelatedField:
+		fieldID = SysRelatedFieldID
+	case def != nil:
+		fieldID = def.ID
+	}
 
 	var row db.Edge
 	err = t.store.Tx(ctx, func(q *db.Queries) error {
@@ -191,7 +215,8 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 		var err error
 		row, err = q.CreateEdge(ctx, db.CreateEdgeParams{
 			ID: newID(), WorldID: from.WorldID, FromEntry: fid,
-			Field: field, ToEntry: tid, Annotation: annotation, Status: status,
+			Field: field, FieldID: fieldID, ToEntry: tid,
+			Annotation: annotation, Status: status,
 		})
 		if err != nil {
 			return err
@@ -206,8 +231,8 @@ func (t *Tools) CreateEdge(ctx context.Context, fromID, field, toID, annotation 
 		return Edge{}, nil, fmt.Errorf("creating edge: %w", err)
 	}
 	return Edge{
-		ID: idStr(row.ID), Field: row.Field, Annotation: row.Annotation,
-		Status: row.Status,
+		ID: idStr(row.ID), Field: row.Field, FieldID: row.FieldID,
+		Annotation: row.Annotation, Status: row.Status,
 		To: EntryRef{
 			ID: idStr(to.ID), Title: to.Title, TypeName: toType.Name, Status: to.Status,
 		},
@@ -307,13 +332,14 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			continue
 		}
 		sections = append(sections, RelationSection{
-			Field: def.Name, Label: def.Name, Config: def.Relation, Edges: byField[def.Name],
+			Field: def.Name, FieldID: def.ID, Label: def.Name,
+			Config: def.Relation, Edges: byField[def.Name],
 		})
 		delete(byField, def.Name)
 	}
 	// The universal untyped section: every entry can relate to anything.
 	sections = append(sections, RelationSection{
-		Field: RelatedField, Label: RelatedField,
+		Field: RelatedField, FieldID: SysRelatedFieldID, Label: RelatedField,
 		Config: &RelationConfig{Many: true, Annotations: true, InverseLabel: "Related"},
 		Edges:  byField[RelatedField],
 	})
@@ -339,21 +365,32 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 	// sections carry the pointing field's config, so annotations and
 	// cardinality behave the same from both ends.
 	sectionIndex := map[string]int{}
+	sectionByID := map[string]int{}
 	for i, sec := range sections {
 		sectionIndex[sec.Field] = i
+		if sec.FieldID != "" {
+			sectionByID[sec.FieldID] = i
+		}
 	}
 	fieldsByType := map[string][]FieldDef{}
 	revIndex := map[string]int{}
 	for _, e := range incoming {
 		edge := Edge{
-			ID: idStr(e.ID), Field: e.Field, Annotation: e.Annotation,
-			Status: e.Status, Incoming: true,
+			ID: idStr(e.ID), Field: e.Field, FieldID: e.FieldID,
+			Annotation: e.Annotation, Status: e.Status, Incoming: true,
 			To: EntryRef{
 				ID: idStr(e.FromEntry), Title: e.FromTitle,
 				TypeName: e.FromTypeName, Status: e.FromEntryStatus,
 			},
 		}
-		if i, ok := sectionIndex[e.Field]; ok && (e.Field == RelatedField || fieldDefFor(fields, e.Field) != nil) {
+		// Merge by stable field identity when the edge carries one
+		// (ADR 0015); name matching remains the legacy fallback.
+		if e.FieldID != "" {
+			if i, ok := sectionByID[e.FieldID]; ok {
+				sections[i].Edges = append(sections[i].Edges, edge)
+				continue
+			}
+		} else if i, ok := sectionIndex[e.Field]; ok && (e.Field == RelatedField || fieldDefFor(fields, e.Field) != nil) {
 			sections[i].Edges = append(sections[i].Edges, edge)
 			continue
 		}
@@ -366,7 +403,10 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			fieldsByType[key] = f
 		}
 		label := e.Field
-		def := fieldDefFor(fieldsByType[key], e.Field)
+		def := fieldDefByID(fieldsByType[key], e.FieldID)
+		if def == nil {
+			def = fieldDefFor(fieldsByType[key], e.Field)
+		}
 		if def != nil && def.Relation != nil && def.Relation.InverseLabel != "" {
 			label = def.Relation.InverseLabel
 		}
@@ -377,7 +417,7 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			sections[i].Edges = append(sections[i].Edges, edge)
 			continue
 		}
-		sec := RelationSection{Field: e.Field, Label: label, Reverse: true, Edges: []Edge{edge}}
+		sec := RelationSection{Field: e.Field, FieldID: e.FieldID, Label: label, Reverse: true, Edges: []Edge{edge}}
 		if def != nil {
 			sec.Config = def.Relation
 		}
