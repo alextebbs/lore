@@ -424,7 +424,12 @@ function RelationsPanel({
   const [warnings, setWarnings] = useState<string[]>([]);
 
   const create = useMutation({
-    mutationFn: (field: string) => api.createEdge(entry.id, field, target, note),
+    // Reverse sections author the edge in its canonical direction:
+    // the chosen entry points here through its own field.
+    mutationFn: ({ field, reverse }: { field: string; reverse?: boolean }) =>
+      reverse
+        ? api.createEdge(target, field, entry.id, note)
+        : api.createEdge(entry.id, field, target, note),
     onSuccess: ({ warnings }) => {
       setWarnings(warnings ?? []);
       setAdding(null);
@@ -460,20 +465,37 @@ function RelationsPanel({
   };
 
   const sections = entry.relations ?? [];
-  if (sections.length === 0 && (entry.reverse ?? []).length === 0) return null;
+  if (sections.length === 0) return null;
+
+  // Candidates for a reverse add: entries whose type declares the field.
+  const typesDeclaring = (field: string) =>
+    new Set(
+      (world.data?.types ?? [])
+        .filter((t) =>
+          (t.fields ?? []).some(
+            (f) => f.name === field && f.kind === "relation",
+          ),
+        )
+        .map((t) => t.name),
+    );
 
   return (
     <div className="space-y-4">
       {sections.map((sec) => {
-        const candidates = (allEntries.data ?? []).filter(
-          (c) =>
-            c.id !== entry.id &&
-            satisfiesTargets(c.type_name, sec.config?.targets),
+        const system = sec.field === "mentions";
+        const declaring = sec.reverse ? typesDeclaring(sec.field) : null;
+        const candidates = (allEntries.data ?? []).filter((c) =>
+          c.id === entry.id
+            ? false
+            : sec.reverse
+              ? declaring!.has(c.type_name)
+              : satisfiesTargets(c.type_name, sec.config?.targets),
         );
+        const secKey = sec.label + "|" + sec.field;
         return (
-          <div key={sec.field}>
+          <div key={secKey}>
             <div className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
-              {sec.field}
+              {sec.label || sec.field}
             </div>
             <div className="flex flex-wrap items-center gap-2">
               {(sec.edges ?? []).map((edge) => (
@@ -497,21 +519,24 @@ function RelationsPanel({
                       — {edge.annotation}
                     </span>
                   )}
-                  <button
-                    title="Remove relation"
-                    onClick={() => remove.mutate(edge.id)}
-                    className="hidden text-neutral-600 hover:text-red-400 group-hover:inline"
-                  >
-                    ×
-                  </button>
+                  {!system && (
+                    <button
+                      title="Remove relation"
+                      onClick={() => remove.mutate(edge.id)}
+                      className="hidden text-neutral-600 hover:text-red-400 group-hover:inline"
+                    >
+                      ×
+                    </button>
+                  )}
                 </span>
               ))}
-              {adding === sec.field ? (
+              {system ? null : adding === secKey ? (
                 <form
                   className="flex items-center gap-1"
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if (target) create.mutate(sec.field);
+                    if (target)
+                      create.mutate({ field: sec.field, reverse: sec.reverse });
                   }}
                 >
                   <select
@@ -549,10 +574,15 @@ function RelationsPanel({
               ) : (
                 <button
                   onClick={() => {
-                    setAdding(sec.field);
+                    setAdding(secKey);
                     setTarget("");
                     setNote("");
                   }}
+                  title={
+                    sec.reverse
+                      ? `Relate an entry to this one via ${sec.field}`
+                      : `Add ${sec.field}`
+                  }
                   className="rounded-full border border-dashed border-neutral-700 px-3 py-1 text-sm text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
                 >
                   +
@@ -571,134 +601,6 @@ function RelationsPanel({
         </ul>
       )}
 
-      {(entry.reverse ?? []).length > 0 && (
-        <div className="space-y-3 rounded-lg border border-neutral-800 p-3">
-          {(entry.reverse ?? []).map((sec) => (
-            <ReverseSectionRow
-              key={sec.label}
-              entry={entry}
-              sec={sec}
-              allEntries={allEntries.data ?? []}
-              onChanged={onChanged}
-            />
-          ))}
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ReverseSectionRow({
-  entry,
-  sec,
-  allEntries,
-  onChanged,
-}: {
-  entry: Entry;
-  sec: NonNullable<Entry["reverse"]>[number];
-  allEntries: EntrySummary[];
-  onChanged: () => void;
-}) {
-  const world = useQuery({
-    queryKey: ["world", entry.world_id],
-    queryFn: () => api.getWorld(entry.world_id),
-  });
-  const [adding, setAdding] = useState(false);
-  const [source, setSource] = useState("");
-  const [note, setNote] = useState("");
-  // Bidirectional authoring: relate from here by creating the edge on
-  // the declaring side. Candidates = entries whose type declares sec.field.
-  const declaringTypes = new Set(
-    (world.data?.types ?? [])
-      .filter((t) =>
-        (t.fields ?? []).some((f) => f.name === sec.field && f.kind === "relation"),
-      )
-      .map((t) => t.name),
-  );
-  const candidates = allEntries.filter(
-    (c) => c.id !== entry.id && declaringTypes.has(c.type_name),
-  );
-  return (
-    <div>
-      <div className="mb-1 text-xs uppercase tracking-wide text-neutral-500">
-        {sec.label}
-      </div>
-      <div className="flex flex-wrap items-center gap-2">
-        {sec.items.map((item) => (
-          <span
-            key={item.edge_id}
-            className={`rounded-full border px-3 py-1 text-sm ${
-              item.status === "draft"
-                ? "border-amber-800 bg-amber-950/40"
-                : "border-neutral-700"
-            }`}
-          >
-            <Link
-              to="/e/$entryId"
-              params={{ entryId: item.from.id }}
-              className="hover:underline"
-            >
-              {item.from.title}
-            </Link>
-            {item.annotation && (
-              <span className="text-xs text-neutral-500"> — {item.annotation}</span>
-            )}
-          </span>
-        ))}
-        {sec.field !== "mentions" &&
-          (adding ? (
-            <form
-              className="flex items-center gap-1"
-              onSubmit={async (ev) => {
-                ev.preventDefault();
-                if (!source) return;
-                await api.createEdge(source, sec.field, entry.id, note);
-                setAdding(false);
-                setSource("");
-                setNote("");
-                onChanged();
-              }}
-            >
-              <select
-                value={source}
-                onChange={(ev) => setSource(ev.target.value)}
-                className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
-                autoFocus
-              >
-                <option value="">choose…</option>
-                {candidates.map((c) => (
-                  <option key={c.id} value={c.id}>
-                    {c.title} ({c.type_name})
-                  </option>
-                ))}
-              </select>
-              <input
-                value={note}
-                onChange={(ev) => setNote(ev.target.value)}
-                placeholder="annotation"
-                className="w-36 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
-              />
-              <button className="rounded bg-neutral-200 px-2 py-1 text-sm text-neutral-900">
-                add
-              </button>
-              <button
-                type="button"
-                onClick={() => setAdding(false)}
-                className="px-1 text-neutral-500"
-              >
-                ×
-              </button>
-            </form>
-          ) : (
-            <button
-              onClick={() => setAdding(true)}
-              title={`Relate an entry to this one via ${sec.field}`}
-              className="rounded-full border border-dashed border-neutral-700 px-3 py-1 text-sm text-neutral-500 hover:border-neutral-500 hover:text-neutral-300"
-            >
-              +
-            </button>
-          ))}
-      </div>
     </div>
   );
 }
@@ -945,7 +847,7 @@ function EntryPage() {
           setDirty((d) => d + 1);
         }}
         placeholder="Untitled"
-        className="w-full bg-transparent text-2xl font-semibold outline-none placeholder:text-neutral-700"
+        className="w-full rounded bg-transparent px-1 text-2xl font-semibold outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
       />
 
       <div className="grid grid-cols-2 gap-3">

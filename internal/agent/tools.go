@@ -221,6 +221,6 @@ func agentEntryView(e tools.Entry) map[string]any {
 	return map[string]any{
 		"id": e.ID, "type_id": e.TypeID, "type_name": e.TypeName,
 		"title": e.Title, "fields": e.Fields, "body_md": e.BodyMD,
-		"status": e.Status, "relations": e.Relations, "reverse": e.Reverse,
+		"status": e.Status, "relations": e.Relations,
 	}
 }

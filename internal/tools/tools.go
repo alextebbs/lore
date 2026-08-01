@@ -151,7 +151,6 @@ type Entry struct {
 	Status    string                `json:"status"`
 	UpdatedAt time.Time             `json:"updated_at"`
 	Relations []RelationSection     `json:"relations"` // outgoing edges by field
-	Reverse   []ReverseSection      `json:"reverse"`   // auto inverse sections
 }
 
 type Revision struct {

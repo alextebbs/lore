@@ -46,14 +46,13 @@ type entryView struct {
 	BodyMD    string                      `json:"body_md"`
 	Status    string                      `json:"status"`
 	Relations []tools.RelationSection     `json:"relations,omitempty"`
-	Reverse   []tools.ReverseSection      `json:"reverse,omitempty"`
 }
 
 func view(e tools.Entry) entryView {
 	return entryView{
 		ID: e.ID, WorldID: e.WorldID, TypeID: e.TypeID, TypeName: e.TypeName,
 		Title: e.Title, Fields: e.Fields, BodyMD: e.BodyMD, Status: e.Status,
-		Relations: e.Relations, Reverse: e.Reverse,
+		Relations: e.Relations,
 	}
 }
 
@@ -133,7 +132,7 @@ func New(t *tools.Tools) *mcp.Server {
 	}
 	mcp.AddTool(s, &mcp.Tool{
 		Name:        "get_entry",
-		Description: "Get an entry. detail=full (default) returns fields with statuses, body markdown ({~draft} spans), relations, and reverse sections; card/digest return compact summaries at lower token cost.",
+		Description: "Get an entry. detail=full (default) returns fields with statuses, body markdown ({~draft} spans), and a unified relations list (sections with reverse=true group edges pointing at this entry); card/digest return compact summaries at lower token cost.",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, in getEntryIn) (*mcp.CallToolResult, any, error) {
 		switch in.Detail {
 		case "card":

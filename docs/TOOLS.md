@@ -59,8 +59,10 @@ loop over the tools above; API/MCP consumers bring their own loop.
   semantic (pgvector, if embeddings configured) + lexical (FTS/trigram)
   + graph proximity to `near` + canon weighting.
 - `get_entry(id, detail: "card" | "digest" | "full")` → entry at chosen
-  token cost. Full includes fields, edges (with annotations + status),
-  reverse sections, status breakdown.
+  token cost. Full includes fields, status breakdown, and a unified
+  `relations` list (ADR 0013): every section `{field, label, reverse?,
+  config?, edges}`, incoming edges merged or grouped under the pointing
+  field's inverse label.
 - `list_entries(type?, status?, sort?, limit?, cursor?)` → cards.
   Type filters include subtypes (single-inheritance semantics).
 - `traverse(entry_id, field?, direction: out|in|both, depth: 1|2)` →

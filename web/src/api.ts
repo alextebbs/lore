@@ -52,18 +52,10 @@ export type EdgeType = {
 };
 export type RelationSection = {
   field: string;
+  label: string;
+  reverse?: boolean; // adds create the edge target→here
   config?: RelationConfig;
   edges: EdgeType[] | null;
-};
-export type ReverseSection = {
-  label: string;
-  field: string;
-  items: {
-    edge_id: string;
-    from: EntryRef;
-    annotation?: string;
-    status: string;
-  }[];
 };
 export type Graph = {
   nodes: null | {
@@ -94,7 +86,6 @@ export type Entry = {
   status: string;
   updated_at: string;
   relations: RelationSection[] | null;
-  reverse: ReverseSection[] | null;
 };
 export type Revision = {
   id: string;

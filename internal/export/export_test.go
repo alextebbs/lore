@@ -17,11 +17,10 @@ func TestRenderEntry(t *testing.T) {
 		Relations: []tools.RelationSection{{
 			Field: "hometown",
 			Edges: []tools.Edge{{To: tools.EntryRef{Title: "Chicago"}}},
-		}},
-		Reverse: []tools.ReverseSection{{
-			Label: "Family",
-			Items: []tools.ReverseItem{{
-				From: tools.EntryRef{Title: "Jane Doe"}, Annotation: "older sister",
+		}, {
+			Field: "family", Label: "Family", Reverse: true,
+			Edges: []tools.Edge{{
+				To: tools.EntryRef{Title: "Jane Doe"}, Annotation: "older sister", Incoming: true,
 			}},
 		}},
 	}

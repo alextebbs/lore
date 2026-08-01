@@ -37,24 +37,16 @@ func RenderEntry(e tools.Entry) string {
 		if len(sec.Edges) == 0 {
 			continue
 		}
-		fmt.Fprintf(&sb, "**%s:** ", sec.Field)
+		label := sec.Label
+		if label == "" {
+			label = sec.Field
+		}
+		fmt.Fprintf(&sb, "**%s:** ", label)
 		links := make([]string, 0, len(sec.Edges))
 		for _, edge := range sec.Edges {
 			l := "[[" + edge.To.Title + "]]"
 			if edge.Annotation != "" {
 				l += " (" + edge.Annotation + ")"
-			}
-			links = append(links, l)
-		}
-		sb.WriteString(strings.Join(links, ", ") + "\n\n")
-	}
-	for _, sec := range e.Reverse {
-		fmt.Fprintf(&sb, "**%s:** ", sec.Label)
-		links := make([]string, 0, len(sec.Items))
-		for _, item := range sec.Items {
-			l := "[[" + item.From.Title + "]]"
-			if item.Annotation != "" {
-				l += " (" + item.Annotation + ")"
 			}
 			links = append(links, l)
 		}

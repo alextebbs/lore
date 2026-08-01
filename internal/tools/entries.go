@@ -529,12 +529,11 @@ func (t *Tools) entryFull(ctx context.Context, row db.Entry, typeName string) (E
 	if err != nil {
 		return Entry{}, err
 	}
-	relations, reverse, err := t.relationSections(ctx, row)
+	relations, err := t.relationSections(ctx, row)
 	if err != nil {
 		return Entry{}, err
 	}
 	out.Relations = relations
-	out.Reverse = reverse
 	return out, nil
 }
 

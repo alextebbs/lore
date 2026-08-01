@@ -30,27 +30,19 @@ type Edge struct {
 	Incoming   bool     `json:"incoming,omitempty"`
 }
 
-// RelationSection groups an entry's outgoing edges under its relation
-// field definition, in schema order.
+// RelationSection is one group of relations on an entry page. All
+// sections present identically regardless of origin (ADR 0013):
+// declared fields appear in schema order; sections that exist only
+// because other entries point here (Reverse=true) follow, titled by
+// the pointing field's inverse label. Every Edge.To is "the other
+// entry" from this page's perspective, whichever direction the row
+// is stored in.
 type RelationSection struct {
-	Field  string          `json:"field"`
-	Config *RelationConfig `json:"config,omitempty"`
-	Edges  []Edge          `json:"edges"`
-}
-
-// ReverseSection is the auto-generated inverse view on a target page
-// (ADR 0003): grouped by the pointing field's inverse label.
-type ReverseSection struct {
-	Label string        `json:"label"`
-	Field string        `json:"field"` // the declaring side's field name
-	Items []ReverseItem `json:"items"`
-}
-
-type ReverseItem struct {
-	EdgeID     string   `json:"edge_id"`
-	From       EntryRef `json:"from"`
-	Annotation string   `json:"annotation,omitempty"`
-	Status     string   `json:"status"`
+	Field   string          `json:"field"`
+	Label   string          `json:"label"`
+	Reverse bool            `json:"reverse,omitempty"` // adds create the edge target→here
+	Config  *RelationConfig `json:"config,omitempty"`
+	Edges   []Edge          `json:"edges"`
 }
 
 // effectiveFields resolves a type's fields through its inheritance chain.
@@ -253,16 +245,16 @@ func (t *Tools) DeleteEdge(ctx context.Context, id string, author Author) error 
 	return nil
 }
 
-// relationSections builds the outgoing and reverse views for an entry.
-func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationSection, []ReverseSection, error) {
+// relationSections builds the unified relation view for an entry.
+func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationSection, error) {
 	fields, err := t.effectiveFields(ctx, row.WorldID, row.TypeID)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 
 	outgoing, err := t.store.Queries.ListEdgesFrom(ctx, row.ID)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	byField := map[string][]Edge{}
 	for _, e := range outgoing {
@@ -280,13 +272,13 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 			continue
 		}
 		sections = append(sections, RelationSection{
-			Field: def.Name, Config: def.Relation, Edges: byField[def.Name],
+			Field: def.Name, Label: def.Name, Config: def.Relation, Edges: byField[def.Name],
 		})
 		delete(byField, def.Name)
 	}
 	// The universal untyped section: every entry can relate to anything.
 	sections = append(sections, RelationSection{
-		Field: RelatedField,
+		Field: RelatedField, Label: RelatedField,
 		Config: &RelationConfig{Many: true, Annotations: true, InverseLabel: "Related"},
 		Edges:  byField[RelatedField],
 	})
@@ -296,67 +288,68 @@ func (t *Tools) relationSections(ctx context.Context, row db.Entry) ([]RelationS
 		if field == MentionField {
 			continue // mentions render on the target side only
 		}
-		sections = append(sections, RelationSection{Field: field, Edges: edges})
+		sections = append(sections, RelationSection{Field: field, Label: field, Edges: edges})
 	}
 
 	incoming, err := t.store.Queries.ListEdgesTo(ctx, row.ID)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	// Bidirectional presentation: incoming edges whose field this
-	// entry's own schema also declares merge into that section — a
-	// family edge reads identically from both ends. Everything else
-	// lands in a reverse section under the pointing field's inverse
-	// label ("People from here", "Mentioned in").
+	// Bidirectional presentation (ADR 0013): incoming edges whose field
+	// this entry's own schema also declares merge into that section — a
+	// family edge reads identically from both ends. Everything else gets
+	// its own section, titled by the pointing field's inverse label
+	// ("People from here", "Mentioned in") and marked Reverse so adds
+	// know to create the edge in the canonical direction. Reverse
+	// sections carry the pointing field's config, so annotations and
+	// cardinality behave the same from both ends.
 	sectionIndex := map[string]int{}
 	for i, sec := range sections {
 		sectionIndex[sec.Field] = i
 	}
 	fieldsByType := map[string][]FieldDef{}
-	var reverse []ReverseSection
 	revIndex := map[string]int{}
 	for _, e := range incoming {
+		edge := Edge{
+			ID: idStr(e.ID), Field: e.Field, Annotation: e.Annotation,
+			Status: e.Status, Incoming: true,
+			To: EntryRef{
+				ID: idStr(e.FromEntry), Title: e.FromTitle,
+				TypeName: e.FromTypeName, Status: e.FromEntryStatus,
+			},
+		}
 		if i, ok := sectionIndex[e.Field]; ok && (e.Field == RelatedField || fieldDefFor(fields, e.Field) != nil) {
-			sections[i].Edges = append(sections[i].Edges, Edge{
-				ID: idStr(e.ID), Field: e.Field, Annotation: e.Annotation,
-				Status: e.Status, Incoming: true,
-				To: EntryRef{
-					ID: idStr(e.FromEntry), Title: e.FromTitle,
-					TypeName: e.FromTypeName, Status: e.FromEntryStatus,
-				},
-			})
+			sections[i].Edges = append(sections[i].Edges, edge)
 			continue
 		}
 		key := idStr(e.FromTypeID)
 		if _, ok := fieldsByType[key]; !ok {
 			f, err := t.effectiveFields(ctx, e.WorldID, e.FromTypeID)
 			if err != nil {
-				return nil, nil, err
+				return nil, err
 			}
 			fieldsByType[key] = f
 		}
-		label := e.Field + " ←"
+		label := e.Field
+		def := fieldDefFor(fieldsByType[key], e.Field)
+		if def != nil && def.Relation != nil && def.Relation.InverseLabel != "" {
+			label = def.Relation.InverseLabel
+		}
 		if e.Field == MentionField {
 			label = "Mentioned in"
 		}
-		if def := fieldDefFor(fieldsByType[key], e.Field); def != nil && def.Relation != nil && def.Relation.InverseLabel != "" {
-			label = def.Relation.InverseLabel
-		}
-		item := ReverseItem{
-			EdgeID: idStr(e.ID), Annotation: e.Annotation, Status: e.Status,
-			From: EntryRef{
-				ID: idStr(e.FromEntry), Title: e.FromTitle,
-				TypeName: e.FromTypeName, Status: e.FromEntryStatus,
-			},
-		}
 		if i, ok := revIndex[label]; ok {
-			reverse[i].Items = append(reverse[i].Items, item)
-		} else {
-			revIndex[label] = len(reverse)
-			reverse = append(reverse, ReverseSection{Label: label, Field: e.Field, Items: []ReverseItem{item}})
+			sections[i].Edges = append(sections[i].Edges, edge)
+			continue
 		}
+		sec := RelationSection{Field: e.Field, Label: label, Reverse: true, Edges: []Edge{edge}}
+		if def != nil {
+			sec.Config = def.Relation
+		}
+		revIndex[label] = len(sections)
+		sections = append(sections, sec)
 	}
-	return sections, reverse, nil
+	return sections, nil
 }
 
 // Graph is a 1–2 hop ego network around an entry.

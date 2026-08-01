@@ -123,7 +123,7 @@ carries its own config:
 - target entry type(s)
 - cardinality (one / many) — creating over a full one-slot **replaces the
   existing edge and warns**
-- inverse label for the reverse section
+- inverse label — the section title shown on the target's page
 - whether per-edge freeform **annotations** are allowed
   (e.g. Family: link to Jane + note "Jane is John's older sister")
 
@@ -156,8 +156,12 @@ ontology.
 - **Untyped relations:** every entry carries a universal `related`
   section — untyped, annotated, bidirectional — for connections that
   don't fit a declared field yet.
-- **Bidirectional authoring:** reverse sections accept adds too; the
-  edge is created on the declaring side transparently.
+- **Uniform bidirectional presentation:** all relation sections look
+  and edit the same, whichever side stored the edge. Declared fields
+  come first; incoming edges merge into a matching declared section or
+  form an ordinary section titled by the pointing field's inverse
+  label. Adds from either side create the edge in its canonical
+  direction transparently. (ADR 0013)
 - **Schema field renames migrate data:** renaming a relation (or any)
   field via UpdateEntryType moves existing edges and stored field
   values along with it, across the type and its subtypes.

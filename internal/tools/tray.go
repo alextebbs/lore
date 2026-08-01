@@ -61,19 +61,14 @@ func (t *Tools) entrySerialization(ctx context.Context, entryID, level string) (
 		text += fmt.Sprintf("- %s: %v (%s)\n", name, fv.Value, fv.Status)
 	}
 	for _, sec := range e.Relations {
+		arrow := "→"
+		if sec.Reverse {
+			arrow = "←"
+		}
 		for _, edge := range sec.Edges {
-			text += fmt.Sprintf("- %s → %s (%s)", sec.Field, edge.To.Title, edge.Status)
+			text += fmt.Sprintf("- %s %s %s (%s)", sec.Label, arrow, edge.To.Title, edge.Status)
 			if edge.Annotation != "" {
 				text += " — " + edge.Annotation
-			}
-			text += "\n"
-		}
-	}
-	for _, sec := range e.Reverse {
-		for _, item := range sec.Items {
-			text += fmt.Sprintf("- %s ← %s", sec.Label, item.From.Title)
-			if item.Annotation != "" {
-				text += " — " + item.Annotation
 			}
 			text += "\n"
 		}

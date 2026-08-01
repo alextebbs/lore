@@ -242,9 +242,9 @@ func TestEdgesAndGraph(t *testing.T) {
 	if !foundMerged {
 		t.Errorf("jane's family section missing merged incoming John: %+v", janeFull.Relations)
 	}
-	for _, sec := range janeFull.Reverse {
-		if sec.Label == "Family" {
-			t.Errorf("duplicate Family reverse section should not exist: %+v", sec)
+	for _, sec := range janeFull.Relations {
+		if sec.Reverse && sec.Field == "family" {
+			t.Errorf("duplicate reverse family section should not exist: %+v", sec)
 		}
 	}
 
