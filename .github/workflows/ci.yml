@@ -47,7 +47,7 @@ jobs:
 
       - name: sqlc generate is committed
         run: |
-          go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.29.0 generate
+          go run github.com/sqlc-dev/sqlc/cmd/sqlc@v1.31.1 generate
           git diff --exit-code
 
       - name: Boot smoke test (migrations + health)
