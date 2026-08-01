@@ -17,7 +17,7 @@ import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
 import { Popover } from "@base-ui/react/popover";
-import { Confirm, EntrySkeleton, IconTip, StatusBadge, strToDoc } from "./ui";
+import { Button, Confirm, EntrySkeleton, LinkButton, RowButton, StatusBadge, strToDoc } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { appState } from "./app-state";
 import { WorldAdmin } from "./world-page";
@@ -48,10 +48,7 @@ function RevisionRow({
 
   return (
     <li className="rounded border border-neutral-800">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-3 py-2 text-left"
-      >
+      <RowButton onClick={() => setOpen(!open)} className="rounded">
         <span className="flex items-center gap-2">
           <span
             className={
@@ -65,7 +62,7 @@ function RevisionRow({
         <span className="text-neutral-500">
           {new Date(rev.created_at).toLocaleString()}
         </span>
-      </button>
+      </RowButton>
       {open && detail.data && (
         <div className="space-y-3 border-t border-neutral-800 p-3">
           <div className="whitespace-pre-wrap rounded bg-neutral-900 p-2 leading-relaxed">
@@ -93,13 +90,7 @@ function RevisionRow({
             <span className="text-neutral-500">
               diff vs current (green = in revision, red = only in current)
             </span>
-            <button
-              onClick={() => restore.mutate()}
-              disabled={restore.isPending}
-              className="rounded border border-neutral-700 px-2 py-1 hover:bg-neutral-800"
-            >
-              Restore this revision
-            </button>
+            <Button intent="solid" onClick={() => restore.mutate()}>restore this version</Button>
           </div>
         </div>
       )}
@@ -313,25 +304,26 @@ export function EntryPage({ entryId }: { entryId: string }) {
                 : ""}
           </span>
           {saveState === "error" && (
-            <button
-              type="button"
+            <Button
+              intent="danger"
               onClick={() => {
                 setSaveState("saving");
                 save.mutate();
               }}
-              className="btn btn-danger text-red-400"
             >
               save failed — retry
-            </button>
+            </Button>
           )}
           {warnings.length > 0 && (
             <Popover.Root>
               <Popover.Trigger
                 aria-label={`${warnings.length} warnings`}
-                className="btn btn-icon text-amber-400"
-              >
-                <TriangleAlert size={14} />
-              </Popover.Trigger>
+                render={
+                  <Button icon intent="warning">
+                    <TriangleAlert size={14} />
+                  </Button>
+                }
+              />
               <Popover.Portal>
                 <Popover.Positioner side="bottom" align="end" sideOffset={6} className="z-40">
                   <Popover.Popup className="panel max-w-md space-y-1 p-3 text-amber-300">
@@ -345,19 +337,17 @@ export function EntryPage({ entryId }: { entryId: string }) {
               </Popover.Portal>
             </Popover.Root>
           )}
-          <button
-            onClick={() => setShowHistory(!showHistory)}
-            className="btn"
-            title="Revision history"
-          >
+          <Button tip="Revision history" onClick={() => setShowHistory(!showHistory)}>
             {revisions.data?.length ?? 0} revisions{" "}
             {showHistory ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          </button>
-          <IconTip label="Export as Markdown">
-            <a href={`/api/entries/${e.id}/export`} className="btn btn-icon">
-              <Download size={14} />
-            </a>
-          </IconTip>
+          </Button>
+          <LinkButton
+            icon
+            tip="Export as Markdown"
+            href={`/api/entries/${e.id}/export`}
+          >
+            <Download size={14} />
+          </LinkButton>
           <Confirm
             title={`Delete "${e.title}"?`}
             body="The entry, its revisions, and its relations go with it."
@@ -368,18 +358,19 @@ export function EntryPage({ entryId }: { entryId: string }) {
               await api.deleteEntry(e.id);
               navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
             }}
+            tip="Delete entry"
             trigger={
-              <button className="btn btn-icon btn-danger">
+              <Button icon intent="danger">
                 <Trash2 size={14} />
-              </button>
+              </Button>
             }
           />
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
-            <button onClick={() => canonize.mutate({})} className="btn btn-solid">
+            <Button intent="solid" onClick={() => canonize.mutate({})}>
               Mark all canon
-            </button>
+            </Button>
           )}
       </div>
 
@@ -464,12 +455,13 @@ function PinButton({ worldId, entryId }: { worldId: string; entryId: string }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["tray"] }),
   });
   return (
-    <button
+    <Button
+      icon
+      active={pinned}
+      tip={pinned ? "Unpin from AI context" : "Pin to AI context"}
       onClick={() => toggle.mutate()}
-      title={pinned ? "Unpin from AI context" : "Pin to AI context"}
-      className={`btn btn-icon ${pinned ? "btn-solid" : ""}`}
     >
       <Pin size={14} />
-    </button>
+    </Button>
   );
 }

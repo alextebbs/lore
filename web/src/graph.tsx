@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { Button } from "./ui";
 import { api } from "./api";
 
 const W = 640;
@@ -115,17 +116,9 @@ export function EgoGraph({ entryId }: { entryId: string }) {
         </span>
         <div className="flex gap-1">
           {([1, 2] as const).map((d) => (
-            <button
-              key={d}
-              onClick={() => setDepth(d)}
-              className={`rounded px-2 py-0.5 ${
-                depth === d
-                  ? "bg-neutral-200 text-neutral-900"
-                  : "text-neutral-500 hover:bg-neutral-800"
-              }`}
-            >
+            <Button key={d} active={depth === d} onClick={() => setDepth(d)}>
               {d} hop{d > 1 ? "s" : ""}
-            </button>
+            </Button>
           ))}
         </div>
       </div>

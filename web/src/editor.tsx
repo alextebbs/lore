@@ -10,6 +10,7 @@ import { PluginKey } from "@tiptap/pm/state";
 import type { EntrySummary } from "./api";
 import { appState } from "./app-state";
 import { fromTipTap, toTipTap, type DocNode } from "./doc";
+import { Button, RowButton } from "./ui";
 
 // Invisible, Notion-like editing: no chrome until you ask for it.
 // Formatting lives in a bubble menu that appears on selection; blocks
@@ -217,9 +218,8 @@ function SuggestionPopup({
       style={{ left: menu.rect.left, top: menu.rect.bottom + 6 }}
     >
       {menu.items.map((item, i) => (
-        <button
+        <RowButton
           key={item.key}
-          type="button"
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => menu.command(item)}
           onMouseEnter={() => {
@@ -236,7 +236,7 @@ function SuggestionPopup({
           {item.hint && (
             <span className="text-neutral-600">{item.hint}</span>
           )}
-        </button>
+        </RowButton>
       ))}
     </div>
   );
@@ -343,19 +343,17 @@ export function BodyEditor({
     active: boolean,
     onClick: () => void,
     label: React.ReactNode,
-    title: string,
+    tip: string,
   ) => (
-    <button
-      type="button"
-      title={title}
+    <Button
+      tip={tip}
+      active={active}
+      className="border-transparent"
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
-      className={`px-2 py-1 ${
-        active ? "text-white" : "text-neutral-400 hover:text-white"
-      }`}
     >
       {label}
-    </button>
+    </Button>
   );
 
   return (

@@ -1,7 +1,7 @@
 import type { Entry, EntrySummary, FieldValue } from "./api";
 import type { FieldDef } from "./api";
 import { InlineField } from "./editor";
-import { asFieldDoc, strToDoc, titleCase } from "./ui";
+import { Button, asFieldDoc, strToDoc, titleCase } from "./ui";
 
 // The left/right property grid: one row per schema field (plus any
 // undeclared stored fields), draft content grey, richtext kinds edited
@@ -44,14 +44,13 @@ export function FieldsGrid({
                 {titleCase(name)}
               </span>
               {fv && fv.status === "draft" && (
-                <button
-                  type="button"
-                  title="Promote this field to canon"
+                <Button
+                  tip="Promote this field to canon"
+                  className="h-5 shrink-0 px-1.5 lowercase"
                   onClick={() => onCanonizeField(name)}
-                  className="btn h-5 shrink-0 px-1.5 lowercase"
                 >
                   draft
-                </button>
+                </Button>
               )}
             </div>
           );
@@ -78,29 +77,30 @@ export function FieldsGrid({
                           }}
                         />
                       </div>
-                      <button
-                        type="button"
+                      <Button
+                        icon
+                        intent="danger"
+                        tip="Remove item"
+                        className="border-transparent"
                         onClick={() =>
                           setFields({
                             ...fields,
                             [name]: items.filter((_, i) => i !== idx),
                           })
                         }
-                        className="text-neutral-600 hover:text-red-400"
                       >
                         ×
-                      </button>
+                      </Button>
                     </div>
                   ))}
-                  <button
-                    type="button"
+                  <Button
+                    className="btn-add"
                     onClick={() =>
                       setFields({ ...fields, [name]: [...items, strToDoc("")] })
                     }
-                    className="btn btn-add"
                   >
                     + add
-                  </button>
+                  </Button>
                 </div>
               </div>
             );

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
 import { appState } from "./app-state";
+import { RowButton } from "./ui";
 import { useDebounced } from "./use-debounced";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -138,21 +139,16 @@ export function CommandPalette() {
             </div>
           )}
           {rows.map((row, i) => (
-            <button
+            <RowButton
               key={row.id}
-              type="button"
+              active={i === selIdx}
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(row)}
               onMouseEnter={() => setSel(i)}
-              className={`flex w-full items-center justify-between gap-4 px-4 py-2 text-left ${
-                i === selIdx ? "bg-neutral-800 text-white" : "text-neutral-300"
-              }`}
             >
               <span className="truncate">{row.label}</span>
-              <span className="shrink-0 text-neutral-600">
-                {row.hint}
-              </span>
-            </button>
+              <span className="shrink-0 text-neutral-600">{row.hint}</span>
+            </RowButton>
           ))}
           </div>
         </Dialog.Popup>

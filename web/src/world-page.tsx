@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Download } from "lucide-react";
 import { Collapsible } from "@base-ui/react/collapsible";
 import { api } from "./api";
-import { Picker, EntrySkeleton } from "./ui";
+import { Button, EntrySkeleton, Picker } from "./ui";
 
 // The world has no separate listing page — its home IS the World meta
 // entry. WorldAdmin renders the world-scoped controls (new entry,
@@ -87,9 +87,9 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
             AI may edit canon
           </label>
         </div>
-        <button onClick={() => save.mutate()} className="btn btn-solid">
+        <Button intent="solid" onClick={() => save.mutate()}>
           Save settings
-        </button>
+        </Button>
       </Collapsible.Panel>
     </Collapsible.Root>
   );
@@ -134,9 +134,9 @@ export function WorldAdmin({ worldId }: { worldId: string }) {
           placeholder="New entry title"
           className="input flex-1"
         />
-        <button className="btn btn-solid" disabled={create.isPending}>
+        <Button intent="solid" type="submit" disabled={create.isPending}>
           Add
-        </button>
+        </Button>
       </form>
       <div className="flex items-center gap-2">
         <a href={`/api/worlds/${worldId}/export`} className="btn">

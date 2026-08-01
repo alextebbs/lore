@@ -55,6 +55,11 @@ func TestDesignLanguage(t *testing.T) {
 			}
 		}
 		for family, allowed := range colorSanction {
+			// index.css defines the system (e.g. .btn-warning) — the
+			// sanction applies to usage sites, not the definition.
+			if base == "index.css" {
+				continue
+			}
 			if !strings.Contains(src, family) {
 				continue
 			}
@@ -67,6 +72,19 @@ func TestDesignLanguage(t *testing.T) {
 			if !ok {
 				t.Errorf("%s: color family %q is not sanctioned here (allowed in: %v)", base, family, allowed)
 			}
+		}
+	}
+
+	// Raw <button> elements live only in ui.tsx — everything else uses
+	// the Button/LinkButton/RowButton components (one tooltip mechanism,
+	// one intent system, no ad-hoc hover styling).
+	for _, f := range files {
+		if filepath.Base(f) == "ui.tsx" {
+			continue
+		}
+		raw, _ := os.ReadFile(f)
+		if strings.Contains(string(raw), "<button") {
+			t.Errorf("%s: raw <button> — use Button/RowButton from ui.tsx", filepath.Base(f))
 		}
 	}
 

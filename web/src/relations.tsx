@@ -4,7 +4,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Lock, LockOpen, TriangleAlert, X } from "lucide-react";
 import { PreviewCard } from "@base-ui/react/preview-card";
 import { api, type Entry } from "./api";
-import { Picker, surface, titleCase } from "./ui";
+import { Button, Picker, surface, titleCase } from "./ui";
 
 export function RelationsPanel({
   entry,
@@ -147,13 +147,14 @@ export function RelationsPanel({
                         <PreviewCard.Popup
                           className={`flex items-center overflow-hidden ${surface}`}
                         >
-                          <button
-                            type="button"
-                            title={
+                          <Button
+                            icon
+                            tip={
                               edge.status === "draft"
                                 ? "Lock as canon"
                                 : "Unlock to draft"
                             }
+                            className="border-transparent"
                             onClick={() =>
                               setStatus.mutate({
                                 id: edge.id,
@@ -161,23 +162,23 @@ export function RelationsPanel({
                                   edge.status === "draft" ? "canon" : "draft",
                               })
                             }
-                            className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
                           >
                             {edge.status === "draft" ? (
                               <Lock size={13} />
                             ) : (
                               <LockOpen size={13} />
                             )}
-                          </button>
+                          </Button>
                           <span className="h-4 w-px bg-neutral-700" />
-                          <button
-                            type="button"
-                            title="Remove relation"
+                          <Button
+                            icon
+                            intent="danger"
+                            tip="Remove relation"
+                            className="border-transparent"
                             onClick={() => remove.mutate(edge.id)}
-                            className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
                           >
                             <X size={13} />
-                          </button>
+                          </Button>
                         </PreviewCard.Popup>
                       </PreviewCard.Positioner>
                     </PreviewCard.Portal>
@@ -211,31 +212,28 @@ export function RelationsPanel({
                       className="input w-40"
                     />
                   )}
-                  <button className="btn btn-solid">add</button>
-                  <button
-                    type="button"
-                    onClick={() => setAdding(null)}
-                    className="btn btn-icon"
-                  >
+                  <Button intent="solid" type="submit">add</Button>
+                  <Button icon tip="Cancel" onClick={() => setAdding(null)}>
                     <X size={13} />
-                  </button>
+                  </Button>
                 </form>
               ) : (
-                <button
+                <Button
+                  icon
+                  className="btn-add"
+                  tip={
+                    sec.reverse
+                      ? `Relate an entry to this one via ${sec.field}`
+                      : `Add ${sec.field}`
+                  }
                   onClick={() => {
                     setAdding(secKey);
                     setTarget("");
                     setNote("");
                   }}
-                  title={
-                    sec.reverse
-                      ? `Relate an entry to this one via ${sec.field}`
-                      : `Add ${sec.field}`
-                  }
-                  className="btn btn-icon btn-add"
                 >
                   +
-                </button>
+                </Button>
               )}
             </div>
           </div>

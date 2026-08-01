@@ -137,7 +137,7 @@ test("relations add and remove from the reverse side", async ({ page }) => {
   // reverse section doesn't exist until an edge does, so author forward
   // from the Character instead, then remove from the Place side.
   await page.goto(`/e/${hero.id}`);
-  await page.getByTitle("Add hometown").click();
+  await page.getByRole("button", { name: "Add hometown" }).click();
   await page.getByRole("combobox").click();
   await page.getByRole("option", { name: "Cinderford (Place)" }).click();
   await page.getByRole("button", { name: "add", exact: true }).click();
@@ -156,6 +156,6 @@ test("relations add and remove from the reverse side", async ({ page }) => {
   // The action popup renders in a portal (Base UI PreviewCard) — hover
   // the pill, then find the control at page level.
   await revPill.hover();
-  await page.getByTitle("Remove relation").click();
+  await page.getByRole("button", { name: "Remove relation" }).click();
   await expect(revPill).toBeHidden();
 });

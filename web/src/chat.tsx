@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Pin, Sparkles, X } from "lucide-react";
+import { Button, RowButton } from "./ui";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   api,
@@ -70,15 +71,14 @@ function TrayPanel({
         {(tray.items ?? []).map((item) => (
           <li key={item.entry_id} className="">
             <div className="flex items-center gap-1.5">
-              <button
+              <RowButton
+                className="min-w-0 flex-1 truncate px-0 py-0"
                 onClick={() =>
                   setExpanded(expanded === item.entry_id ? null : item.entry_id)
                 }
-                className="flex-1 truncate text-left text-neutral-300 hover:text-white"
-                title="Show exact serialized text"
               >
                 {item.title}
-              </button>
+              </RowButton>
               <span
                 className={`rounded border px-1.5 ${sourceStyle[item.source]}`}
               >
@@ -89,43 +89,48 @@ function TrayPanel({
               </span>
               {item.source === "auto" && (
                 <>
-                  <button
-                    title="Promote to pin"
+                  <Button
+                    icon
+                    tip="Promote to pin"
+                    className="h-5 w-5 border-transparent"
                     onClick={async () => {
                       await api.createPin(worldId, item.entry_id, false);
                       onChanged();
                       qc.invalidateQueries({ queryKey: ["tray"] });
                     }}
-                    className="text-neutral-500 hover:text-white"
                   >
                     <Pin size={12} />
-                  </button>
+                  </Button>
                   {conversationId && (
-                    <button
-                      title="Evict from this conversation"
+                    <Button
+                      icon
+                      intent="danger"
+                      tip="Evict from this conversation"
+                      className="h-5 w-5 border-transparent"
                       onClick={async () => {
                         await api.evictAutoItem(conversationId, item.entry_id);
                         onChanged();
                       }}
-                      className="text-neutral-600 hover:text-red-400"
                     >
                       <X size={12} />
-                    </button>
+                    </Button>
                   )}
                 </>
               )}
               {item.source === "pinned" && (
-                <button
-                  title="Unpin"
+                <Button
+                  icon
+                  intent="danger"
+                  tip="Unpin"
+                  className="h-5 w-5 border-transparent"
                   onClick={async () => {
                     await api.deletePin(worldId, item.entry_id);
                     onChanged();
                     qc.invalidateQueries({ queryKey: ["tray"] });
                   }}
-                  className="text-neutral-600 hover:text-red-400"
                 >
                   <X size={12} />
-                </button>
+                </Button>
               )}
             </div>
             {expanded === item.entry_id && (
@@ -218,12 +223,9 @@ export function ChatPanel({
 
   if (!open) {
     return (
-      <button
-        onClick={() => setOpen(true)}
-        className="btn btn-solid panel"
-      >
+      <Button intent="solid" className="panel" onClick={() => setOpen(true)}>
         <Sparkles size={14} /> Assistant
-      </button>
+      </Button>
     );
   }
 
@@ -232,23 +234,25 @@ export function ChatPanel({
       <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2">
         <span className="flex items-center gap-1.5 font-medium"><Sparkles size={14} /> Assistant</span>
         <div className="flex gap-2">
-          <button
-            title="New conversation"
+          <Button
+            tip="New conversation"
+            className="border-transparent"
             onClick={() => {
               setConversationId(null);
               setItems([]);
               setTray(null);
             }}
-            className="text-neutral-500 hover:text-neutral-300"
           >
             new
-          </button>
-          <button
+          </Button>
+          <Button
+            icon
+            tip="Close"
+            className="border-transparent"
             onClick={() => setOpen(false)}
-            className="text-neutral-500 hover:text-neutral-300"
           >
             <X size={13} />
-          </button>
+          </Button>
         </div>
       </div>
 

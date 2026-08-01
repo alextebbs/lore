@@ -9,7 +9,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { CommandPalette } from "./palette";
-import { Tooltip } from "./ui";
+import { Button, Tooltip } from "./ui";
 import { WorldPage } from "./world-page";
 import { EntryPage } from "./entry-page";
 
@@ -73,9 +73,9 @@ function WorldsPage() {
           placeholder="New world name"
           className="input flex-1"
         />
-        <button className="btn btn-solid" disabled={create.isPending}>
+        <Button intent="solid" type="submit" disabled={create.isPending}>
           Create
-        </button>
+        </Button>
       </form>
     </div>
   );

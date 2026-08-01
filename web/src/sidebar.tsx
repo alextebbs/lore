@@ -8,6 +8,7 @@ import { useDebounced } from "./use-debounced";
 // ---------- World sidebar (Notion-style) ----------
 
 import { appState, setSidebarWidth, sidebarWidth } from "./app-state";
+import { Button } from "./ui";
 
 function startSidebarResize(e: React.MouseEvent) {
   e.preventDefault();
@@ -95,7 +96,6 @@ export function WorldSidebar({
         aria-orientation="vertical"
         aria-label="Resize sidebar (drag or arrow keys)"
         tabIndex={0}
-        title="Drag to resize"
         className="fixed inset-y-0 z-30 w-1.5 cursor-col-resize hover:bg-neutral-700 focus:bg-neutral-600 focus:outline-none"
         style={{ left: "calc(var(--sidebar-w) - 3px)" }}
       />
@@ -188,12 +188,11 @@ export function WorldSidebar({
               ))}
             </ul>
             {!q && all.length > GROUP_CAP && (
-              <button
-                type="button"
+              <Button
+                className="mt-0.5 border-transparent text-neutral-600"
                 onClick={() =>
                   setExpanded({ ...expanded, [typeName]: !expanded[typeName] })
                 }
-                className="mt-0.5 inline-flex items-center gap-1 px-2 text-neutral-600 hover:text-neutral-300"
               >
                 {expanded[typeName] ? (
                   "show less"
@@ -202,7 +201,7 @@ export function WorldSidebar({
                     show all {all.length} <ChevronRight size={12} />
                   </>
                 )}
-              </button>
+              </Button>
             )}
           </div>
         );

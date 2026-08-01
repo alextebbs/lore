@@ -68,6 +68,7 @@ export const surface = "panel";
 // Confirm replaces window.confirm: a real focus-trapped dialog.
 export function Confirm({
   trigger,
+  tip,
   title,
   body,
   actionLabel,
@@ -76,6 +77,7 @@ export function Confirm({
   onOpenChange,
 }: {
   trigger?: ReactElement;
+  tip?: string;
   title: string;
   body?: string;
   actionLabel: string;
@@ -85,7 +87,14 @@ export function Confirm({
 }) {
   return (
     <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
-      {trigger && <AlertDialog.Trigger render={trigger} />}
+      {trigger &&
+        (tip ? (
+          <Tip tip={tip}>
+            <AlertDialog.Trigger render={trigger} />
+          </Tip>
+        ) : (
+          <AlertDialog.Trigger render={trigger} />
+        ))}
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
         <AlertDialog.Popup
@@ -114,25 +123,100 @@ export function Confirm({
   );
 }
 
-// IconTip wraps an icon-only control with an accessible tooltip.
-export function IconTip({
-  label,
-  children,
-}: {
-  label: string;
-  children: ReactElement;
-}) {
+function Tip({ tip, children }: { tip: string; children: ReactElement }) {
   return (
     <Tooltip.Root>
-      <Tooltip.Trigger render={children} aria-label={label} />
+      <Tooltip.Trigger render={children} aria-label={tip} />
       <Tooltip.Portal>
-        <Tooltip.Positioner side="bottom" sideOffset={6}>
+        <Tooltip.Positioner side="bottom" sideOffset={6} className="z-50">
           <Tooltip.Popup className={`px-2 py-1 text-neutral-300 ${surface}`}>
-            {label}
+            {tip}
           </Tooltip.Popup>
         </Tooltip.Positioner>
       </Tooltip.Portal>
     </Tooltip.Root>
+  );
+}
+
+// THE button. One height, one radius; intent controls the accent color
+// (rest text + hover border); `tip` is the one tooltip mechanism — no
+// native title attributes on controls anywhere. Raw <button> elements
+// are forbidden outside this file (design test).
+export type Intent = "default" | "solid" | "danger" | "warning";
+
+const intentCls: Record<Intent, string> = {
+  default: "",
+  solid: "btn-solid",
+  danger: "btn-danger",
+  warning: "btn-warning",
+};
+
+export function Button({
+  intent = "default",
+  icon = false,
+  active = false,
+  tip,
+  className = "",
+  ...props
+}: {
+  intent?: Intent;
+  icon?: boolean;
+  active?: boolean;
+  tip?: string;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  const btn = (
+    <button
+      type="button"
+      className={[
+        "btn",
+        icon && "btn-icon",
+        active ? "btn-solid" : intentCls[intent],
+        className,
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      {...props}
+    />
+  );
+  return tip ? <Tip tip={tip}>{btn}</Tip> : btn;
+}
+
+// Same contract for anchors (downloads, external links).
+export function LinkButton({
+  icon = false,
+  tip,
+  className = "",
+  ...props
+}: {
+  icon?: boolean;
+  tip?: string;
+  className?: string;
+} & React.AnchorHTMLAttributes<HTMLAnchorElement>) {
+  const a = (
+    <a
+      className={["btn", icon && "btn-icon", className].filter(Boolean).join(" ")}
+      {...props}
+    />
+  );
+  return tip ? <Tip tip={tip}>{a}</Tip> : a;
+}
+
+// List-row button: palette rows, suggestion menus, revision headers.
+export function RowButton({
+  active = false,
+  className = "",
+  ...props
+}: {
+  active?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <button
+      type="button"
+      className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left ${
+        active ? "bg-neutral-800 text-white" : "text-neutral-300"
+      } ${className}`}
+      {...props}
+    />
   );
 }
 

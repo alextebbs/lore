@@ -74,8 +74,19 @@ body {
   .btn-solid:hover {
     @apply bg-neutral-800;
   }
+  /* Intent accents: tinted text at rest, tinted border on hover —
+     the same rule for every intent. */
+  .btn-danger {
+    @apply text-red-400;
+  }
   .btn-danger:hover {
-    @apply border-red-900 bg-transparent text-red-400;
+    @apply border-red-900 bg-red-950/30 text-red-300;
+  }
+  .btn-warning {
+    @apply text-amber-400;
+  }
+  .btn-warning:hover {
+    @apply border-amber-900 bg-amber-950/30 text-amber-300;
   }
   .btn-icon {
     @apply w-7 justify-center px-0;
