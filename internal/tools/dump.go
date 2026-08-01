@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 
+	"github.com/alextebbs/lore/internal/richtext"
 	"github.com/alextebbs/lore/internal/store/db"
 )
 
@@ -203,13 +204,35 @@ func (t *Tools) ImportWorld(ctx context.Context, dump WorldDump, name string) (W
 			}
 		}
 
-		// Derived rows (cards/digests/search) for every imported entry.
+		// Second pass now that every entry exists: normalize mentions to
+		// ID-carrying nodes, then derived rows + mention edges.
 		for _, id := range entryMap {
 			row, err := q.GetEntry(ctx, id)
 			if err != nil {
 				return err
 			}
+			if doc, err := richtext.ParseDoc(row.Body); err == nil {
+				doc = t.resolveMentionDoc(ctx, q, w.ID, doc)
+				raw, err := json.Marshal(doc)
+				if err != nil {
+					return err
+				}
+				row, err = q.UpdateEntry(ctx, db.UpdateEntryParams{
+					ID: row.ID, Title: row.Title, Fields: row.Fields,
+					Body: raw, Status: row.Status,
+				})
+				if err != nil {
+					return err
+				}
+			}
 			if err := t.refreshDerived(ctx, q, row, typeName[row.TypeID]); err != nil {
+				return err
+			}
+			author := AuthorHuman
+			if row.Status == StatusDraft {
+				author = AuthorAI
+			}
+			if err := t.syncMentions(ctx, q, row, author); err != nil {
 				return err
 			}
 		}

@@ -8,6 +8,8 @@ import (
 
 	"encoding/json"
 
+	"github.com/jackc/pgx/v5/pgtype"
+
 	"github.com/alextebbs/lore/internal/richtext"
 	"github.com/alextebbs/lore/internal/store/db"
 )
@@ -29,26 +31,32 @@ const (
 var mentionRe = regexp.MustCompile(`\[\[([^\[\]{}]+)\]\]`)
 
 type mention struct {
-	title   string
+	id      string // entry id when known (mention nodes)
+	title   string // fallback resolution + display
 	section string
 }
 
-// collectMentions scans an entry's body and field values.
+// collectMentions scans an entry's body (mention nodes, ID-first) and
+// field values (textual [[links]]).
 func collectMentions(row db.Entry) []mention {
 	var out []mention
 	seen := map[string]bool{}
+	addRef := func(id, title, section string) {
+		key := id + "\x00" + strings.ToLower(title) + "\x00" + section
+		if (id != "" || title != "") && !seen[key] {
+			seen[key] = true
+			out = append(out, mention{id: id, title: title, section: section})
+		}
+	}
 	add := func(text, section string) {
 		for _, m := range mentionRe.FindAllStringSubmatch(text, -1) {
-			title := strings.TrimSpace(m[1])
-			key := strings.ToLower(title) + "\x00" + section
-			if title != "" && !seen[key] {
-				seen[key] = true
-				out = append(out, mention{title: title, section: section})
-			}
+			addRef("", strings.TrimSpace(m[1]), section)
 		}
 	}
 	if doc, err := richtext.ParseDoc(row.Body); err == nil {
-		add(richtext.ToMarkdown(doc, false), "body")
+		for _, ref := range richtext.MentionRefs(doc) {
+			addRef(ref[0], ref[1], "body")
+		}
 	}
 	fields := map[string]FieldValue{}
 	if err := jsonUnmarshal(row.Fields, &fields); err == nil {
@@ -86,11 +94,25 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 		status = settings.humanStatus()
 	}
 	for _, m := range collectMentions(row) {
-		target, err := q.GetEntryByTitle(ctx, db.GetEntryByTitleParams{
-			WorldID: row.WorldID, Lower: m.title,
-		})
-		if err != nil || target == row.ID {
-			continue // unresolved titles are fine — link later
+		var target pgtype.UUID
+		if m.id != "" {
+			if u, err := parseID(m.id); err == nil {
+				if _, err := q.GetEntry(ctx, u); err == nil {
+					target = u
+				}
+			}
+		}
+		if !target.Valid {
+			t2, err := q.GetEntryByTitle(ctx, db.GetEntryByTitleParams{
+				WorldID: row.WorldID, Lower: m.title,
+			})
+			if err != nil {
+				continue // unresolved — link later
+			}
+			target = t2
+		}
+		if target == row.ID {
+			continue
 		}
 		section := m.section
 		if section != "body" {
@@ -106,6 +128,29 @@ func (t *Tools) syncMentions(ctx context.Context, q *db.Queries, row db.Entry, a
 		}
 	}
 	return nil
+}
+
+// resolveMentionDoc normalizes an incoming body doc: literal [[Title]]
+// text becomes mention nodes, and mention nodes get their entry IDs
+// resolved from titles (unresolved mentions keep id="" and resolve on a
+// later write, once the target exists).
+func (t *Tools) resolveMentionDoc(ctx context.Context, q *db.Queries, worldID pgtype.UUID, doc richtext.Node) richtext.Node {
+	doc = richtext.SplitMentionText(doc)
+	return richtext.TransformMentions(doc, func(id, label string) (string, string) {
+		if id != "" {
+			if u, err := parseID(id); err == nil {
+				if row, err := q.GetEntry(ctx, u); err == nil {
+					return id, row.Title // label follows the entry
+				}
+			}
+		}
+		if target, err := q.GetEntryByTitle(ctx, db.GetEntryByTitleParams{
+			WorldID: worldID, Lower: label,
+		}); err == nil {
+			return idStr(target), label
+		}
+		return "", label
+	})
 }
 
 // propagateRename rewrites [[Old Title]] to [[New Title]] in every entry
@@ -125,18 +170,14 @@ func (t *Tools) propagateRename(ctx context.Context, q *db.Queries, renamed db.E
 		changed := false
 
 		if doc, err := richtext.ParseDoc(src.Body); err == nil {
-			var rewrite func(n richtext.Node) richtext.Node
-			rewrite = func(n richtext.Node) richtext.Node {
-				if n.Type == "text" && strings.Contains(n.Text, oldLink) {
-					n.Text = strings.ReplaceAll(n.Text, oldLink, newLink)
+			renamedID := idStr(renamed.ID)
+			doc = richtext.TransformMentions(doc, func(id, label string) (string, string) {
+				if id == renamedID || (id == "" && strings.EqualFold(label, oldTitle)) {
 					changed = true
+					return renamedID, newTitle
 				}
-				for i, c := range n.Content {
-					n.Content[i] = rewrite(c)
-				}
-				return n
-			}
-			doc = rewrite(doc)
+				return id, label
+			})
 			if changed {
 				if src.Body, err = json.Marshal(doc); err != nil {
 					return err

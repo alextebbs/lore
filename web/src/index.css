@@ -9,3 +9,23 @@
 body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
+
+/* TipTap placeholder (invisible-editor empty state) */
+.tiptap p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: oklch(0.4 0 0);
+}
+
+/* Invisible editor typography */
+.tiptap h1 { font-size: 1.5rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }
+.tiptap h2 { font-size: 1.25rem; font-weight: 600; margin: 0.6rem 0 0.2rem; }
+.tiptap h3 { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0 0.15rem; }
+.tiptap p { margin: 0.35rem 0; }
+.tiptap ul { list-style: disc; padding-left: 1.25rem; }
+.tiptap ol { list-style: decimal; padding-left: 1.25rem; }
+.tiptap blockquote { border-left: 2px solid oklch(0.35 0 0); padding-left: 0.75rem; color: oklch(0.75 0 0); }
+.tiptap pre { background: oklch(0.2 0 0); border-radius: 0.5rem; padding: 0.6rem 0.8rem; margin: 0.5rem 0; overflow-x: auto; }
+.tiptap hr { border-color: oklch(0.3 0 0); margin: 1rem 0; }

@@ -152,6 +152,7 @@ func (t *Tools) UpdateEntry(ctx context.Context, id string, patch EntryPatch, au
 		if author == AuthorAI {
 			doc = richtext.MarkAllDraft(doc)
 		}
+		doc = t.resolveMentionDoc(ctx, t.store.Queries, row.WorldID, doc)
 		if body, err = json.Marshal(doc); err != nil {
 			return Entry{}, nil, err
 		}

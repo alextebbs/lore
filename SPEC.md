@@ -141,11 +141,18 @@ ontology.
   ends — no duplicate sections); everything else appears under the
   pointing field's inverse label — Character.hometown → Chicago shows
   "People from here: John". No wiring required on the target schema.
-- **Mentions:** `[[Entry Title]]` inside a body or rich-text field links
-  entries and auto-maintains a system relation annotated "mentioned in
+- **Mentions:** `[[Entry Title]]` is the *authoring syntax only* — in
+  Markdown input and rich-text fields. In stored body docs a mention is
+  a first-class inline node `{type: "mention", attrs: {id, label}}`
+  carrying the target entry's ID; the UI renders it as a chip (no
+  brackets) that navigates on click, and the `[[` autocomplete inserts
+  it directly. `[[Title]]` text is normalized to mention nodes (with
+  IDs resolved by title) on every write and on world import; the
+  Markdown boundary serializes mention nodes back to `[[label]]`.
+  Mentions auto-maintain a system relation annotated "mentioned in
   <section> of <entry>", surfaced on the target as "Mentioned in".
-  Mentions persist through IDs: renaming an entry rewrites the
-  `[[links]]` in every mentioning entry (located via the edges).
+  Because mentions persist through IDs, renaming an entry just updates
+  chip labels (and rewrites textual `[[links]]` in rich-text fields).
 - **Untyped relations:** every entry carries a universal `related`
   section — untyped, annotated, bidirectional — for connections that
   don't fit a declared field yet.

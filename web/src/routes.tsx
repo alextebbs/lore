@@ -803,12 +803,25 @@ function EntryPage() {
     queryKey: ["revisions", entryId],
     queryFn: () => api.listRevisions(entryId),
   });
+  const worldEntries = useQuery({
+    queryKey: ["entries", entry.data?.world_id],
+    queryFn: () => api.listEntries(entry.data!.world_id),
+    enabled: !!entry.data,
+  });
 
   const [title, setTitle] = useState("");
   const [fields, setFields] = useState<Record<string, string | string[]>>({});
   const [bodyDoc, setBodyDoc] = useState<DocNode>(emptyDoc);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [dirty, setDirty] = useState(0);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const latest = useRef<{ title: string; fields: Record<string, string | string[]>; bodyDoc: DocNode }>({
+    title: "",
+    fields: {},
+    bodyDoc: emptyDoc,
+  });
+  latest.current = { title, fields, bodyDoc };
 
   useEffect(() => {
     const e = entry.data;
@@ -832,12 +845,26 @@ function EntryPage() {
 
   const save = useMutation({
     mutationFn: () =>
-      api.updateEntry(entryId, { title, fields, body_doc: bodyDoc }),
+      api.updateEntry(entryId, {
+        title: latest.current.title,
+        fields: latest.current.fields,
+        body_doc: latest.current.bodyDoc,
+      }),
     onSuccess: ({ entry: e, warnings }) => {
       refresh(e);
       setWarnings(warnings ?? []);
+      setSaveState("saved");
     },
   });
+
+  // Notion-style autosave: debounce user edits, no Save button.
+  useEffect(() => {
+    if (dirty === 0) return;
+    setSaveState("saving");
+    const t = setTimeout(() => save.mutate(), 1200);
+    return () => clearTimeout(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty]);
   const canonize = useMutation({
     mutationFn: (scope: { fields?: string[]; body?: boolean }) =>
       api.markCanon(entryId, scope),
@@ -910,8 +937,12 @@ function EntryPage() {
 
       <input
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full rounded-lg border border-transparent bg-transparent text-2xl font-semibold outline-none focus:border-neutral-700"
+        onChange={(e) => {
+          setTitle(e.target.value);
+          setDirty((d) => d + 1);
+        }}
+        placeholder="Untitled"
+        className="w-full bg-transparent text-2xl font-semibold outline-none placeholder:text-neutral-700"
       />
 
       <div className="grid grid-cols-2 gap-3">
@@ -948,14 +979,15 @@ function EntryPage() {
                   <div key={idx} className="mb-1 flex gap-1">
                     <textarea
                       value={item}
-                      rows={2}
-                      placeholder="Rich text — [[Entry Title]] links entries"
+                      rows={1}
+                      placeholder="— ([[Entry Title]] links entries)"
                       onChange={(ev) => {
                         const next = [...items];
                         next[idx] = ev.target.value;
                         setFields({ ...fields, [name]: next });
+                        setDirty((d) => d + 1);
                       }}
-                      className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+                      className="w-full resize-none rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
                     />
                     <button
                       type="button"
@@ -987,12 +1019,13 @@ function EntryPage() {
                 {label}
                 <textarea
                   value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
-                  rows={3}
-                  placeholder="Rich text — [[Entry Title]] links entries"
-                  onChange={(ev) =>
-                    setFields({ ...fields, [name]: ev.target.value })
-                  }
-                  className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+                  rows={2}
+                  placeholder="— ([[Entry Title]] links entries)"
+                  onChange={(ev) => {
+                    setFields({ ...fields, [name]: ev.target.value });
+                    setDirty((d) => d + 1);
+                  }}
+                  className="w-full resize-none rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
                 />
               </label>
             );
@@ -1002,10 +1035,12 @@ function EntryPage() {
               {label}
               <input
                 value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
-                onChange={(ev) =>
-                  setFields({ ...fields, [name]: ev.target.value })
-                }
-                className="w-full rounded-lg border border-neutral-800 bg-neutral-900 px-3 py-2 text-sm outline-none focus:border-neutral-500"
+                onChange={(ev) => {
+                  setFields({ ...fields, [name]: ev.target.value });
+                  setDirty((d) => d + 1);
+                }}
+                placeholder="—"
+                className="w-full rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
               />
             </label>
           );
@@ -1020,13 +1055,14 @@ function EntryPage() {
         }}
       />
 
-      <div className="space-y-2">
-        <span className="text-xs uppercase tracking-wide text-neutral-500">
-          Body — draft spans highlighted amber; select text to toggle
-          draft/canon
-        </span>
-        <BodyEditor doc={bodyDoc} onChange={setBodyDoc} />
-      </div>
+      <BodyEditor
+        doc={bodyDoc}
+        entries={(worldEntries.data ?? []).filter((c) => c.id !== e.id)}
+        onChange={(d) => {
+          setBodyDoc(d);
+          setDirty((n) => n + 1);
+        }}
+      />
 
       <EgoGraph entryId={entryId} />
 
@@ -1038,20 +1074,19 @@ function EntryPage() {
         </ul>
       )}
 
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => save.mutate()}
-          disabled={save.isPending}
-          className="rounded-lg bg-neutral-100 px-4 py-2 font-medium text-neutral-900 disabled:opacity-50"
-        >
-          Save
-        </button>
+      <div className="flex items-center justify-between text-xs text-neutral-600">
+        <span>
+          {saveState === "saving"
+            ? "saving…"
+            : saveState === "saved"
+              ? "saved"
+              : ""}
+        </span>
         <button
           onClick={() => setShowHistory(!showHistory)}
-          className="text-xs text-neutral-500 hover:text-neutral-300"
+          className="text-neutral-500 hover:text-neutral-300"
         >
-          {revisions.data?.length ?? 0} revisions{" "}
-          {showHistory ? "▾" : "▸"}
+          {revisions.data?.length ?? 0} revisions {showHistory ? "▾" : "▸"}
         </button>
       </div>
 

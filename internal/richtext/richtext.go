@@ -66,7 +66,7 @@ var (
 		"doc": true, "paragraph": true, "heading": true,
 		"bullet_list": true, "ordered_list": true, "list_item": true,
 		"code_block": true, "blockquote": true, "horizontal_rule": true,
-		"text": true,
+		"text": true, "mention": true,
 	}
 	allowedMarks = map[string]bool{
 		MarkBold: true, MarkItalic: true, MarkDraft: true,

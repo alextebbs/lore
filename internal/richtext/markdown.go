@@ -2,6 +2,7 @@ package richtext
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/yuin/goldmark"
@@ -22,7 +23,85 @@ func FromMarkdown(md string) Node {
 			doc.Content = append(doc.Content, n)
 		}
 	}
-	return normalize(applyDraftMarkers(doc))
+	return normalize(SplitMentionText(applyDraftMarkers(doc)))
+}
+
+var mentionTextRe = regexp.MustCompile(`\[\[([^\[\]{}|]+)\]\]`)
+
+// SplitMentionText converts literal [[Title]] runs inside text nodes
+// into mention nodes (id resolved later, at the tool layer). Marks —
+// including draft — carry over onto the mention.
+func SplitMentionText(doc Node) Node {
+	var walk func(Node) Node
+	walk = func(n Node) Node {
+		if n.Type == "code_block" {
+			return n // code is literal
+		}
+		var content []Node
+		for _, c := range n.Content {
+			if c.Type != "text" || !mentionTextRe.MatchString(c.Text) {
+				content = append(content, walk(c))
+				continue
+			}
+			rest := c.Text
+			for rest != "" {
+				loc := mentionTextRe.FindStringSubmatchIndex(rest)
+				if loc == nil {
+					content = append(content, Node{Type: "text", Text: rest, Marks: c.Marks})
+					break
+				}
+				if loc[0] > 0 {
+					content = append(content, Node{Type: "text", Text: rest[:loc[0]], Marks: c.Marks})
+				}
+				content = append(content, Node{
+					Type:  "mention",
+					Marks: c.Marks,
+					Attrs: map[string]any{"id": "", "label": rest[loc[2]:loc[3]]},
+				})
+				rest = rest[loc[1]:]
+			}
+		}
+		n.Content = content
+		return n
+	}
+	return walk(doc)
+}
+
+// MentionRefs returns (id, label) pairs for every mention node.
+func MentionRefs(doc Node) [][2]string {
+	var out [][2]string
+	var walk func(Node)
+	walk = func(n Node) {
+		if n.Type == "mention" {
+			id, _ := n.Attrs["id"].(string)
+			label, _ := n.Attrs["label"].(string)
+			out = append(out, [2]string{id, label})
+		}
+		for _, c := range n.Content {
+			walk(c)
+		}
+	}
+	walk(doc)
+	return out
+}
+
+// TransformMentions rewrites mention attrs in place via fn(id, label) ->
+// (newID, newLabel).
+func TransformMentions(doc Node, fn func(id, label string) (string, string)) Node {
+	var walk func(Node) Node
+	walk = func(n Node) Node {
+		if n.Type == "mention" {
+			id, _ := n.Attrs["id"].(string)
+			label, _ := n.Attrs["label"].(string)
+			nid, nlabel := fn(id, label)
+			n.Attrs = map[string]any{"id": nid, "label": nlabel}
+		}
+		for i, c := range n.Content {
+			n.Content[i] = walk(c)
+		}
+		return n
+	}
+	return walk(doc)
 }
 
 // normalize drops empty text nodes and merges adjacent text runs with
@@ -401,6 +480,10 @@ func renderInline(nodes []Node, withDraftMarkers bool) string {
 	}
 
 	for _, n := range nodes {
+		if n.Type == "mention" {
+			label, _ := n.Attrs["label"].(string)
+			n = Node{Type: "text", Text: "[[" + label + "]]", Marks: n.Marks}
+		}
 		if n.Type != "text" || n.Text == "" {
 			continue
 		}
