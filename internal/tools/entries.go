@@ -359,6 +359,10 @@ func (t *Tools) GetRevision(ctx context.Context, revisionID string) (RevisionDet
 	if err := json.Unmarshal(r.Fields, &fields); err != nil {
 		return RevisionDetail{}, err
 	}
+	for name, fv := range fields {
+		fv.Value, fv.ValueDoc = presentFieldValue(fv.Value)
+		fields[name] = fv
+	}
 	doc, err := richtext.ParseDoc(r.Body)
 	if err != nil {
 		return RevisionDetail{}, err

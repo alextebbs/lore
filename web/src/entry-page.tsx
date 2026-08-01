@@ -9,94 +9,21 @@ import {
   Trash2,
   TriangleAlert,
 } from "lucide-react";
-import { api, type Entry, type Revision as RevisionType } from "./api";
+import { api, type Entry } from "./api";
 import { BodyEditor } from "./editor";
 import { usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
-import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
 import { Popover } from "@base-ui/react/popover";
-import { Button, Confirm, EntrySkeleton, LinkButton, RowButton, StatusBadge, strToDoc } from "./ui";
+import { Button, Confirm, EntrySkeleton, LinkButton, StatusBadge, strToDoc } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { appState } from "./app-state";
 import { WorldAdmin } from "./world-page";
 import { RelationsPanel } from "./relations";
+import { RevisionsDrawer } from "./revisions-drawer";
 import { FieldsGrid } from "./fields-grid";
 
-function RevisionRow({
-  entryId,
-  rev,
-  currentBody,
-  onRestored,
-}: {
-  entryId: string;
-  rev: RevisionType;
-  currentBody: string;
-  onRestored: (e: Entry) => void;
-}) {
-  const [open, setOpen] = useState(false);
-  const detail = useQuery({
-    queryKey: ["revision", rev.id],
-    queryFn: () => api.getRevision(entryId, rev.id),
-    enabled: open,
-  });
-  const restore = useMutation({
-    mutationFn: () => api.restoreRevision(entryId, rev.id),
-    onSuccess: onRestored,
-  });
-
-  return (
-    <li className="rounded border border-neutral-800">
-      <RowButton onClick={() => setOpen(!open)} className="rounded">
-        <span className="flex items-center gap-2">
-          <span
-            className={
-              rev.author === "ai" ? "text-neutral-500" : "text-neutral-300"
-            }
-          >
-            {rev.author}
-          </span>
-          <StatusBadge status={rev.status} />
-        </span>
-        <span className="text-neutral-500">
-          {new Date(rev.created_at).toLocaleString()}
-        </span>
-      </RowButton>
-      {open && detail.data && (
-        <div className="space-y-3 border-t border-neutral-800 p-3">
-          <div className="whitespace-pre-wrap rounded bg-neutral-900 p-2 leading-relaxed">
-            {diffWords(currentBody, detail.data.body_md).map((p, i) =>
-              p.type === "same" ? (
-                <span key={i}>{p.text}</span>
-              ) : p.type === "add" ? (
-                <span key={i} className="rounded bg-emerald-950 text-emerald-300">
-                  {p.text}
-                </span>
-              ) : (
-                <span
-                  key={i}
-                  className="rounded bg-red-950 text-red-400 line-through"
-                >
-                  {p.text}
-                </span>
-              ),
-            )}
-            {detail.data.body_md === "" && currentBody === "" && (
-              <span className="text-neutral-600">empty body</span>
-            )}
-          </div>
-          <div className="flex justify-between">
-            <span className="text-neutral-500">
-              diff vs current (green = in revision, red = only in current)
-            </span>
-            <Button intent="solid" onClick={() => restore.mutate()}>restore this version</Button>
-          </div>
-        </div>
-      )}
-    </li>
-  );
-}
 
 export function EntryPage({ entryId }: { entryId: string }) {
   const qc = useQueryClient();
@@ -422,19 +349,13 @@ export function EntryPage({ entryId }: { entryId: string }) {
 
       <EgoGraph entryId={entryId} />
 
-      {showHistory && (
-        <ul className="space-y-2">
-          {revisions.data?.map((rev) => (
-            <RevisionRow
-              key={rev.id}
-              entryId={entryId}
-              rev={rev}
-              currentBody={e.body_md}
-              onRestored={refresh}
-            />
-          ))}
-        </ul>
-      )}
+      <RevisionsDrawer
+        entry={e}
+        revisions={revisions.data ?? []}
+        open={showHistory}
+        onOpenChange={setShowHistory}
+        onRestored={refresh}
+      />
 
       {e.type_name === "World" && <WorldAdmin worldId={e.world_id} />}
 

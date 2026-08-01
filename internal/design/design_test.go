@@ -25,7 +25,7 @@ var forbidden = []*regexp.Regexp{
 // color and allowed everywhere.
 var colorSanction = map[string][]string{
 	"sky-":     {}, // .entity in index.css is the only definition
-	"emerald-": {"entry-page.tsx"}, // revision diff additions
+	"emerald-": {"revisions-drawer.tsx"}, // revision diff additions
 	"violet-":  {},
 	"amber-":   {"entry-page.tsx", "relations.tsx"}, // warnings
 }
