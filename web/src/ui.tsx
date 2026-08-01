@@ -124,7 +124,7 @@ export function Confirm({
         <AlertDialog.Popup
           className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4"
         >
-          <AlertDialog.Title className="font-semibold">
+          <AlertDialog.Title className="">
             {title}
           </AlertDialog.Title>
           {body && (

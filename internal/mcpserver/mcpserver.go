@@ -381,6 +381,18 @@ func New(t *tools.Tools) *mcp.Server {
 		DumpJSON    string `json:"dump_json" jsonschema:"a fixture produced by dump_world"`
 		PreserveIDs bool   `json:"preserve_ids,omitempty" jsonschema:"keep dumped ids verbatim (prod swap); delete the old world first"`
 	}
+	type vaultImportIn struct {
+		WorldID string            `json:"world_id" jsonschema:"the world to import into"`
+		Files   []tools.VaultFile `json:"files" jsonschema:"markdown files: path + content; frontmatter type/status honored, [[wiki-links]] become mentions"`
+	}
+	addTool(s, &registered, &mcp.Tool{
+		Name:        "import_vault",
+		Description: "Import Obsidian-style markdown files as entries in an existing world (additive; existing titles are skipped). Entries without status frontmatter arrive as DRAFT.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in vaultImportIn) (*mcp.CallToolResult, tools.VaultImportResult, error) {
+		out, err := t.ImportVault(ctx, in.WorldID, in.Files)
+		return nil, out, err
+	})
+
 	addTool(s, &registered, &mcp.Tool{
 		Name:        "import_world",
 		Description: "Rebuild a world from a dump_world fixture. IDs are remapped; statuses, draft marks, and annotations come through verbatim.",

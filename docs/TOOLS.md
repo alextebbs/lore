@@ -45,6 +45,7 @@ callers (MCP + agent) write as draft; the UI/API write as the human.
 | UpdateEntryType — field identity survives renames (ADR 0015) | PATCH /api/worlds/{id}/types/{typeId} | update_entry_type | updateEntryType |
 | DumpWorld — fixture format | GET /api/worlds/{id}/dump | dump_world | dumpWorld |
 | ImportWorld — preserve_ids keeps URLs stable | POST /api/worlds/import | import_world | importWorld |
+| ImportVault — markdown files/zip → draft entries; additive | POST /api/worlds/{id}/import-vault | import_vault | importVault |
 | GetContextTray | GET /api/worlds/{id}/tray | get_context_tray | getTray |
 | PinEntry | POST /api/worlds/{id}/tray/pins | pin_entry | createPin |
 | UnpinEntry | DELETE /api/worlds/{id}/tray/pins/{entryId} | unpin_entry | deletePin |

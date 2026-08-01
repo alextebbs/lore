@@ -19,6 +19,8 @@ var forbidden = []*regexp.Regexp{
 	regexp.MustCompile(`text-(xs|sm|base|lg|xl|2xl|3xl|\[[0-9]+px\])\b`),
 	regexp.MustCompile(`text-neutral-(100|200)\b`),
 	regexp.MustCompile(`!important`),
+	// One weight: bold is not part of the chrome's vocabulary.
+	regexp.MustCompile(`font-(bold|semibold|medium)\b`),
 }
 
 // Color families are permitted only where listed; red is the danger

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Download } from "lucide-react";
-import { api } from "./api";
+import { api, type VaultImportResult } from "./api";
 import { Button, EntrySkeleton, LinkButton, Picker } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { TypeManager } from "./schema-editor";
@@ -88,6 +88,55 @@ function WorldSettingsForm({ worldId }: { worldId: string }) {
   );
 }
 
+function VaultImport({ worldId }: { worldId: string }) {
+  const qc = useQueryClient();
+  const [result, setResult] = useState<VaultImportResult | null>(null);
+  const [busy, setBusy] = useState(false);
+  return (
+    <div className="space-y-2">
+      <label className="btn btn-add inline-flex cursor-pointer">
+        {busy ? "importing…" : "import vault (.zip of markdown)"}
+        <input
+          type="file"
+          accept=".zip"
+          className="hidden"
+          onChange={async (e) => {
+            const f = e.target.files?.[0];
+            if (!f) return;
+            setBusy(true);
+            try {
+              setResult(await api.importVault(worldId, f));
+              qc.invalidateQueries({ queryKey: ["entries", worldId] });
+              qc.invalidateQueries({ queryKey: ["world", worldId] });
+            } finally {
+              setBusy(false);
+              e.target.value = "";
+            }
+          }}
+        />
+      </label>
+      {result && (
+        <div className="space-y-1 rounded border border-neutral-800 p-2 text-neutral-400">
+          <div>
+            {result.created} entries imported
+            {result.created > 0 && " (as drafts unless marked canon)"}
+          </div>
+          {(result.skipped ?? []).map((s: string) => (
+            <div key={s} className="text-neutral-600">
+              skipped: {s}
+            </div>
+          ))}
+          {(result.warnings ?? []).map((w: string) => (
+            <div key={w} className="text-neutral-600">
+              {w}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function SettingsPage({ worldId }: { worldId: string }) {
   return (
     <div>
@@ -96,7 +145,7 @@ export function SettingsPage({ worldId }: { worldId: string }) {
         style={{ marginLeft: "var(--sidebar-w)" }}
         className="max-w-3xl space-y-6 p-6"
       >
-        <h2 className="font-bold">World settings</h2>
+        <h2 className="">World settings</h2>
         <WorldSettingsForm worldId={worldId} />
         <div className="space-y-2 border-t border-neutral-800 pt-4">
           <h3 className="text-neutral-500">Export</h3>
@@ -113,6 +162,10 @@ export function SettingsPage({ worldId }: { worldId: string }) {
             </LinkButton>
           </div>
         </div>
+        <div className="space-y-2 border-t border-neutral-800 pt-4">
+          <h3 className="text-neutral-500">Import</h3>
+          <VaultImport worldId={worldId} />
+        </div>
       </div>
     </div>
   );
@@ -126,7 +179,7 @@ export function SchemaPage({ worldId }: { worldId: string }) {
         style={{ marginLeft: "var(--sidebar-w)" }}
         className="max-w-3xl space-y-6 p-6"
       >
-        <h2 className="font-bold">Entry types</h2>
+        <h2 className="">Entry types</h2>
         <TypeManager worldId={worldId} />
       </div>
     </div>

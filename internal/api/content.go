@@ -1,9 +1,12 @@
 package api
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"strconv"
@@ -49,6 +52,7 @@ func (s *Server) registerContent(mux *http.ServeMux) {
 		"UpdateEntryType":     s.updateEntryType,
 		"DumpWorld":           s.dumpWorld,
 		"ImportWorld":         s.importWorld,
+		"ImportVault":         s.importVault,
 		"GetContextTray":      s.getTray,
 		"PinEntry":            s.createPin,
 		"UnpinEntry":          s.deletePin,
@@ -128,6 +132,45 @@ func (s *Server) importWorld(w http.ResponseWriter, r *http.Request) {
 	}
 	world, err := s.Tools.ImportWorld(r.Context(), in.Dump, in.Name, in.PreserveIDs)
 	respond(w, world, err)
+}
+
+func (s *Server) importVault(w http.ResponseWriter, r *http.Request) {
+	var files []tools.VaultFile
+	ct := r.Header.Get("Content-Type")
+	if strings.HasPrefix(ct, "application/zip") {
+		raw, err := io.ReadAll(io.LimitReader(r.Body, 50<<20))
+		if err != nil {
+			respond(w, nil, err)
+			return
+		}
+		zr, err := zip.NewReader(bytes.NewReader(raw), int64(len(raw)))
+		if err != nil {
+			respond(w, nil, fmt.Errorf("bad zip: %w", err))
+			return
+		}
+		for _, f := range zr.File {
+			if f.FileInfo().IsDir() {
+				continue
+			}
+			rc, err := f.Open()
+			if err != nil {
+				continue
+			}
+			content, _ := io.ReadAll(io.LimitReader(rc, 5<<20))
+			rc.Close()
+			files = append(files, tools.VaultFile{Path: f.Name, Content: string(content)})
+		}
+	} else {
+		var in struct {
+			Files []tools.VaultFile `json:"files"`
+		}
+		if !decode(w, r, &in) {
+			return
+		}
+		files = in.Files
+	}
+	res, err := s.Tools.ImportVault(r.Context(), r.PathValue("id"), files)
+	respond(w, res, err)
 }
 
 func (s *Server) exportEntry(w http.ResponseWriter, r *http.Request) {

@@ -25,6 +25,7 @@ var tsRoots = []any{
 	tools.GraphEdge{}, tools.SearchResult{}, tools.Tray{},
 	tools.TrayItem{}, tools.CanonScope{}, tools.WorldDump{},
 	tools.TypeDump{}, tools.EntryDump{}, tools.EdgeDump{},
+	tools.VaultFile{}, tools.VaultImportResult{},
 }
 
 var (

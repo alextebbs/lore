@@ -46,6 +46,7 @@ var Decls = []Decl{
 	{"UpdateEntryType", "PATCH", "/api/worlds/{id}/types/{typeId}", "update_entry_type", "updateEntryType", "field identity survives renames (ADR 0015)"},
 	{"DumpWorld", "GET", "/api/worlds/{id}/dump", "dump_world", "dumpWorld", "fixture format"},
 	{"ImportWorld", "POST", "/api/worlds/import", "import_world", "importWorld", "preserve_ids keeps URLs stable"},
+	{"ImportVault", "POST", "/api/worlds/{id}/import-vault", "import_vault", "importVault", "markdown files/zip → draft entries; additive"},
 	{"GetContextTray", "GET", "/api/worlds/{id}/tray", "get_context_tray", "getTray", ""},
 	{"PinEntry", "POST", "/api/worlds/{id}/tray/pins", "pin_entry", "createPin", ""},
 	{"UnpinEntry", "DELETE", "/api/worlds/{id}/tray/pins/{entryId}", "unpin_entry", "deletePin", ""},

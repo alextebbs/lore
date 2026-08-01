@@ -56,7 +56,7 @@ function NewEntryDialog({ worldId }: { worldId: string }) {
         <Dialog.Portal>
           <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
           <Dialog.Popup className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 outline-none">
-            <Dialog.Title className="font-bold">New entry</Dialog.Title>
+            <Dialog.Title className="">New entry</Dialog.Title>
             <form
               className="mt-3 space-y-2"
               onSubmit={(e) => {
@@ -162,13 +162,13 @@ export function WorldSidebar({
       <div className="shrink-0 space-y-3 border-b border-neutral-800 px-3 py-4">
         <Link
           to="/"
-          className="block font-bold tracking-wide text-white hover:text-white"
+          className="block tracking-wide text-white hover:text-white"
         >
           Lore
         </Link>
         <div className="flex items-center gap-1">
           <span
-            className="min-w-0 flex-1 truncate font-bold"
+            className="min-w-0 flex-1 truncate"
             title={world.data?.world.name}
           >
             {world.data?.world.name ?? "…"}

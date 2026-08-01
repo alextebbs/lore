@@ -6,6 +6,8 @@ import type { DocNode } from "./doc";
 // this file only aliases legacy names and adds client-side unions.
 export type {
   CanonScope,
+  VaultFile,
+  VaultImportResult,
   Edge as EdgeType,
   EntryRef,
   EntrySummary,
@@ -27,6 +29,7 @@ export type {
 } from "./api-types.gen";
 import type {
   CanonScope,
+  VaultImportResult,
   Edge as EdgeType,
   Entry,
   EntrySummary,
@@ -126,6 +129,12 @@ export const api = {
       { ...json(patch), method: "PATCH" },
     ),
   dumpWorld: (id: string) => req<unknown>(`/api/worlds/${id}/dump`),
+  importVault: (worldId: string, zip: Blob) =>
+    req<VaultImportResult>(`/api/worlds/${worldId}/import-vault`, {
+      method: "POST",
+      headers: { "Content-Type": "application/zip" },
+      body: zip,
+    }),
   importWorld: (dump: unknown, name = "", preserveIds = false) =>
     req<World>(`/api/worlds/import`, json({ dump, name, preserve_ids: preserveIds })),
   deleteWorld: (id: string) =>

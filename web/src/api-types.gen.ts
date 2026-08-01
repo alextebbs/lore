@@ -177,6 +177,17 @@ export interface TypeDump {
   builtin: boolean;
 }
 
+export interface VaultFile {
+  path: string;
+  content: string;
+}
+
+export interface VaultImportResult {
+  created: number;
+  skipped?: string[] | null;
+  warnings?: string[] | null;
+}
+
 export interface World {
   id: string;
   name: string;

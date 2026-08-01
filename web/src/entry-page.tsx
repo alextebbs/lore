@@ -332,7 +332,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
             setDirty((d) => d + 1);
           }}
           placeholder="Untitled"
-          className="w-full rounded bg-transparent px-1 font-bold outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
+          className="w-full rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
         />
       </div>
 

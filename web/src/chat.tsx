@@ -232,7 +232,7 @@ export function ChatPanel({
   return (
     <div className="fixed bottom-0 right-0 top-0 z-10 flex w-96 flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl">
       <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2">
-        <span className="flex items-center gap-1.5 font-medium"><Sparkles size={14} /> Assistant</span>
+        <span className="flex items-center gap-1.5"><Sparkles size={14} /> Assistant</span>
         <div className="flex gap-2">
           <Button
             tip="New conversation"
