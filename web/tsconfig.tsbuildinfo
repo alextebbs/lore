@@ -1,1 +1,1 @@
-{"root":["./src/api.ts","./src/chat.tsx","./src/diff.ts","./src/doc.ts","./src/editor.tsx","./src/graph.tsx","./src/main.tsx","./src/routes.tsx"],"version":"5.9.3"}
+{"root":["./src/api.ts","./src/chat.tsx","./src/diff.ts","./src/doc.ts","./src/editor.tsx","./src/graph.tsx","./src/main.tsx","./src/palette.tsx","./src/routes.tsx"],"version":"5.9.3"}

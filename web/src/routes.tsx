@@ -15,6 +15,7 @@ import {
   type Revision as RevisionType,
 } from "./api";
 import { BodyEditor, InlineField } from "./editor";
+import { CommandPalette, usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
@@ -26,6 +27,7 @@ const rootRoute = createRootRoute({
       <main>
         <Outlet />
       </main>
+      <CommandPalette />
     </div>
   ),
 });
@@ -356,6 +358,42 @@ function WorldPage() {
   for (const e of entries.data ?? []) {
     grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
   }
+
+  usePageCommands(worldId, [
+    {
+      id: "export-vault",
+      label: "Export vault (Obsidian zip)",
+      hint: "download",
+      run: () => {
+        window.location.href = `/api/worlds/${worldId}/export`;
+      },
+    },
+    {
+      id: "export-dump",
+      label: "Export world dump (JSON fixture)",
+      hint: "download",
+      run: () => window.open(`/api/worlds/${worldId}/dump`, "_blank"),
+    },
+    {
+      id: "new-entry",
+      label: "New entry…",
+      run: () =>
+        document
+          .querySelector<HTMLInputElement>('input[placeholder="New entry title"]')
+          ?.focus(),
+    },
+    {
+      id: "settings",
+      label: "World settings",
+      run: () => {
+        const d = document.querySelector("details");
+        if (d) {
+          d.open = true;
+          d.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      },
+    },
+  ]);
 
   return (
     <div>
@@ -844,6 +882,69 @@ function EntryPage() {
       api.markCanon(entryId, scope),
     onSuccess: refresh,
   });
+
+  // Every visible control doubles as a ⌘K command (shared tray state
+  // with PinButton via the query cache).
+  const tray = useQuery({
+    queryKey: ["tray", entry.data?.world_id],
+    queryFn: () => api.getTray(entry.data!.world_id),
+    enabled: !!entry.data,
+  });
+  const pinned = (tray.data?.items ?? []).some(
+    (i) => i.entry_id === entryId && i.source === "pinned",
+  );
+  const ed = entry.data;
+  usePageCommands(
+    ed?.world_id,
+    ed
+      ? [
+          {
+            id: "export",
+            label: "Export entry as Markdown",
+            hint: "download",
+            run: () => {
+              window.location.href = `/api/entries/${ed.id}/export`;
+            },
+          },
+          {
+            id: "pin",
+            label: pinned ? "Unpin from AI context" : "Pin to AI context",
+            run: async () => {
+              if (pinned) await api.deletePin(ed.world_id, ed.id);
+              else await api.createPin(ed.world_id, ed.id, false);
+              qc.invalidateQueries({ queryKey: ["tray"] });
+            },
+          },
+          ...(ed.status !== "canon"
+            ? [
+                {
+                  id: "canon",
+                  label: "Mark all canon",
+                  run: () => canonize.mutate({}),
+                },
+              ]
+            : []),
+          {
+            id: "history",
+            label: showHistory
+              ? "Hide revision history"
+              : "Show revision history",
+            run: () => setShowHistory((v) => !v),
+          },
+          {
+            id: "delete",
+            label: "Delete entry",
+            hint: "destructive",
+            run: async () => {
+              if (confirm(`Delete "${ed.title}"?`)) {
+                await api.deleteEntry(ed.id);
+                navigate({ to: "/w/$worldId", params: { worldId: ed.world_id } });
+              }
+            },
+          },
+        ]
+      : [],
+  );
 
   const e = entry.data;
   if (!e) return <p className="text-neutral-500">Loading…</p>;
