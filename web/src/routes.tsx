@@ -43,7 +43,7 @@ function WorldsPage() {
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 p-6">
-      <h2 className="text-xl font-semibold">Your worlds</h2>
+      <h2 className="font-semibold">Your worlds</h2>
       <ul className="space-y-2">
         {worlds.data?.map((w) => (
           <li key={w.id}>

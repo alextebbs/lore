@@ -42,3 +42,15 @@ func TestToolsDocCurrent(t *testing.T) {
 		}
 	}
 }
+
+// The generated TS wire types must match the Go structs — regenerate
+// with make tools-docs when tool-layer shapes change.
+func TestGeneratedTypesCurrent(t *testing.T) {
+	raw, err := os.ReadFile("../../web/src/api-types.gen.ts")
+	if err != nil {
+		t.Fatalf("reading api-types.gen.ts: %v (run make tools-docs)", err)
+	}
+	if string(raw) != RenderTSTypes() {
+		t.Error("web/src/api-types.gen.ts is stale — run make tools-docs")
+	}
+}

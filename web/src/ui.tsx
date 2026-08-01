@@ -72,16 +72,20 @@ export function Confirm({
   body,
   actionLabel,
   onConfirm,
+  open,
+  onOpenChange,
 }: {
-  trigger: ReactElement;
+  trigger?: ReactElement;
   title: string;
   body?: string;
   actionLabel: string;
   onConfirm: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }) {
   return (
-    <AlertDialog.Root>
-      <AlertDialog.Trigger render={trigger} />
+    <AlertDialog.Root open={open} onOpenChange={onOpenChange}>
+      {trigger && <AlertDialog.Trigger render={trigger} />}
       <AlertDialog.Portal>
         <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
         <AlertDialog.Popup
@@ -123,7 +127,7 @@ export function IconTip({
       <Tooltip.Trigger render={children} aria-label={label} />
       <Tooltip.Portal>
         <Tooltip.Positioner side="bottom" sideOffset={6}>
-          <Tooltip.Popup className={`px-2 py-1 text-xs text-neutral-300 ${surface}`}>
+          <Tooltip.Popup className={`px-2 py-1 text-neutral-300 ${surface}`}>
             {label}
           </Tooltip.Popup>
         </Tooltip.Positioner>

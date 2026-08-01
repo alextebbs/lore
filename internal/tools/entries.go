@@ -27,6 +27,17 @@ func (t *Tools) CreateEntry(ctx context.Context, worldID, typeID, title string, 
 	if err != nil {
 		return Entry{}, notFound(err)
 	}
+	// The World meta entry is a singleton: one per world, created at
+	// world creation, never duplicated (the world's home page).
+	if et.Name == "World" {
+		if rows, err := t.store.Queries.ListEntryRows(ctx, wid); err == nil {
+			for _, r := range rows {
+				if r.TypeID == tid {
+					return Entry{}, fmt.Errorf("a world has exactly one World meta entry; edit %q instead", r.Title)
+				}
+			}
+		}
+	}
 
 	settings, err := t.GetWorldSettings(ctx, worldID)
 	if err != nil {
@@ -315,6 +326,9 @@ func (t *Tools) DeleteEntry(ctx context.Context, id string, author Author, canon
 	row, err := t.store.Queries.GetEntry(ctx, eid)
 	if err != nil {
 		return notFound(err)
+	}
+	if et, err := t.store.Queries.GetEntryType(ctx, row.TypeID); err == nil && et.Name == "World" {
+		return fmt.Errorf("the World meta entry is the world's home page and cannot be deleted (delete the world itself instead)")
 	}
 	if row.Status != StatusDraft {
 		if err := t.mayTouchCanon(ctx, row.WorldID, author, canonOverride).refuseCanon(fmt.Sprintf("entry %q is %s and", row.Title, row.Status)); err != nil {

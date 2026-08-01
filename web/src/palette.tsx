@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Dialog } from "@base-ui/react/dialog";
+import { appState } from "./app-state";
+import { useDebounced } from "./use-debounced";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
@@ -16,18 +18,14 @@ export type Command = {
   run: () => void;
 };
 
-const registry: { worldId?: string; commands: Command[] } = { commands: [] };
-
 export function usePageCommands(
   worldId: string | undefined,
   commands: Command[],
 ) {
   useEffect(() => {
-    registry.worldId = worldId;
-    registry.commands = commands;
+    appState.commands = { worldId, list: commands };
     return () => {
-      registry.worldId = undefined;
-      registry.commands = [];
+      appState.commands = { worldId: undefined, list: [] };
     };
   });
 }
@@ -46,7 +44,7 @@ export function CommandPalette() {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setSnap({ worldId: registry.worldId, commands: registry.commands });
+        setSnap({ worldId: appState.commands.worldId, commands: appState.commands.list });
         setQuery("");
         setSel(0);
         setOpen((o) => !o);
@@ -65,6 +63,15 @@ export function CommandPalette() {
     queryFn: () => api.listEntries(snap.worldId!),
     enabled: open && !!snap.worldId,
   });
+  // Entry rows come from FindRelevant when there's a query — hybrid
+  // ranking over bodies and fields, not title substrings.
+  const dq = useDebounced(query.trim(), 200);
+  const searched = useQuery({
+    queryKey: ["search", snap.worldId, dq],
+    queryFn: () => api.search(snap.worldId!, dq),
+    enabled: open && !!snap.worldId && dq !== "",
+    placeholderData: (prev) => prev,
+  });
 
   const q = query.trim().toLowerCase();
   const rows = [
@@ -76,8 +83,7 @@ export function CommandPalette() {
         hint: c.hint ?? "action",
         run: c.run,
       })),
-    ...(entries.data ?? [])
-      .filter((e) => !q || e.title.toLowerCase().includes(q))
+    ...(q ? (searched.data ?? []) : (entries.data ?? []))
       .slice(0, 10)
       .map((e) => ({
         id: "e:" + e.id,
@@ -123,11 +129,11 @@ export function CommandPalette() {
             if (e.key === "Enter" && rows[selIdx]) pick(rows[selIdx]);
           }}
           placeholder="Search entries and actions…"
-          className="w-full border-b border-neutral-800 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-neutral-600"
+          className="w-full border-b border-neutral-800 bg-transparent px-4 py-3 outline-none placeholder:text-neutral-600"
         />
         <div className="max-h-80 overflow-y-auto py-1">
           {rows.length === 0 && (
-            <div className="px-4 py-3 text-sm text-neutral-600">
+            <div className="px-4 py-3 text-neutral-600">
               no matches
             </div>
           )}
@@ -138,12 +144,12 @@ export function CommandPalette() {
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => pick(row)}
               onMouseEnter={() => setSel(i)}
-              className={`flex w-full items-center justify-between gap-4 px-4 py-2 text-left text-sm ${
+              className={`flex w-full items-center justify-between gap-4 px-4 py-2 text-left ${
                 i === selIdx ? "bg-neutral-800 text-white" : "text-neutral-300"
               }`}
             >
               <span className="truncate">{row.label}</span>
-              <span className="shrink-0 text-xs text-neutral-600">
+              <span className="shrink-0 text-neutral-600">
                 {row.hint}
               </span>
             </button>

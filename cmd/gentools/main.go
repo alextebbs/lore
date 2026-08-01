@@ -24,7 +24,10 @@ func main() {
 	if err := os.WriteFile(path, []byte(updated), 0o644); err != nil {
 		panic(err)
 	}
-	fmt.Println("docs/TOOLS.md capability table regenerated")
+	if err := os.WriteFile("web/src/api-types.gen.ts", []byte(toolreg.RenderTSTypes()), 0o644); err != nil {
+		panic(err)
+	}
+	fmt.Println("docs/TOOLS.md table + web/src/api-types.gen.ts regenerated")
 }
 
 // Regenerate replaces the markdown table that starts at the

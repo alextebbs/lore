@@ -101,7 +101,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   const edges = graph.data.edges ?? [];
   if (nodes.length <= 1) {
     return (
-      <p className="text-xs text-neutral-600">
+      <p className="text-neutral-600">
         No connections yet — add relations to see the graph.
       </p>
     );
@@ -110,10 +110,10 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs text-neutral-500">
+        <span className="text-neutral-500">
           Connections
         </span>
-        <div className="flex gap-1 text-xs">
+        <div className="flex gap-1">
           {([1, 2] as const).map((d) => (
             <button
               key={d}

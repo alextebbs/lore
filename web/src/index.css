@@ -28,11 +28,13 @@ samp {
   font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
-/* One type size, one rhythm — everywhere, no matter what. Headings,
-   titles, and labels differentiate by weight and color only. */
-* {
-  font-size: 14px !important;
-  line-height: 1.6 !important;
+/* One type size, one rhythm — set once and inherited, never overridden.
+   No component may declare a font-size (the design test enforces it);
+   headings, titles, and labels differentiate by weight and color only.
+   Form controls inherit via Tailwind's preflight (font: inherit). */
+body {
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 /* TipTap placeholder (invisible-editor empty state) */

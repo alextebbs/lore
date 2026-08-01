@@ -109,7 +109,8 @@ test("draft content promotes to canon", async ({ page, request }) => {
 test("sidebar search narrows the list", async ({ page }) => {
   await page.goto(`/e/${hero.id}`);
   await page.locator("nav input").fill("cinder");
-  await expect(page.locator("nav ul a")).toHaveCount(1);
+  // Server-side FindRelevant: body matches count too (Vex's body says
+  // "Lives in Cinderford"), so assert ranking, not count.
   await expect(page.locator("nav ul a").first()).toContainText("Cinderford");
 });
 
@@ -123,6 +124,9 @@ test("cmd+K palette jumps to an entry and lists page actions", async ({ page }) 
   const palette = page.locator(".fixed.z-50");
   await expect(palette.getByRole("button", { name: /Delete entry/ })).toBeVisible();
   await palette.locator("input").fill("cinderford");
+  await expect(
+    palette.getByRole("button", { name: /Cinderford/ }),
+  ).toBeVisible();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(new RegExp(town.id));
 });

@@ -61,3 +61,13 @@ jobs:
             curl -sf localhost:8080/api/health && break || sleep 0.5
           done
           curl -sf localhost:8080/api/health | grep '"db":"ok"'
+
+      - name: Playwright smoke suite
+        env:
+          DATABASE_URL: postgres://lore:lore@localhost:5432/lore
+        run: |
+          cd web
+          npx playwright install --with-deps chromium
+          npm run dev &
+          for i in $(seq 1 30); do curl -sf localhost:5173 >/dev/null && break || sleep 0.5; done
+          npx playwright test

@@ -3,27 +3,15 @@ import { Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Home } from "lucide-react";
 import { api, type EntrySummary } from "./api";
+import { useDebounced } from "./use-debounced";
 
 // ---------- World sidebar (Notion-style) ----------
 
-// Sidebar scroll survives route remounts (module-scoped, per world).
-const sidebarScroll: Record<string, number> = {};
-
-// Sidebar width lives in a CSS variable so the fixed nav and the
-// content margin stay in lockstep while dragging; persisted per user.
-const SIDEBAR_WIDTH_KEY = "lore:sidebar-width";
-document.documentElement.style.setProperty(
-  "--sidebar-w",
-  `${Number(localStorage.getItem(SIDEBAR_WIDTH_KEY)) || 240}px`,
-);
+import { appState, setSidebarWidth, sidebarWidth } from "./app-state";
 
 function startSidebarResize(e: React.MouseEvent) {
   e.preventDefault();
-  const move = (ev: MouseEvent) => {
-    const w = Math.min(480, Math.max(180, ev.clientX));
-    document.documentElement.style.setProperty("--sidebar-w", `${w}px`);
-    localStorage.setItem(SIDEBAR_WIDTH_KEY, String(w));
-  };
+  const move = (ev: MouseEvent) => setSidebarWidth(ev.clientX);
   const up = () => {
     window.removeEventListener("mousemove", move);
     window.removeEventListener("mouseup", up);
@@ -43,7 +31,7 @@ export function WorldSidebar({
 }) {
   const navRef = useRef<HTMLElement>(null);
   useLayoutEffect(() => {
-    if (navRef.current) navRef.current.scrollTop = sidebarScroll[worldId] ?? 0;
+    if (navRef.current) navRef.current.scrollTop = appState.sidebarScroll[worldId] ?? 0;
   }, [worldId]);
   const qc = useQueryClient();
   const entries = useQuery({
@@ -64,13 +52,22 @@ export function WorldSidebar({
   const GROUP_CAP = 8;
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const q = query.trim().toLowerCase();
+  const q = query.trim();
+  // Search goes through FindRelevant — the same hybrid scorer every
+  // other surface uses — so bodies and fields match, not just titles.
+  const dq = useDebounced(q, 200);
+  const results = useQuery({
+    queryKey: ["search", worldId, dq],
+    queryFn: () => api.search(worldId, dq),
+    enabled: dq !== "",
+    placeholderData: (prev) => prev,
+  });
   const grouped = new Map<string, EntrySummary[]>();
   for (const e of entries.data ?? []) {
     // The World meta entry is the home link above — one per world,
     // never listed as a group.
     if (e.type_name === "World") continue;
-    if (q && !e.title.toLowerCase().includes(q)) continue;
+    if (q) continue;
     grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
   }
   const typeNames = [...grouped.keys()].sort((a, b) =>
@@ -80,22 +77,17 @@ export function WorldSidebar({
     <nav
       ref={navRef}
       onScroll={(e) => {
-        sidebarScroll[worldId] = e.currentTarget.scrollTop;
+        appState.sidebarScroll[worldId] = e.currentTarget.scrollTop;
       }}
       style={{ width: "var(--sidebar-w)" }}
-      className="fixed inset-y-0 left-0 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4 text-sm"
+      className="fixed inset-y-0 left-0 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4"
     >
       <div
         onMouseDown={startSidebarResize}
         onKeyDown={(e) => {
-          const cur =
-            Number(localStorage.getItem(SIDEBAR_WIDTH_KEY)) || 240;
-          const next =
-            e.key === "ArrowLeft" ? cur - 16 : e.key === "ArrowRight" ? cur + 16 : cur;
-          if (next !== cur) {
-            const w = Math.min(480, Math.max(180, next));
-            document.documentElement.style.setProperty("--sidebar-w", `${w}px`);
-            localStorage.setItem(SIDEBAR_WIDTH_KEY, String(w));
+          const cur = sidebarWidth();
+          if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+            setSidebarWidth(cur + (e.key === "ArrowLeft" ? -16 : 16));
             e.preventDefault();
           }
         }}
@@ -109,7 +101,7 @@ export function WorldSidebar({
       />
       <Link
         to="/"
-        className="mb-4 block text-lg font-semibold tracking-wide text-white hover:text-white"
+        className="mb-4 block font-semibold tracking-wide text-white hover:text-white"
       >
         Lore
       </Link>
@@ -139,8 +131,30 @@ export function WorldSidebar({
         placeholder="search…"
         className="input mb-3 w-full"
       />
-      {q && typeNames.length === 0 && (
-        <div className="text-neutral-600">no matches</div>
+      {q !== "" && (
+        <ul>
+          {(results.data ?? []).map((r) => (
+            <li key={r.id}>
+              <Link
+                to="/e/$entryId"
+                params={{ entryId: r.id }}
+                onMouseEnter={() => prefetch(r.id)}
+                className={`flex items-center justify-between gap-2 rounded px-2 py-0.5 ${
+                  r.id === currentEntryId
+                    ? "bg-neutral-800 text-white"
+                    : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+                }`}
+                title={r.card}
+              >
+                <span className="truncate">{r.title}</span>
+                <span className="shrink-0 text-neutral-600">{r.type_name}</span>
+              </Link>
+            </li>
+          ))}
+          {results.data?.length === 0 && (
+            <li className="px-2 text-neutral-600">no matches</li>
+          )}
+        </ul>
       )}
       {typeNames.map((typeName) => {
         const all = grouped.get(typeName)!;
@@ -148,7 +162,7 @@ export function WorldSidebar({
         const shown = open ? all : all.slice(0, GROUP_CAP);
         return (
           <div key={typeName} className="mb-3">
-            <div className="mb-1 text-xs text-neutral-600">
+            <div className="mb-1 text-neutral-600">
               {typeName}
             </div>
             <ul>
@@ -179,7 +193,7 @@ export function WorldSidebar({
                 onClick={() =>
                   setExpanded({ ...expanded, [typeName]: !expanded[typeName] })
                 }
-                className="mt-0.5 inline-flex items-center gap-1 px-2 text-xs text-neutral-600 hover:text-neutral-300"
+                className="mt-0.5 inline-flex items-center gap-1 px-2 text-neutral-600 hover:text-neutral-300"
               >
                 {expanded[typeName] ? (
                   "show less"

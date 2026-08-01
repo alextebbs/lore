@@ -46,15 +46,15 @@ function TrayPanel({
   const qc = useQueryClient();
   const pct = Math.min(100, Math.round((tray.total_tokens / tray.budget) * 100));
   const sourceStyle: Record<string, string> = {
-    pinned: "text-sky-300 border-sky-800",
-    current: "text-emerald-300 border-emerald-800",
-    neighbor: "text-neutral-400 border-neutral-700",
-    auto: "text-amber-300 border-amber-800",
+    pinned: "text-white border-neutral-500",
+    current: "text-white border-neutral-500",
+    neighbor: "text-neutral-400 border-neutral-800",
+    auto: "text-neutral-400 border-neutral-800",
   };
 
   return (
     <div className="space-y-2 border-b border-neutral-800 p-3">
-      <div className="flex items-center justify-between text-xs text-neutral-500">
+      <div className="flex items-center justify-between text-neutral-500">
         <span className="tracking-wide">Context</span>
         <span>
           ~{tray.total_tokens} / {tray.budget} tokens
@@ -62,13 +62,13 @@ function TrayPanel({
       </div>
       <div className="h-1 rounded bg-neutral-800">
         <div
-          className={`h-1 rounded ${pct > 90 ? "bg-amber-500" : "bg-neutral-500"}`}
+          className={`h-1 rounded ${pct > 90 ? "bg-red-900" : "bg-neutral-500"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
       <ul className="max-h-48 space-y-1 overflow-y-auto">
         {(tray.items ?? []).map((item) => (
-          <li key={item.entry_id} className="text-xs">
+          <li key={item.entry_id} className="">
             <div className="flex items-center gap-1.5">
               <button
                 onClick={() =>
@@ -96,7 +96,7 @@ function TrayPanel({
                       onChanged();
                       qc.invalidateQueries({ queryKey: ["tray"] });
                     }}
-                    className="text-sky-500 hover:text-sky-300"
+                    className="text-neutral-500 hover:text-white"
                   >
                     <Pin size={12} />
                   </button>
@@ -230,7 +230,7 @@ export function ChatPanel({
   return (
     <div className="fixed bottom-0 right-0 top-0 z-10 flex w-96 flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl">
       <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2">
-        <span className="flex items-center gap-1.5 text-sm font-medium"><Sparkles size={14} /> Assistant</span>
+        <span className="flex items-center gap-1.5 font-medium"><Sparkles size={14} /> Assistant</span>
         <div className="flex gap-2">
           <button
             title="New conversation"
@@ -239,7 +239,7 @@ export function ChatPanel({
               setItems([]);
               setTray(null);
             }}
-            className="text-xs text-neutral-500 hover:text-neutral-300"
+            className="text-neutral-500 hover:text-neutral-300"
           >
             new
           </button>
@@ -261,7 +261,7 @@ export function ChatPanel({
         />
       )}
 
-      <div className="flex-1 space-y-2 overflow-y-auto p-3 text-sm">
+      <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {items.length === 0 && (
           <p className="text-neutral-600">
             Ask for new content, expansions, or connections. Everything the
@@ -279,7 +279,7 @@ export function ChatPanel({
               {item.text}
             </div>
           ) : item.kind === "tool" ? (
-            <details key={i} className="rounded border border-neutral-800 px-2 py-1 text-xs">
+            <details key={i} className="rounded border border-neutral-800 px-2 py-1">
               <summary
                 className={item.isError ? "text-red-400" : "text-neutral-500"}
               >

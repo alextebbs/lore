@@ -77,7 +77,8 @@ export function RelationsPanel({
       (world.data?.types ?? [])
         .filter((t) =>
           (t.fields ?? []).some(
-            (f) => f.name === field && f.kind === "relation",
+            (f: { name: string; kind: string }) =>
+              f.name === field && f.kind === "relation",
           ),
         )
         .map((t) => t.name),
@@ -93,13 +94,13 @@ export function RelationsPanel({
             ? false
             : sec.reverse
               ? declaring!.has(c.type_name)
-              : satisfiesTargets(c.type_name, sec.config?.targets),
+              : satisfiesTargets(c.type_name, sec.config?.targets ?? undefined),
         );
         const secKey = sec.label + "|" + sec.field;
         return (
           <div key={secKey} className="flex gap-3">
             <div
-              className="w-44 shrink-0 truncate pt-2 text-right text-xs text-neutral-500"
+              className="w-44 shrink-0 truncate pt-2 text-right text-neutral-500"
               title={sec.label || sec.field}
             >
               {titleCase(sec.label || sec.field)}
@@ -144,7 +145,7 @@ export function RelationsPanel({
                         className="z-30"
                       >
                         <PreviewCard.Popup
-                          className={`flex items-center overflow-hidden text-xs ${surface}`}
+                          className={`flex items-center overflow-hidden ${surface}`}
                         >
                           <button
                             type="button"

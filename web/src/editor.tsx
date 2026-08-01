@@ -8,7 +8,7 @@ import { Placeholder } from "@tiptap/extensions";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { PluginKey } from "@tiptap/pm/state";
 import type { EntrySummary } from "./api";
-import { nav } from "./nav";
+import { appState } from "./app-state";
 import { fromTipTap, toTipTap, type DocNode } from "./doc";
 
 // Invisible, Notion-like editing: no chrome until you ask for it.
@@ -226,7 +226,7 @@ function SuggestionPopup({
             selectedRef.current = i;
             setMenu({ ...menu });
           }}
-          className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left text-sm ${
+          className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left ${
             i === selectedRef.current
               ? "bg-neutral-800 text-white"
               : "text-neutral-300"
@@ -234,7 +234,7 @@ function SuggestionPopup({
         >
           <span>{item.label}</span>
           {item.hint && (
-            <span className="text-xs text-neutral-600">{item.hint}</span>
+            <span className="text-neutral-600">{item.hint}</span>
           )}
         </button>
       ))}
@@ -248,7 +248,7 @@ const mentionNavigate = (
   node: { type: { name: string }; attrs: Record<string, unknown> },
 ) => {
   if (node.type.name === "mention" && node.attrs.id) {
-    nav.toEntry(String(node.attrs.id));
+    appState.navToEntry(String(node.attrs.id));
     return true;
   }
   return false;
@@ -318,7 +318,7 @@ export function BodyEditor({
     content: toTipTap(doc),
     editorProps: {
       attributes: {
-        class: "min-h-48 py-2 text-sm leading-relaxed outline-none",
+        class: "min-h-48 py-2 leading-relaxed outline-none",
       },
       handleClickOn: mentionNavigate,
     },
@@ -350,7 +350,7 @@ export function BodyEditor({
       title={title}
       onMouseDown={(e) => e.preventDefault()}
       onClick={onClick}
-      className={`px-2 py-1 text-xs ${
+      className={`px-2 py-1 ${
         active ? "text-white" : "text-neutral-400 hover:text-white"
       }`}
     >

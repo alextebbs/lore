@@ -2,122 +2,43 @@
 // markers; the server owns conversion to/from the stored doc format.
 import type { DocNode } from "./doc";
 
-export type FieldDef = { name: string; kind: string; label?: string };
-export type FieldValue = {
-  value: unknown;
-  value_doc?: unknown; // doc (or doc[]) for richtext kinds
-  status: "draft" | "canon";
-};
-export type WorldSettings = {
-  vibe?: string;
-  style_prompt?: string;
-  humans_author_as?: "draft" | "canon";
-  ai_can_edit_canon?: boolean;
-};
-export type World = {
-  id: string;
-  name: string;
-  settings: WorldSettings;
-  created_at: string;
-};
-export type EntryType = {
-  id: string;
-  name: string;
-  parent_id?: string;
-  fields: FieldDef[];
-  builtin: boolean;
-};
-export type EntrySummary = {
-  id: string;
-  title: string;
-  type_id: string;
-  type_name: string;
-  status: string;
-};
-export type RelationConfig = {
-  targets?: string[];
-  many?: boolean;
-  template?: string;
-  inverse_label?: string;
-  annotations?: boolean;
-};
-export type EntryRef = {
-  id: string;
-  title: string;
-  type_name: string;
-  status: string;
-};
-export type EdgeType = {
-  id: string;
-  field: string;
-  to: EntryRef;
-  annotation?: string;
-  status: string;
-};
-export type RelationSection = {
-  field: string;
-  label: string;
-  reverse?: boolean; // adds create the edge target→here
-  config?: RelationConfig;
-  edges: EdgeType[] | null;
-};
-export type SearchResult = {
-  id: string;
-  title: string;
-  type_name: string;
-  status: string;
-  card: string;
-  score: number;
-};
-export type EntryTypeDef = {
-  id: string;
-  name: string;
-  parent_id?: string;
-  fields: FieldDef[] | null;
-  builtin: boolean;
-};
-export type Graph = {
-  nodes: null | {
-    id: string;
-    title: string;
-    type_name: string;
-    status: string;
-    depth: number;
-  }[];
-  edges: null | {
-    id: string;
-    from: string;
-    to: string;
-    field: string;
-    annotation?: string;
-    status: string;
-  }[];
-};
-export type Entry = {
-  id: string;
-  world_id: string;
-  type_id: string;
-  type_name: string;
-  title: string;
-  fields: Record<string, FieldValue>;
-  body_md: string;
-  body_doc: DocNode;
-  status: string;
-  updated_at: string;
-  relations: RelationSection[] | null;
-};
-export type Revision = {
-  id: string;
-  author: "human" | "ai";
-  status: string;
-  created_at: string;
-};
-export type RevisionDetail = Revision & {
-  title: string;
-  fields: Record<string, FieldValue>;
-  body_md: string;
-};
-export type CanonScope = { fields?: string[]; body?: boolean };
+// Wire types are generated from the Go structs (make tools-docs) —
+// this file only aliases legacy names and adds client-side unions.
+export type {
+  CanonScope,
+  Edge as EdgeType,
+  EntryRef,
+  EntrySummary,
+  EntryType,
+  EntryType as EntryTypeDef,
+  FieldDef,
+  FieldValue,
+  Graph,
+  RelationConfig,
+  RelationSection,
+  Revision,
+  RevisionDetail,
+  SearchResult,
+  Tray,
+  TrayItem,
+  World,
+  WorldSettings,
+  Entry,
+} from "./api-types.gen";
+import type {
+  CanonScope,
+  Edge as EdgeType,
+  Entry,
+  EntrySummary,
+  EntryType as EntryTypeDef,
+  Graph,
+  Revision,
+  RevisionDetail,
+  SearchResult,
+  Tray,
+  World,
+  WorldSettings,
+} from "./api-types.gen";
 
 async function req<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, init);
@@ -136,7 +57,7 @@ export const api = {
   listWorlds: () => req<World[]>("/api/worlds"),
   createWorld: (name: string) => req<World>("/api/worlds", json({ name })),
   getWorld: (id: string) =>
-    req<{ world: World; types: EntryType[] }>(`/api/worlds/${id}`),
+    req<{ world: World; types: EntryTypeDef[] }>(`/api/worlds/${id}`),
   listEntries: (worldId: string) =>
     req<EntrySummary[]>(`/api/worlds/${worldId}/entries`),
   createEntry: (worldId: string, typeId: string, title: string) =>
@@ -158,7 +79,7 @@ export const api = {
       ...json(patch),
       method: "PATCH",
     }),
-  markCanon: (id: string, scope: CanonScope = {}) =>
+  markCanon: (id: string, scope: Partial<CanonScope> = {}) =>
     req<Entry>(`/api/entries/${id}/canon`, json(scope)),
   listRevisions: (id: string) => req<Revision[]>(`/api/entries/${id}/revisions`),
   getRevision: (id: string, rid: string) =>
@@ -239,16 +160,6 @@ export const api = {
     ),
 };
 
-export type TrayItem = {
-  entry_id: string;
-  title: string;
-  source: "pinned" | "current" | "neighbor" | "auto";
-  level: "full" | "digest" | "card";
-  text: string;
-  tokens: number;
-  score?: number;
-};
-export type Tray = { items: TrayItem[] | null; total_tokens: number; budget: number };
 export type ContentBlock = {
   type: string;
   text?: string;

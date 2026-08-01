@@ -9,23 +9,20 @@ import {
   Trash2,
   TriangleAlert,
 } from "lucide-react";
-import {
-  api,
-  type Entry,
-  type FieldValue,
-  type Revision as RevisionType,
-} from "./api";
-import { BodyEditor, InlineField } from "./editor";
+import { api, type Entry, type Revision as RevisionType } from "./api";
+import { BodyEditor } from "./editor";
 import { usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
 import { Popover } from "@base-ui/react/popover";
-import { Confirm, EntrySkeleton, IconTip, StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
+import { Confirm, EntrySkeleton, IconTip, StatusBadge, strToDoc } from "./ui";
 import { WorldSidebar } from "./sidebar";
+import { appState } from "./app-state";
 import { WorldAdmin } from "./world-page";
 import { RelationsPanel } from "./relations";
+import { FieldsGrid } from "./fields-grid";
 
 function RevisionRow({
   entryId,
@@ -53,7 +50,7 @@ function RevisionRow({
     <li className="rounded border border-neutral-800">
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm"
+        className="flex w-full items-center justify-between px-3 py-2 text-left"
       >
         <span className="flex items-center gap-2">
           <span
@@ -65,12 +62,12 @@ function RevisionRow({
           </span>
           <StatusBadge status={rev.status} />
         </span>
-        <span className="text-xs text-neutral-500">
+        <span className="text-neutral-500">
           {new Date(rev.created_at).toLocaleString()}
         </span>
       </button>
       {open && detail.data && (
-        <div className="space-y-3 border-t border-neutral-800 p-3 text-sm">
+        <div className="space-y-3 border-t border-neutral-800 p-3">
           <div className="whitespace-pre-wrap rounded bg-neutral-900 p-2 leading-relaxed">
             {diffWords(currentBody, detail.data.body_md).map((p, i) =>
               p.type === "same" ? (
@@ -93,13 +90,13 @@ function RevisionRow({
             )}
           </div>
           <div className="flex justify-between">
-            <span className="text-xs text-neutral-500">
+            <span className="text-neutral-500">
               diff vs current (green = in revision, red = only in current)
             </span>
             <button
               onClick={() => restore.mutate()}
               disabled={restore.isPending}
-              className="rounded border border-neutral-700 px-2 py-1 text-xs hover:bg-neutral-800"
+              className="rounded border border-neutral-700 px-2 py-1 hover:bg-neutral-800"
             >
               Restore this revision
             </button>
@@ -109,10 +106,6 @@ function RevisionRow({
     </li>
   );
 }
-
-// Last world seen — lets the sidebar stay mounted while the next
-// entry loads (module-scoped; survives keyed remounts).
-let lastWorldId = "";
 
 export function EntryPage({ entryId }: { entryId: string }) {
   const qc = useQueryClient();
@@ -141,6 +134,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
   const [bodyDoc, setBodyDoc] = useState<DocNode>(emptyDoc);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const [dirty, setDirty] = useState(0);
   const [saveState, setSaveState] = useState<
     "idle" | "saving" | "saved" | "error"
@@ -263,12 +257,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
             id: "delete",
             label: "Delete entry",
             hint: "destructive",
-            run: async () => {
-              if (confirm(`Delete "${ed.title}"?`)) {
-                await api.deleteEntry(ed.id);
-                navigate({ to: "/w/$worldId", params: { worldId: ed.world_id } });
-              }
-            },
+            run: () => setDeleteOpen(true),
           },
         ]
       : [],
@@ -278,9 +267,9 @@ export function EntryPage({ entryId }: { entryId: string }) {
   if (entry.isError) {
     return (
       <div>
-        {lastWorldId && <WorldSidebar worldId={lastWorldId} />}
+        {appState.lastWorldId && <WorldSidebar worldId={appState.lastWorldId} />}
         <div
-          style={{ marginLeft: lastWorldId ? "var(--sidebar-w)" : 0 }}
+          style={{ marginLeft: appState.lastWorldId ? "var(--sidebar-w)" : 0 }}
           className="p-6 text-neutral-500"
         >
           Entry not found — it may have been deleted.{" "}
@@ -296,25 +285,17 @@ export function EntryPage({ entryId }: { entryId: string }) {
     // skeleton — no full-page flash on cold navigations.
     return (
       <div>
-        {lastWorldId && <WorldSidebar worldId={lastWorldId} currentEntryId={entryId} />}
-        <div style={{ marginLeft: lastWorldId ? "var(--sidebar-w)" : 0 }}>
+        {appState.lastWorldId && <WorldSidebar worldId={appState.lastWorldId} currentEntryId={entryId} />}
+        <div style={{ marginLeft: appState.lastWorldId ? "var(--sidebar-w)" : 0 }}>
           <EntrySkeleton />
         </div>
       </div>
     );
   }
-  lastWorldId = e.world_id;
+  appState.lastWorldId = e.world_id;
 
   const schemaFields =
     world.data?.types.find((t) => t.id === e.type_id)?.fields ?? [];
-  // Relation fields live in the relations panel, not the fields grid.
-  const nonRelation = schemaFields.filter((f) => f.kind !== "relation");
-  const fieldNames = [
-    ...nonRelation.map((f) => f.name),
-    ...Object.keys(e.fields).filter(
-      (n) => !schemaFields.some((f) => f.name === n),
-    ),
-  ];
   const fieldLinkTargets = (worldEntries.data ?? []).filter(
     (c) => c.id !== e.id,
   );
@@ -381,6 +362,8 @@ export function EntryPage({ entryId }: { entryId: string }) {
             title={`Delete "${e.title}"?`}
             body="The entry, its revisions, and its relations go with it."
             actionLabel="delete"
+            open={deleteOpen}
+            onOpenChange={setDeleteOpen}
             onConfirm={async () => {
               await api.deleteEntry(e.id);
               navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
@@ -413,114 +396,15 @@ export function EntryPage({ entryId }: { entryId: string }) {
         />
       </div>
 
-      <div className="space-y-1">
-        {fieldNames.map((name) => {
-          const fv = e.fields[name] as FieldValue | undefined;
-          const kind = schemaFields.find((f) => f.name === name)?.kind ?? "string";
-          // Draft content reads grey; canon reads white (the only
-          // status distinction the content itself makes).
-          const tone = fv?.status === "draft" ? "text-neutral-500" : "";
-          const label = (
-            <div className="flex w-44 shrink-0 items-start justify-end gap-2 pt-1 text-right text-xs text-neutral-500">
-              <span className="truncate" title={name}>
-                {titleCase(name)}
-              </span>
-              {fv && fv.status === "draft" && (
-                <button
-                  type="button"
-                  title="Promote this field to canon"
-                  onClick={() => canonize.mutate({ fields: [name] })}
-                  className="btn h-5 shrink-0 px-1.5 text-xs lowercase"
-                >
-                  draft
-                </button>
-              )}
-            </div>
-          );
-          if (kind === "richtext_list") {
-            const items = Array.isArray(fields[name])
-              ? (fields[name] as unknown[])
-              : [];
-            return (
-              <div key={name} className="flex gap-3">
-                {label}
-                <div className="min-w-0 flex-1">
-                  {items.map((item, idx) => (
-                    <div key={idx} className="mb-1 flex gap-1">
-                      <div className={`w-full ${tone}`}>
-                        <InlineField
-                          doc={asFieldDoc(item)}
-                          entries={fieldLinkTargets}
-                          placeholder="— ('[[' links an entry)"
-                          onChange={(d) => {
-                            const next = [...items];
-                            next[idx] = d;
-                            setFields({ ...fields, [name]: next });
-                            setDirty((n) => n + 1);
-                          }}
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setFields({
-                            ...fields,
-                            [name]: items.filter((_, i) => i !== idx),
-                          })
-                        }
-                        className="text-neutral-600 hover:text-red-400"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFields({ ...fields, [name]: [...items, strToDoc("")] })
-                    }
-                    className="btn btn-add"
-                  >
-                    + add
-                  </button>
-                </div>
-              </div>
-            );
-          }
-          if (kind === "richtext") {
-            return (
-              <div key={name} className="flex gap-3">
-                {label}
-                <div className={`min-w-0 flex-1 ${tone}`}>
-                  <InlineField
-                    doc={asFieldDoc(fields[name])}
-                    entries={fieldLinkTargets}
-                    placeholder="— ('[[' links an entry)"
-                    onChange={(d) => {
-                      setFields({ ...fields, [name]: d });
-                      setDirty((n) => n + 1);
-                    }}
-                  />
-                </div>
-              </div>
-            );
-          }
-          return (
-            <label key={name} className="flex gap-3">
-              {label}
-              <input
-                value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
-                onChange={(ev) => {
-                  setFields({ ...fields, [name]: ev.target.value });
-                  setDirty((d) => d + 1);
-                }}
-                placeholder="—"
-                className={`min-w-0 flex-1 rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
-              />
-            </label>
-          );
-        })}
-      </div>
+      <FieldsGrid
+        entry={e}
+        schemaFields={schemaFields}
+        fields={fields}
+        setFields={setFields}
+        bump={() => setDirty((n) => n + 1)}
+        onCanonizeField={(name) => canonize.mutate({ fields: [name] })}
+        fieldLinkTargets={fieldLinkTargets}
+      />
 
       <RelationsPanel
         entry={e}
