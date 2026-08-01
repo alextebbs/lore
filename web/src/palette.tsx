@@ -42,17 +42,27 @@ export function CommandPalette() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const openIt = () => {
+      setSnap({
+        worldId: appState.commands.worldId,
+        commands: appState.commands.list,
+      });
+      setQuery("");
+      setSel(0);
+      setOpen(true);
+    };
+    appState.openPalette = openIt;
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        setSnap({ worldId: appState.commands.worldId, commands: appState.commands.list });
-        setQuery("");
-        setSel(0);
-        setOpen((o) => !o);
+        openIt();
       }
     };
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      appState.openPalette = () => {};
+    };
   }, []);
 
   useEffect(() => {

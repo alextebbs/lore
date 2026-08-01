@@ -19,7 +19,6 @@ import { Popover } from "@base-ui/react/popover";
 import { Button, Confirm, EntrySkeleton, LinkButton, StatusBadge, strToDoc } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { appState } from "./app-state";
-import { WorldAdmin } from "./world-page";
 import { RelationsPanel } from "./relations";
 import { RevisionsDrawer } from "./revisions-drawer";
 import { FieldsGrid } from "./fields-grid";
@@ -176,6 +175,29 @@ export function EntryPage({ entryId }: { entryId: string }) {
             label: "Delete entry",
             hint: "destructive",
             run: () => setDeleteOpen(true),
+          },
+          {
+            id: "new-entry",
+            label: "New entry…",
+            run: () => appState.openNewEntry(),
+          },
+          {
+            id: "settings",
+            label: "World settings & export",
+            run: () =>
+              navigate({
+                to: "/w/$worldId/settings",
+                params: { worldId: ed.world_id },
+              }),
+          },
+          {
+            id: "schema",
+            label: "Entry types…",
+            run: () =>
+              navigate({
+                to: "/w/$worldId/schema",
+                params: { worldId: ed.world_id },
+              }),
           },
         ]
       : [],
@@ -356,8 +378,6 @@ export function EntryPage({ entryId }: { entryId: string }) {
         onOpenChange={setShowHistory}
         onRestored={refresh}
       />
-
-      {e.type_name === "World" && <WorldAdmin worldId={e.world_id} />}
 
       <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
       </div>

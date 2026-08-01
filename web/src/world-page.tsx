@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Download } from "lucide-react";
-import { Collapsible } from "@base-ui/react/collapsible";
+import { Download } from "lucide-react";
 import { api } from "./api";
-import { Button, EntrySkeleton, Picker } from "./ui";
+import { Button, EntrySkeleton, LinkButton, Picker } from "./ui";
+import { WorldSidebar } from "./sidebar";
 import { TypeManager } from "./schema-editor";
 
-// The world has no separate listing page — its home IS the World meta
-// entry. WorldAdmin renders the world-scoped controls (new entry,
-// settings, exports) inside that entry's page; the /w route redirects.
+// World-scoped pages: settings (+ exports) and the schema editor, each
+// a dedicated route reached from the sidebar's world row. The world's
+// home remains its meta entry; /w/$worldId redirects there.
 
-function WorldSettingsPanel({ worldId }: { worldId: string }) {
+function WorldSettingsForm({ worldId }: { worldId: string }) {
   const qc = useQueryClient();
   const world = useQuery({
     queryKey: ["world", worldId],
@@ -34,126 +34,101 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ["world", worldId] }),
   });
+  if (!world.data) return null;
   return (
-    <Collapsible.Root id="world-settings" className="rounded border border-neutral-800 p-3">
-      <Collapsible.Trigger className="group flex cursor-pointer items-center gap-1 text-neutral-400 hover:text-white">
-        <ChevronRight
-          size={13}
-          className="transition-transform group-data-[panel-open]:rotate-90"
+    <div className="space-y-3">
+      <label className="block">
+        <span className="text-neutral-500">
+          Vibe — global context for the AI ("It's Elden Ring", …)
+        </span>
+        <textarea
+          defaultValue={s.vibe ?? ""}
+          onChange={(e) => setVibe(e.target.value)}
+          rows={2}
+          className="input mt-1 h-auto w-full py-1"
         />
-        World settings
-      </Collapsible.Trigger>
-      <Collapsible.Panel className="mt-3 space-y-3">
-        <label className="block">
-          <span className="text-neutral-500">
-            Vibe — global context for the AI ("It's Elden Ring", …)
-          </span>
-          <textarea
-            defaultValue={s.vibe ?? ""}
-            onChange={(e) => setVibe(e.target.value)}
-            rows={2}
-            className="input mt-1 h-auto w-full py-1"
+      </label>
+      <label className="block">
+        <span className="text-neutral-500">
+          Style prompt — how AI prose should read
+        </span>
+        <textarea
+          defaultValue={s.style_prompt ?? ""}
+          onChange={(e) => setStyle(e.target.value)}
+          rows={2}
+          className="input mt-1 h-auto w-full py-1"
+        />
+      </label>
+      <div className="flex items-center gap-6">
+        <label className="flex items-center gap-2">
+          <span className="text-neutral-500">Humans author as</span>
+          <Picker
+            value={(authorAs ?? s.humans_author_as ?? "canon") as string}
+            onChange={setAuthorAs}
+            placeholder="canon"
+            items={[
+              { value: "canon", label: "canon" },
+              { value: "draft", label: "draft" },
+            ]}
           />
         </label>
-        <label className="block">
-          <span className="text-neutral-500">
-            Style prompt — how AI prose should read
-          </span>
-          <textarea
-            defaultValue={s.style_prompt ?? ""}
-            onChange={(e) => setStyle(e.target.value)}
-            rows={2}
-            className="input mt-1 h-auto w-full py-1"
+        <label className="flex items-center gap-2 text-neutral-500">
+          <input
+            type="checkbox"
+            defaultChecked={s.ai_can_edit_canon ?? false}
+            onChange={(e) => setAiCanon(e.target.checked)}
           />
+          AI may edit canon
         </label>
-        <div className="flex items-center gap-6">
-          <label className="flex items-center gap-2">
-            <span className="text-neutral-500">Humans author as</span>
-            <Picker
-              value={(authorAs ?? s.humans_author_as ?? "canon") as string}
-              onChange={setAuthorAs}
-              placeholder="canon"
-              items={[
-                { value: "canon", label: "canon" },
-                { value: "draft", label: "draft" },
-              ]}
-            />
-          </label>
-          <label className="flex items-center gap-2 text-neutral-500">
-            <input
-              type="checkbox"
-              defaultChecked={s.ai_can_edit_canon ?? false}
-              onChange={(e) => setAiCanon(e.target.checked)}
-            />
-            AI may edit canon
-          </label>
-        </div>
-        <Button intent="solid" onClick={() => save.mutate()}>
-          Save settings
-        </Button>
-      </Collapsible.Panel>
-    </Collapsible.Root>
+      </div>
+      <Button intent="solid" onClick={() => save.mutate()}>
+        Save settings
+      </Button>
+    </div>
   );
 }
 
-export function WorldAdmin({ worldId }: { worldId: string }) {
-  const qc = useQueryClient();
-  const navigate = useNavigate();
-  const world = useQuery({
-    queryKey: ["world", worldId],
-    queryFn: () => api.getWorld(worldId),
-  });
-  const [title, setTitle] = useState("");
-  const [typeId, setTypeId] = useState("");
-  const create = useMutation({
-    mutationFn: () => api.createEntry(worldId, typeId, title.trim()),
-    onSuccess: (e) => {
-      qc.invalidateQueries({ queryKey: ["entries", worldId] });
-      navigate({ to: "/e/$entryId", params: { entryId: e.id } });
-    },
-  });
+export function SettingsPage({ worldId }: { worldId: string }) {
   return (
-    <div className="space-y-4">
-      <form
-        className="flex gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (title.trim() && typeId) create.mutate();
-        }}
+    <div>
+      <WorldSidebar worldId={worldId} />
+      <div
+        style={{ marginLeft: "var(--sidebar-w)" }}
+        className="max-w-3xl space-y-6 p-6"
       >
-        <Picker
-          value={typeId}
-          onChange={setTypeId}
-          placeholder="Type…"
-          items={(world.data?.types ?? [])
-            .filter((t) => t.name !== "World")
-            .map((t) => ({ value: t.id, label: t.name }))}
-        />
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="New entry title"
-          className="input flex-1"
-        />
-        <Button intent="solid" type="submit" disabled={create.isPending}>
-          Add
-        </Button>
-      </form>
-      <div className="flex items-center gap-2">
-        <a href={`/api/worlds/${worldId}/export`} className="btn">
-          <Download size={12} /> export vault
-        </a>
-        <a
-          href={`/api/worlds/${worldId}/dump`}
-          target="_blank"
-          rel="noreferrer"
-          className="btn"
-        >
-          <Download size={12} /> export dump
-        </a>
+        <h2 className="font-bold">World settings</h2>
+        <WorldSettingsForm worldId={worldId} />
+        <div className="space-y-2 border-t border-neutral-800 pt-4">
+          <h3 className="text-neutral-500">Export</h3>
+          <div className="flex items-center gap-2">
+            <LinkButton href={`/api/worlds/${worldId}/export`}>
+              <Download size={12} /> vault (Obsidian zip)
+            </LinkButton>
+            <LinkButton
+              href={`/api/worlds/${worldId}/dump`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Download size={12} /> dump (JSON fixture)
+            </LinkButton>
+          </div>
+        </div>
       </div>
-      <TypeManager worldId={worldId} />
-      <WorldSettingsPanel worldId={worldId} />
+    </div>
+  );
+}
+
+export function SchemaPage({ worldId }: { worldId: string }) {
+  return (
+    <div>
+      <WorldSidebar worldId={worldId} />
+      <div
+        style={{ marginLeft: "var(--sidebar-w)" }}
+        className="max-w-3xl space-y-6 p-6"
+      >
+        <h2 className="font-bold">Entry types</h2>
+        <TypeManager worldId={worldId} />
+      </div>
     </div>
   );
 }
@@ -175,12 +150,5 @@ export function WorldPage({ worldId }: { worldId: string }) {
       });
     }
   }, [meta, navigate]);
-  if (entries.data && !meta) {
-    return (
-      <div className="mx-auto max-w-3xl p-6">
-        <WorldAdmin worldId={worldId} />
-      </div>
-    );
-  }
   return <EntrySkeleton />;
 }

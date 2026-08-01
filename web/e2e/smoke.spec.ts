@@ -106,12 +106,17 @@ test("draft content promotes to canon", async ({ page, request }) => {
   });
 });
 
-test("sidebar search narrows the list", async ({ page }) => {
+test("sidebar search button opens the palette with ranked results", async ({
+  page,
+}) => {
   await page.goto(`/e/${hero.id}`);
-  await page.locator("nav input").fill("cinder");
-  // Server-side FindRelevant: body matches count too (Vex's body says
-  // "Lives in Cinderford"), so assert ranking, not count.
-  await expect(page.locator("nav ul a").first()).toContainText("Cinderford");
+  await page.getByRole("button", { name: "search…" }).click();
+  const palette = page.locator(".fixed.z-50");
+  await palette.locator("input").fill("cinder");
+  // Server-side FindRelevant: ranked, bodies match too.
+  await expect(
+    palette.getByRole("button", { name: /Cinderford/ }).first(),
+  ).toBeVisible();
 });
 
 test("cmd+K palette jumps to an entry and lists page actions", async ({ page }) => {

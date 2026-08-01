@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Collapsible } from "@base-ui/react/collapsible";
-import { ChevronRight, Plus, TriangleAlert, X } from "lucide-react";
+import { Plus, TriangleAlert, X } from "lucide-react";
 import { api, type FieldDef } from "./api";
 import { Button, Picker, titleCase } from "./ui";
 
@@ -242,15 +241,7 @@ export function TypeManager({ worldId }: { worldId: string }) {
   const [creating, setCreating] = useState(false);
 
   return (
-    <Collapsible.Root className="rounded border border-neutral-800 p-3">
-      <Collapsible.Trigger className="group flex cursor-pointer items-center gap-1 text-neutral-400 hover:text-white">
-        <ChevronRight
-          size={13}
-          className="transition-transform group-data-[panel-open]:rotate-90"
-        />
-        Entry types
-      </Collapsible.Trigger>
-      <Collapsible.Panel className="mt-3 space-y-2">
+    <div className="space-y-2">
         {(world.data?.types ?? [])
           .filter((t) => t.name !== "World")
           .map((t) =>
@@ -282,7 +273,6 @@ export function TypeManager({ worldId }: { worldId: string }) {
             <Plus size={12} /> new type
           </Button>
         )}
-      </Collapsible.Panel>
-    </Collapsible.Root>
+    </div>
   );
 }

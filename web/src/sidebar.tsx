@@ -1,14 +1,11 @@
-import { useLayoutEffect, useRef, useState } from "react";
-import { Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Home } from "lucide-react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Dialog } from "@base-ui/react/dialog";
+import { BookOpen, ChevronRight, Plus, Settings2, Shapes } from "lucide-react";
 import { api, type EntrySummary } from "./api";
-import { useDebounced } from "./use-debounced";
-
-// ---------- World sidebar (Notion-style) ----------
-
 import { appState, setSidebarWidth, sidebarWidth } from "./app-state";
-import { Button } from "./ui";
+import { Button, LinkButton, Picker } from "./ui";
 
 function startSidebarResize(e: React.MouseEvent) {
   e.preventDefault();
@@ -23,6 +20,83 @@ function startSidebarResize(e: React.MouseEvent) {
   window.addEventListener("mouseup", up);
 }
 
+// New-entry dialog, opened from the sidebar's sticky header (and from
+// anywhere via appState.openNewEntry).
+function NewEntryDialog({ worldId }: { worldId: string }) {
+  const qc = useQueryClient();
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const [typeId, setTypeId] = useState("");
+  const world = useQuery({
+    queryKey: ["world", worldId],
+    queryFn: () => api.getWorld(worldId),
+  });
+  useEffect(() => {
+    appState.openNewEntry = () => setOpen(true);
+    return () => {
+      appState.openNewEntry = () => {};
+    };
+  }, []);
+  const create = useMutation({
+    mutationFn: () => api.createEntry(worldId, typeId, title.trim()),
+    onSuccess: (e) => {
+      qc.invalidateQueries({ queryKey: ["entries", worldId] });
+      setOpen(false);
+      setTitle("");
+      navigate({ to: "/e/$entryId", params: { entryId: e.id } });
+    },
+  });
+  return (
+    <>
+      <Button className="btn-add w-full" onClick={() => setOpen(true)}>
+        <Plus size={12} /> new entry
+      </Button>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
+        <Dialog.Portal>
+          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+          <Dialog.Popup className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 outline-none">
+            <Dialog.Title className="font-bold">New entry</Dialog.Title>
+            <form
+              className="mt-3 space-y-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (title.trim() && typeId) create.mutate();
+              }}
+            >
+              <Picker
+                value={typeId}
+                onChange={setTypeId}
+                placeholder="Type…"
+                items={(world.data?.types ?? [])
+                  .filter((t) => t.name !== "World")
+                  .map((t) => ({ value: t.id, label: t.name }))}
+              />
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Title"
+                autoFocus
+                className="input w-full"
+              />
+              <div className="flex justify-end gap-2">
+                <Dialog.Close render={<Button>cancel</Button>} />
+                <Button
+                  intent="solid"
+                  type="submit"
+                  disabled={!title.trim() || !typeId || create.isPending}
+                >
+                  create
+                </Button>
+              </div>
+            </form>
+          </Dialog.Popup>
+        </Dialog.Portal>
+      </Dialog.Root>
+    </>
+  );
+}
+
 export function WorldSidebar({
   worldId,
   currentEntryId,
@@ -30,58 +104,42 @@ export function WorldSidebar({
   worldId: string;
   currentEntryId?: string;
 }) {
-  const navRef = useRef<HTMLElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
-    if (navRef.current) navRef.current.scrollTop = appState.sidebarScroll[worldId] ?? 0;
+    if (listRef.current)
+      listRef.current.scrollTop = appState.sidebarScroll[worldId] ?? 0;
   }, [worldId]);
-  const qc = useQueryClient();
+  const world = useQuery({
+    queryKey: ["world", worldId],
+    queryFn: () => api.getWorld(worldId),
+  });
   const entries = useQuery({
     queryKey: ["entries", worldId],
     queryFn: () => api.listEntries(worldId),
   });
-  // Hover-prefetch: by the time a link is clicked its entry is usually
-  // cached, so navigation renders instantly instead of skeletoning.
+  const qc = useQueryClient();
   const prefetch = (id: string) =>
     qc.prefetchQuery({
       queryKey: ["entry", id],
       queryFn: () => api.getEntry(id),
       staleTime: 15_000,
     });
-  // Filter-as-you-type narrows the list in place; without a query,
-  // groups cap at GROUP_CAP with a per-group "show all" toggle
-  // (Slack-style) so the unfiltered sidebar stays scannable.
+
   const GROUP_CAP = 8;
-  const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-  const q = query.trim();
-  // Search goes through FindRelevant — the same hybrid scorer every
-  // other surface uses — so bodies and fields match, not just titles.
-  const dq = useDebounced(q, 200);
-  const results = useQuery({
-    queryKey: ["search", worldId, dq],
-    queryFn: () => api.search(worldId, dq),
-    enabled: dq !== "",
-    placeholderData: (prev) => prev,
-  });
+  const meta = (entries.data ?? []).find((e) => e.type_name === "World");
+
   const grouped = new Map<string, EntrySummary[]>();
   for (const e of entries.data ?? []) {
-    // The World meta entry is the home link above — one per world,
-    // never listed as a group.
     if (e.type_name === "World") continue;
-    if (q) continue;
     grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
   }
-  const typeNames = [...grouped.keys()].sort((a, b) =>
-    a === "World" ? -1 : b === "World" ? 1 : a.localeCompare(b),
-  );
+  const typeNames = [...grouped.keys()].sort((a, b) => a.localeCompare(b));
+
   return (
     <nav
-      ref={navRef}
-      onScroll={(e) => {
-        appState.sidebarScroll[worldId] = e.currentTarget.scrollTop;
-      }}
       style={{ width: "var(--sidebar-w)" }}
-      className="fixed inset-y-0 left-0 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4"
+      className="fixed inset-y-0 left-0 flex flex-col border-r border-neutral-800 bg-neutral-950"
     >
       <div
         onMouseDown={startSidebarResize}
@@ -99,113 +157,114 @@ export function WorldSidebar({
         className="fixed inset-y-0 z-30 w-1.5 cursor-col-resize hover:bg-neutral-700 focus:bg-neutral-600 focus:outline-none"
         style={{ left: "calc(var(--sidebar-w) - 3px)" }}
       />
-      <Link
-        to="/"
-        className="mb-4 block font-semibold tracking-wide text-white hover:text-white"
-      >
-        Lore
-      </Link>
-      {(() => {
-        // The world's own page IS its meta entry — no separate listing.
-        const meta = (entries.data ?? []).find((e) => e.type_name === "World");
-        return meta ? (
-          <Link
-            to="/e/$entryId"
-            params={{ entryId: meta.id }}
-            className={`mb-3 flex items-center gap-1.5 rounded px-2 py-0.5 font-semibold ${
-              meta.id === currentEntryId
-                ? "bg-neutral-800 text-white"
-                : "text-white hover:text-white"
-            }`}
+
+      {/* Sticky header: brand, world row, search, new entry. */}
+      <div className="shrink-0 space-y-3 border-b border-neutral-800 px-3 py-4">
+        <Link
+          to="/"
+          className="block font-bold tracking-wide text-white hover:text-white"
+        >
+          Lore
+        </Link>
+        <div className="flex items-center gap-1">
+          <span
+            className="min-w-0 flex-1 truncate font-bold"
+            title={world.data?.world.name}
           >
-            <Home size={14} /> {meta.title}
-          </Link>
-        ) : null;
-      })()}
-      <input
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === "Escape") setQuery("");
-        }}
-        placeholder="search…"
-        className="input mb-3 w-full"
-      />
-      {q !== "" && (
-        <ul>
-          {(results.data ?? []).map((r) => (
-            <li key={r.id}>
-              <Link
-                to="/e/$entryId"
-                params={{ entryId: r.id }}
-                onMouseEnter={() => prefetch(r.id)}
-                className={`flex items-center justify-between gap-2 rounded px-2 py-0.5 ${
-                  r.id === currentEntryId
-                    ? "bg-neutral-800 text-white"
-                    : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
-                }`}
-                title={r.card}
-              >
-                <span className="truncate">{r.title}</span>
-                <span className="shrink-0 text-neutral-600">{r.type_name}</span>
-              </Link>
-            </li>
-          ))}
-          {results.data?.length === 0 && (
-            <li className="px-2 text-neutral-600">no matches</li>
+            {world.data?.world.name ?? "…"}
+          </span>
+          {meta && (
+            <Button
+              icon
+              tip="World entry"
+              className="border-transparent"
+              active={meta.id === currentEntryId}
+              onClick={() => appState.navToEntry(meta.id)}
+            >
+              <BookOpen size={13} />
+            </Button>
           )}
-        </ul>
-      )}
-      {typeNames.map((typeName) => {
-        const all = grouped.get(typeName)!;
-        const open = q !== "" || expanded[typeName];
-        const shown = open ? all : all.slice(0, GROUP_CAP);
-        return (
-          <div key={typeName} className="mb-3">
-            <div className="mb-1 text-neutral-600">
-              {typeName}
+          <LinkButton
+            icon
+            tip="World settings & export"
+            className="border-transparent"
+            href={`/w/${worldId}/settings`}
+          >
+            <Settings2 size={13} />
+          </LinkButton>
+          <LinkButton
+            icon
+            tip="Entry types"
+            className="border-transparent"
+            href={`/w/${worldId}/schema`}
+          >
+            <Shapes size={13} />
+          </LinkButton>
+        </div>
+        <Button
+          className="input w-full justify-start border-0 text-neutral-600"
+          onClick={() => appState.openPalette()}
+        >
+          search…
+        </Button>
+        <NewEntryDialog worldId={worldId} />
+      </div>
+
+      {/* Scrollable entry list. */}
+      <div
+        ref={listRef}
+        onScroll={(e) => {
+          appState.sidebarScroll[worldId] = e.currentTarget.scrollTop;
+        }}
+        className="min-h-0 flex-1 overflow-y-auto px-3 py-3"
+      >
+        {typeNames.map((typeName) => {
+          const all = grouped.get(typeName)!;
+          const open = expanded[typeName];
+          const shown = open ? all : all.slice(0, GROUP_CAP);
+          return (
+            <div key={typeName} className="mb-3">
+              <div className="mb-1 text-neutral-600">{typeName}</div>
+              <ul>
+                {shown.map((e) => (
+                  <li key={e.id}>
+                    <Link
+                      to="/e/$entryId"
+                      params={{ entryId: e.id }}
+                      onMouseEnter={() => prefetch(e.id)}
+                      className={`block truncate rounded px-2 py-0.5 ${
+                        e.id === currentEntryId
+                          ? "bg-neutral-800 text-white"
+                          : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+                      }`}
+                      title={e.title}
+                    >
+                      {e.title}
+                      {e.status !== "canon" && (
+                        <span className="ml-1 text-neutral-600">•</span>
+                      )}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              {all.length > GROUP_CAP && (
+                <Button
+                  className="mt-0.5 border-transparent text-neutral-600"
+                  onClick={() => setExpanded({ ...expanded, [typeName]: !open })}
+                >
+                  {open ? (
+                    "show less"
+                  ) : (
+                    <>
+                      show all {all.length} <ChevronRight size={12} />
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
-            <ul>
-              {shown.map((e) => (
-                <li key={e.id}>
-                  <Link
-                    to="/e/$entryId"
-                    params={{ entryId: e.id }}
-                    onMouseEnter={() => prefetch(e.id)}
-                    className={`block truncate rounded px-2 py-0.5 ${
-                      e.id === currentEntryId
-                        ? "bg-neutral-800 text-white"
-                        : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
-                    }`}
-                    title={e.title}
-                  >
-                    {e.title}
-                    {e.status !== "canon" && (
-                      <span className="ml-1 text-neutral-600">•</span>
-                    )}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            {!q && all.length > GROUP_CAP && (
-              <Button
-                className="mt-0.5 border-transparent text-neutral-600"
-                onClick={() =>
-                  setExpanded({ ...expanded, [typeName]: !expanded[typeName] })
-                }
-              >
-                {expanded[typeName] ? (
-                  "show less"
-                ) : (
-                  <>
-                    show all {all.length} <ChevronRight size={12} />
-                  </>
-                )}
-              </Button>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </nav>
   );
 }

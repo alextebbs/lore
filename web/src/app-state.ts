@@ -15,6 +15,10 @@ export const appState = {
   // Router indirection for modules outside the route tree (editor
   // mention chips). main.tsx points this at the real router.
   navToEntry: (id: string) => window.location.assign(`/e/${id}`),
+  // Openers wired by the components that own the UI (palette, sidebar
+  // new-entry dialog) so buttons elsewhere can trigger them.
+  openPalette: () => {},
+  openNewEntry: () => {},
 };
 
 // Sidebar width lives in a CSS variable so the fixed nav and content

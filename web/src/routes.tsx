@@ -10,7 +10,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { CommandPalette } from "./palette";
 import { Button, Tooltip } from "./ui";
-import { WorldPage } from "./world-page";
+import { SchemaPage, SettingsPage, WorldPage } from "./world-page";
 import { EntryPage } from "./entry-page";
 
 const rootRoute = createRootRoute({
@@ -107,7 +107,27 @@ const entryRoute = createRoute({
   },
 });
 
+const settingsRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/w/$worldId/settings",
+  component: function SettingsRoute() {
+    const { worldId } = settingsRoute.useParams();
+    return <SettingsPage key={worldId} worldId={worldId} />;
+  },
+});
+
+const schemaRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/w/$worldId/schema",
+  component: function SchemaRoute() {
+    const { worldId } = schemaRoute.useParams();
+    return <SchemaPage key={worldId} worldId={worldId} />;
+  },
+});
+
 export const routeTree = rootRoute.addChildren([
+  settingsRoute,
+  schemaRoute,
   indexRoute,
   worldRoute,
   entryRoute,
