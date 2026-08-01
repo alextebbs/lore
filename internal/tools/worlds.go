@@ -70,6 +70,10 @@ var builtinTypes = []struct {
 			InverseLabel: "Factions based here",
 		}},
 	}},
+	// Generic concept pages — the Fall, the Fog, a calendar, a law —
+	// worldbuilding that deserves an entry but no bespoke schema. Body
+	// plus the universal related/mentions relations carry everything.
+	{"Lore", nil},
 	// The world's own page: one meta entry per world describes the
 	// setting itself (its body is prime agent context).
 	{"World", nil},

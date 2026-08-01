@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Code, Lock, LockOpen } from "lucide-react";
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import { BubbleMenu } from "@tiptap/react/menus";
 import { Extension, Mark, Node } from "@tiptap/core";
@@ -364,13 +365,13 @@ export function BodyEditor({
       >
         {bubbleBtn(editor.isActive("bold"), () => editor.chain().focus().toggleBold().run(), <b>B</b>, "Bold")}
         {bubbleBtn(editor.isActive("italic"), () => editor.chain().focus().toggleItalic().run(), <i>I</i>, "Italic")}
-        {bubbleBtn(editor.isActive("code"), () => editor.chain().focus().toggleCode().run(), <span>{"<>"}</span>, "Code")}
+        {bubbleBtn(editor.isActive("code"), () => editor.chain().focus().toggleCode().run(), <Code size={13} />, "Code")}
         <span className="h-4 w-px bg-neutral-700" />
         {bubbleBtn(editor.isActive("heading", { level: 1 }), () => editor.chain().focus().toggleHeading({ level: 1 }).run(), "H1", "Heading 1")}
         {bubbleBtn(editor.isActive("heading", { level: 2 }), () => editor.chain().focus().toggleHeading({ level: 2 }).run(), "H2", "Heading 2")}
         <span className="h-4 w-px bg-neutral-700" />
-        {bubbleBtn(editor.isActive("draft"), () => editor.chain().focus().toggleMark("draft").run(), "draft", "Mark selection as draft")}
-        {bubbleBtn(false, () => editor.chain().focus().unsetMark("draft").run(), "✓ canon", "Promote selection to canon")}
+        {bubbleBtn(editor.isActive("draft"), () => editor.chain().focus().toggleMark("draft").run(), <LockOpen size={13} />, "Mark selection as draft")}
+        {bubbleBtn(false, () => editor.chain().focus().unsetMark("draft").run(), <Lock size={13} />, "Promote selection to canon")}
       </BubbleMenu>
 
       <EditorContent editor={editor} />

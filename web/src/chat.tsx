@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Pin, Sparkles, X } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   api,
@@ -54,7 +55,7 @@ function TrayPanel({
   return (
     <div className="space-y-2 border-b border-neutral-800 p-3">
       <div className="flex items-center justify-between text-xs text-neutral-500">
-        <span className="uppercase tracking-wide">Context</span>
+        <span className="tracking-wide">Context</span>
         <span>
           ~{tray.total_tokens} / {tray.budget} tokens
         </span>
@@ -97,7 +98,7 @@ function TrayPanel({
                     }}
                     className="text-sky-500 hover:text-sky-300"
                   >
-                    📌
+                    <Pin size={12} />
                   </button>
                   {conversationId && (
                     <button
@@ -108,7 +109,7 @@ function TrayPanel({
                       }}
                       className="text-neutral-600 hover:text-red-400"
                     >
-                      ×
+                      <X size={12} />
                     </button>
                   )}
                 </>
@@ -123,7 +124,7 @@ function TrayPanel({
                   }}
                   className="text-neutral-600 hover:text-red-400"
                 >
-                  ×
+                  <X size={12} />
                 </button>
               )}
             </div>
@@ -221,7 +222,7 @@ export function ChatPanel({
         onClick={() => setOpen(true)}
         className="fixed bottom-5 right-5 rounded-full bg-neutral-100 px-4 py-2.5 font-medium text-neutral-900 shadow-lg hover:bg-white"
       >
-        ✦ Assistant
+        <Sparkles size={14} /> Assistant
       </button>
     );
   }
@@ -229,7 +230,7 @@ export function ChatPanel({
   return (
     <div className="fixed bottom-0 right-0 top-0 z-10 flex w-96 flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl">
       <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2">
-        <span className="text-sm font-medium">✦ Assistant</span>
+        <span className="flex items-center gap-1.5 text-sm font-medium"><Sparkles size={14} /> Assistant</span>
         <div className="flex gap-2">
           <button
             title="New conversation"
@@ -246,7 +247,7 @@ export function ChatPanel({
             onClick={() => setOpen(false)}
             className="text-neutral-500 hover:text-neutral-300"
           >
-            ×
+            <X size={13} />
           </button>
         </div>
       </div>

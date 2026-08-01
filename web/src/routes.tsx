@@ -14,6 +14,18 @@ import {
   type FieldValue,
   type Revision as RevisionType,
 } from "./api";
+import {
+  ChevronDown,
+  ChevronRight,
+  Download,
+  Home,
+  Lock,
+  LockOpen,
+  Pin,
+  Trash2,
+  TriangleAlert,
+  X,
+} from "lucide-react";
 import { BodyEditor, InlineField } from "./editor";
 import { CommandPalette, usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
@@ -31,6 +43,9 @@ const rootRoute = createRootRoute({
     </div>
   ),
 });
+
+const titleCase = (s: string) =>
+  s.replace(/_/g, " ").replace(/\b[a-z]/g, (c) => c.toUpperCase());
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
@@ -116,6 +131,31 @@ const indexRoute = createRoute({
 // Sidebar scroll survives route remounts (module-scoped, per world).
 const sidebarScroll: Record<string, number> = {};
 
+// Sidebar width lives in a CSS variable so the fixed nav and the
+// content margin stay in lockstep while dragging; persisted per user.
+const SIDEBAR_WIDTH_KEY = "lore:sidebar-width";
+document.documentElement.style.setProperty(
+  "--sidebar-w",
+  `${Number(localStorage.getItem(SIDEBAR_WIDTH_KEY)) || 240}px`,
+);
+
+function startSidebarResize(e: React.MouseEvent) {
+  e.preventDefault();
+  const move = (ev: MouseEvent) => {
+    const w = Math.min(480, Math.max(180, ev.clientX));
+    document.documentElement.style.setProperty("--sidebar-w", `${w}px`);
+    localStorage.setItem(SIDEBAR_WIDTH_KEY, String(w));
+  };
+  const up = () => {
+    window.removeEventListener("mousemove", move);
+    window.removeEventListener("mouseup", up);
+    document.body.style.cursor = "";
+  };
+  document.body.style.cursor = "col-resize";
+  window.addEventListener("mousemove", move);
+  window.addEventListener("mouseup", up);
+}
+
 function WorldSidebar({
   worldId,
   currentEntryId,
@@ -152,8 +192,15 @@ function WorldSidebar({
       onScroll={(e) => {
         sidebarScroll[worldId] = e.currentTarget.scrollTop;
       }}
-      className="fixed inset-y-0 left-0 w-60 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4 text-sm"
+      style={{ width: "var(--sidebar-w)" }}
+      className="fixed inset-y-0 left-0 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4 text-sm"
     >
+      <div
+        onMouseDown={startSidebarResize}
+        title="Drag to resize"
+        className="fixed inset-y-0 z-30 w-1.5 cursor-col-resize hover:bg-neutral-700"
+        style={{ left: "calc(var(--sidebar-w) - 3px)" }}
+      />
       <Link
         to="/"
         className="mb-4 block text-lg font-semibold tracking-wide text-neutral-100 hover:text-white"
@@ -163,9 +210,9 @@ function WorldSidebar({
       <Link
         to="/w/$worldId"
         params={{ worldId }}
-        className="mb-3 block font-semibold text-neutral-200 hover:text-white"
+        className="mb-3 flex items-center gap-1.5 font-semibold text-neutral-200 hover:text-white"
       >
-        ⌂ Overview
+        <Home size={14} /> Overview
       </Link>
       <input
         value={query}
@@ -185,7 +232,7 @@ function WorldSidebar({
         const shown = open ? all : all.slice(0, GROUP_CAP);
         return (
           <div key={typeName} className="mb-3">
-            <div className="mb-1 text-xs uppercase tracking-wide text-neutral-600">
+            <div className="mb-1 text-xs text-neutral-600">
               {typeName}
             </div>
             <ul>
@@ -215,11 +262,15 @@ function WorldSidebar({
                 onClick={() =>
                   setExpanded({ ...expanded, [typeName]: !expanded[typeName] })
                 }
-                className="mt-0.5 px-2 text-xs text-neutral-600 hover:text-neutral-300"
+                className="mt-0.5 inline-flex items-center gap-1 px-2 text-xs text-neutral-600 hover:text-neutral-300"
               >
-                {expanded[typeName]
-                  ? "show less"
-                  : `show all ${all.length} ▸`}
+                {expanded[typeName] ? (
+                  "show less"
+                ) : (
+                  <>
+                    show all {all.length} <ChevronRight size={12} />
+                  </>
+                )}
               </button>
             )}
           </div>
@@ -259,7 +310,7 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
       </summary>
       <div className="mt-3 space-y-3">
         <label className="block">
-          <span className="text-xs uppercase tracking-wide text-neutral-500">
+          <span className="text-xs text-neutral-500">
             Vibe — global context for the AI ("It's Elden Ring", …)
           </span>
           <textarea
@@ -270,7 +321,7 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
           />
         </label>
         <label className="block">
-          <span className="text-xs uppercase tracking-wide text-neutral-500">
+          <span className="text-xs text-neutral-500">
             Style prompt — primes AI writing (e.g. WoTC sourcebook voice)
           </span>
           <textarea
@@ -282,7 +333,7 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
         </label>
         <div className="flex items-center gap-6">
           <label className="flex items-center gap-2">
-            <span className="text-xs uppercase text-neutral-500">
+            <span className="text-xs text-neutral-500">
               Humans author as
             </span>
             <select
@@ -300,7 +351,7 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
               defaultChecked={s.ai_can_edit_canon ?? false}
               onChange={(e) => setAiCanon(e.target.checked)}
             />
-            <span className="text-xs uppercase text-neutral-500">
+            <span className="text-xs text-neutral-500">
               AI can modify/delete canon
             </span>
           </label>
@@ -398,21 +449,21 @@ function WorldPage() {
   return (
     <div>
       <WorldSidebar worldId={worldId} />
-      <div className="ml-60 max-w-4xl space-y-6 p-6">
+      <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{world.data?.world.name}</h2>
         <a
           href={`/api/worlds/${worldId}/export`}
-          className="text-xs text-neutral-500 hover:text-neutral-300"
+          className="flex items-center gap-1.5 text-xs text-neutral-500 hover:text-neutral-300"
           title="Download Obsidian-style vault (zip)"
         >
-          ⇩ export vault
+          <Download size={12} /> export vault
         </a>
       </div>
 
       {[...grouped.entries()].map(([typeName, list]) => (
         <section key={typeName}>
-          <h3 className="mb-2 text-sm font-medium uppercase tracking-wide text-neutral-500">
+          <h3 className="mb-2 text-sm font-medium text-neutral-500">
             {typeName}
           </h3>
           <ul className="space-y-1">
@@ -576,10 +627,10 @@ function RelationsPanel({
         return (
           <div key={secKey} className="flex gap-3">
             <div
-              className="w-44 shrink-0 truncate pt-2 text-xs uppercase tracking-wide text-neutral-500"
+              className="w-44 shrink-0 truncate pt-2 text-right text-xs text-neutral-500"
               title={sec.label || sec.field}
             >
-              {sec.label || sec.field}
+              {titleCase(sec.label || sec.field)}
             </div>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
               {(sec.edges ?? []).map((edge) => (
@@ -624,7 +675,11 @@ function RelationsPanel({
                           }
                           className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
                         >
-                          {edge.status === "draft" ? "🔒" : "🔓"}
+                          {edge.status === "draft" ? (
+                            <Lock size={13} />
+                          ) : (
+                            <LockOpen size={13} />
+                          )}
                         </button>
                         <span className="h-4 w-px bg-neutral-700" />
                         <button
@@ -633,7 +688,7 @@ function RelationsPanel({
                           onClick={() => remove.mutate(edge.id)}
                           className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
                         >
-                          ×
+                          <X size={13} />
                         </button>
                       </span>
                     </span>
@@ -678,7 +733,7 @@ function RelationsPanel({
                     onClick={() => setAdding(null)}
                     className="px-1 text-neutral-500"
                   >
-                    ×
+                    <X size={13} />
                   </button>
                 </form>
               ) : (
@@ -706,7 +761,9 @@ function RelationsPanel({
       {warnings.length > 0 && (
         <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-2 text-xs text-amber-300">
           {warnings.map((w) => (
-            <li key={w}>⚠ {w}</li>
+            <li key={w} className="flex items-center gap-1.5">
+              <TriangleAlert size={12} /> {w}
+            </li>
           ))}
         </ul>
       )}
@@ -966,7 +1023,7 @@ function EntryPage() {
   return (
     <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
-      <div className="ml-60 max-w-4xl space-y-5 p-6">
+      <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-5 p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
@@ -976,7 +1033,7 @@ function EntryPage() {
           >
             ← {world.data?.world.name ?? "world"}
           </Link>
-          <span className="text-xs uppercase tracking-wide text-neutral-600">
+          <span className="text-xs text-neutral-600">
             {e.type_name}
           </span>
         </div>
@@ -986,7 +1043,7 @@ function EntryPage() {
             className="rounded-lg border border-neutral-700 px-2 py-1 text-sm text-neutral-500 hover:text-neutral-300"
             title="Export as Markdown"
           >
-            ⇩
+            <Download size={14} />
           </a>
           <button
             title="Delete entry"
@@ -998,7 +1055,7 @@ function EntryPage() {
             }}
             className="rounded-lg border border-neutral-800 px-2 py-1 text-sm text-neutral-600 hover:border-red-900 hover:text-red-400"
           >
-            🗑
+            <Trash2 size={14} />
           </button>
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
@@ -1031,9 +1088,9 @@ function EntryPage() {
           // status distinction the content itself makes).
           const tone = fv?.status === "draft" ? "text-neutral-500" : "";
           const label = (
-            <div className="flex w-44 shrink-0 items-start gap-2 pt-1 text-xs uppercase tracking-wide text-neutral-500">
+            <div className="flex w-44 shrink-0 items-start justify-end gap-2 pt-1 text-right text-xs text-neutral-500">
               <span className="truncate" title={name}>
-                {name}
+                {titleCase(name)}
               </span>
               {fv && fv.status === "draft" && (
                 <button
@@ -1154,7 +1211,9 @@ function EntryPage() {
       {warnings.length > 0 && (
         <ul className="rounded-lg border border-amber-900 bg-amber-950/40 p-3 text-sm text-amber-300">
           {warnings.map((w) => (
-            <li key={w}>⚠ {w}</li>
+            <li key={w} className="flex items-center gap-1.5">
+              <TriangleAlert size={12} /> {w}
+            </li>
           ))}
         </ul>
       )}
@@ -1169,9 +1228,10 @@ function EntryPage() {
         </span>
         <button
           onClick={() => setShowHistory(!showHistory)}
-          className="text-neutral-500 hover:text-neutral-300"
+          className="inline-flex items-center gap-1 text-neutral-500 hover:text-neutral-300"
         >
-          {revisions.data?.length ?? 0} revisions {showHistory ? "▾" : "▸"}
+          {revisions.data?.length ?? 0} revisions{" "}
+          {showHistory ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
         </button>
       </div>
 
@@ -1221,7 +1281,7 @@ function PinButton({ worldId, entryId }: { worldId: string; entryId: string }) {
           : "border-neutral-700 text-neutral-500 hover:text-neutral-300"
       }`}
     >
-      📌
+      <Pin size={14} />
     </button>
   );
 }
@@ -1229,7 +1289,12 @@ function PinButton({ worldId, entryId }: { worldId: string; entryId: string }) {
 const entryRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: "/e/$entryId",
-  component: EntryPage,
+  // Key by entryId: navigating entry→entry must remount, or a pending
+  // debounced autosave from the old entry writes onto the new one.
+  component: function EntryRoute() {
+    const { entryId } = entryRoute.useParams();
+    return <EntryPage key={entryId} />;
+  },
 });
 
 export const routeTree = rootRoute.addChildren([

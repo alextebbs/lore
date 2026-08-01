@@ -19,6 +19,7 @@
     "@tiptap/react": "^3.29.2",
     "@tiptap/starter-kit": "^3.29.2",
     "@tiptap/suggestion": "^3.29.2",
+    "lucide-react": "^1.28.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

@@ -28,6 +28,13 @@ samp {
   font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/* One type size, one rhythm — everywhere, no matter what. Headings,
+   titles, and labels differentiate by weight and color only. */
+* {
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+}
+
 /* TipTap placeholder (invisible-editor empty state) */
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
@@ -37,10 +44,10 @@ samp {
   color: oklch(0.4 0 0);
 }
 
-/* Invisible editor typography */
-.tiptap h1 { font-size: 1.5rem; font-weight: 600; margin: 0.75rem 0 0.25rem; }
-.tiptap h2 { font-size: 1.25rem; font-weight: 600; margin: 0.6rem 0 0.2rem; }
-.tiptap h3 { font-size: 1.1rem; font-weight: 600; margin: 0.5rem 0 0.15rem; }
+/* Invisible editor typography (single type size — weight only) */
+.tiptap h1 { font-weight: 700; margin: 0.75rem 0 0.25rem; }
+.tiptap h2 { font-weight: 600; margin: 0.6rem 0 0.2rem; }
+.tiptap h3 { font-weight: 600; margin: 0.5rem 0 0.15rem; text-decoration: underline; }
 .tiptap p { margin: 0.35rem 0; }
 .tiptap ul { list-style: disc; padding-left: 1.25rem; }
 .tiptap ol { list-style: decimal; padding-left: 1.25rem; }

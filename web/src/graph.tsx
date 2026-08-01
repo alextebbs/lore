@@ -110,7 +110,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-xs uppercase tracking-wide text-neutral-500">
+        <span className="text-xs text-neutral-500">
           Connections
         </span>
         <div className="flex gap-1 text-xs">
