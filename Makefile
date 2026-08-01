@@ -54,3 +54,6 @@ fixture-dump:
 
 tools-docs: ## regenerate the TOOLS.md capability table from the registry
 	go run ./cmd/gentools
+
+e2e: ## run the Playwright smoke suite (needs dev servers running)
+	cd web && npx playwright test
