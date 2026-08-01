@@ -21,7 +21,7 @@ import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
-import { EntrySkeleton, StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
+import { Confirm, EntrySkeleton, IconTip, StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { RelationsPanel } from "./relations";
 
@@ -335,25 +335,28 @@ export function EntryPage({ entryId }: { entryId: string }) {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <a
-            href={`/api/entries/${e.id}/export`}
-            className="rounded-lg border border-neutral-700 px-2 py-1 text-sm text-neutral-500 hover:text-neutral-300"
-            title="Export as Markdown"
-          >
-            <Download size={14} />
-          </a>
-          <button
-            title="Delete entry"
-            onClick={async () => {
-              if (confirm(`Delete "${e.title}"?`)) {
-                await api.deleteEntry(e.id);
-                navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
-              }
+          <IconTip label="Export as Markdown">
+            <a
+              href={`/api/entries/${e.id}/export`}
+              className="rounded-lg border border-neutral-700 px-2 py-1 text-sm text-neutral-500 hover:text-neutral-300"
+            >
+              <Download size={14} />
+            </a>
+          </IconTip>
+          <Confirm
+            title={`Delete "${e.title}"?`}
+            body="The entry, its revisions, and its relations go with it."
+            actionLabel="delete"
+            onConfirm={async () => {
+              await api.deleteEntry(e.id);
+              navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
             }}
-            className="rounded-lg border border-neutral-800 px-2 py-1 text-sm text-neutral-600 hover:border-red-900 hover:text-red-400"
-          >
-            <Trash2 size={14} />
-          </button>
+            trigger={
+              <button className="rounded-lg border border-neutral-800 px-2 py-1 text-sm text-neutral-600 hover:border-red-900 hover:text-red-400">
+                <Trash2 size={14} />
+              </button>
+            }
+          />
           <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (

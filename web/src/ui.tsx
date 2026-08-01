@@ -59,3 +59,139 @@ export function EntrySkeleton() {
     </div>
   );
 }
+
+// ---- Base UI, spartan-styled -------------------------------------------
+// Primitives supply behavior (focus, ARIA, positioning, dismissal); the
+// design language stays ours: mono, one type size, neutral surfaces.
+
+import { AlertDialog } from "@base-ui/react/alert-dialog";
+import { Select } from "@base-ui/react/select";
+import { Tooltip } from "@base-ui/react/tooltip";
+import type { ReactElement, ReactNode } from "react";
+
+export const surface =
+  "rounded-lg border border-neutral-700 bg-neutral-900 shadow-xl";
+
+// Confirm replaces window.confirm: a real focus-trapped dialog.
+export function Confirm({
+  trigger,
+  title,
+  body,
+  actionLabel,
+  onConfirm,
+}: {
+  trigger: ReactElement;
+  title: string;
+  body?: string;
+  actionLabel: string;
+  onConfirm: () => void;
+}) {
+  return (
+    <AlertDialog.Root>
+      <AlertDialog.Trigger render={trigger} />
+      <AlertDialog.Portal>
+        <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+        <AlertDialog.Popup
+          className={`fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 ${surface}`}
+        >
+          <AlertDialog.Title className="font-semibold">
+            {title}
+          </AlertDialog.Title>
+          {body && (
+            <AlertDialog.Description className="mt-1 text-neutral-400">
+              {body}
+            </AlertDialog.Description>
+          )}
+          <div className="mt-4 flex justify-end gap-2">
+            <AlertDialog.Close className="rounded border border-neutral-700 px-3 py-1 text-neutral-400 hover:text-neutral-200">
+              cancel
+            </AlertDialog.Close>
+            <AlertDialog.Close
+              onClick={onConfirm}
+              className="rounded border border-red-900 px-3 py-1 text-red-400 hover:bg-red-950"
+            >
+              {actionLabel}
+            </AlertDialog.Close>
+          </div>
+        </AlertDialog.Popup>
+      </AlertDialog.Portal>
+    </AlertDialog.Root>
+  );
+}
+
+// IconTip wraps an icon-only control with an accessible tooltip.
+export function IconTip({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactElement;
+}) {
+  return (
+    <Tooltip.Root>
+      <Tooltip.Trigger render={children} aria-label={label} />
+      <Tooltip.Portal>
+        <Tooltip.Positioner side="bottom" sideOffset={6}>
+          <Tooltip.Popup className={`px-2 py-1 text-xs text-neutral-300 ${surface}`}>
+            {label}
+          </Tooltip.Popup>
+        </Tooltip.Positioner>
+      </Tooltip.Portal>
+    </Tooltip.Root>
+  );
+}
+
+export { Tooltip };
+
+// Picker: the app's one Select style.
+export function Picker<T extends string>({
+  value,
+  onChange,
+  items,
+  placeholder,
+  autoFocus,
+}: {
+  value: T | "";
+  onChange: (v: T) => void;
+  items: { value: T; label: ReactNode }[];
+  placeholder: string;
+  autoFocus?: boolean;
+}) {
+  return (
+    <Select.Root
+      value={value === "" ? null : value}
+      onValueChange={(v) => v != null && onChange(v as T)}
+    >
+      <Select.Trigger
+        autoFocus={autoFocus}
+        className="flex min-w-40 items-center justify-between gap-2 rounded border border-neutral-700 bg-neutral-900 px-2 py-1 data-[popup-open]:border-neutral-500"
+      >
+        <Select.Value className="truncate">
+          {(v: T | null) =>
+            v == null ? (
+              <span className="text-neutral-600">{placeholder}</span>
+            ) : (
+              (items.find((i) => i.value === v)?.label ?? v)
+            )
+          }
+        </Select.Value>
+        <Select.Icon className="text-neutral-600">▾</Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Positioner sideOffset={4} className="z-50">
+          <Select.Popup className={`max-h-72 overflow-y-auto py-1 ${surface}`}>
+            {items.map((i) => (
+              <Select.Item
+                key={i.value}
+                value={i.value}
+                className="cursor-default px-3 py-1 data-[highlighted]:bg-neutral-800 data-[selected]:text-white"
+              >
+                <Select.ItemText>{i.label}</Select.ItemText>
+              </Select.Item>
+            ))}
+          </Select.Popup>
+        </Select.Positioner>
+      </Select.Portal>
+    </Select.Root>
+  );
+}

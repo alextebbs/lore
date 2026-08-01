@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Dialog } from "@base-ui/react/dialog";
 import { useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "./api";
@@ -65,8 +66,6 @@ export function CommandPalette() {
     enabled: open && !!snap.worldId,
   });
 
-  if (!open) return null;
-
   const q = query.trim().toLowerCase();
   const rows = [
     ...snap.commands
@@ -94,14 +93,13 @@ export function CommandPalette() {
   };
 
   return (
-    <div
-      className="fixed inset-0 z-50 bg-black/50 pt-[15vh]"
-      onMouseDown={() => setOpen(false)}
-    >
-      <div
-        className="mx-auto w-full max-w-lg overflow-hidden rounded-xl border border-neutral-700 bg-neutral-900 shadow-2xl"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+        <Dialog.Popup
+          className="fixed left-1/2 top-[15vh] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 shadow-2xl outline-none"
+          aria-label="Command palette"
+        >
         <input
           ref={inputRef}
           value={query}
@@ -150,8 +148,9 @@ export function CommandPalette() {
               </span>
             </button>
           ))}
-        </div>
-      </div>
-    </div>
+          </div>
+        </Dialog.Popup>
+      </Dialog.Portal>
+    </Dialog.Root>
   );
 }

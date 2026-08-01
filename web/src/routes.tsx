@@ -9,17 +9,20 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { CommandPalette } from "./palette";
+import { Tooltip } from "./ui";
 import { WorldPage } from "./world-page";
 import { EntryPage } from "./entry-page";
 
 const rootRoute = createRootRoute({
   component: () => (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <main>
-        <Outlet />
-      </main>
-      <CommandPalette />
-    </div>
+    <Tooltip.Provider delay={400}>
+      <div className="min-h-screen bg-neutral-950 text-neutral-100">
+        <main>
+          <Outlet />
+        </main>
+        <CommandPalette />
+      </div>
+    </Tooltip.Provider>
   ),
 });
 

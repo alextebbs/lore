@@ -2,8 +2,9 @@ import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Lock, LockOpen, TriangleAlert, X } from "lucide-react";
+import { PreviewCard } from "@base-ui/react/preview-card";
 import { api, type Entry } from "./api";
-import { titleCase } from "./ui";
+import { Picker, surface, titleCase } from "./ui";
 
 export function RelationsPanel({
   entry,
@@ -104,68 +105,82 @@ export function RelationsPanel({
               {titleCase(sec.label || sec.field)}
             </div>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-              {(sec.edges ?? []).map((edge) => (
-                <span
-                  key={edge.id}
-                  className={`group relative flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
-                    edge.status === "draft"
-                      ? "border-neutral-800 text-neutral-500"
-                      : "border-neutral-700"
-                  }`}
-                >
-                  <Link
-                    to="/e/$entryId"
-                    params={{ entryId: edge.to.id }}
-                    className="hover:underline"
+              {(sec.edges ?? []).map((edge) => {
+                const pill = (
+                  <span
+                    className={`group relative flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
+                      edge.status === "draft"
+                        ? "border-neutral-800 text-neutral-500"
+                        : "border-neutral-700"
+                    }`}
                   >
-                    {edge.to.title}
-                  </Link>
-                  {edge.annotation && (
-                    <span className="text-xs text-neutral-500">
-                      — {edge.annotation}
-                    </span>
-                  )}
-                  {/* Hover controls float below the pill — no layout
-                      shift. The pt-1 wrapper bridges the hover gap. */}
-                  {!system && (
-                    <span className="invisible absolute left-0 top-full z-20 pt-1 group-hover:visible group-focus-within:visible">
-                      <span className="flex items-center overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 text-xs shadow-xl">
-                        <button
-                          type="button"
-                          title={
-                            edge.status === "draft"
-                              ? "Lock as canon"
-                              : "Unlock to draft"
-                          }
-                          onClick={() =>
-                            setStatus.mutate({
-                              id: edge.id,
-                              status:
-                                edge.status === "draft" ? "canon" : "draft",
-                            })
-                          }
-                          className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
-                        >
-                          {edge.status === "draft" ? (
-                            <Lock size={13} />
-                          ) : (
-                            <LockOpen size={13} />
-                          )}
-                        </button>
-                        <span className="h-4 w-px bg-neutral-700" />
-                        <button
-                          type="button"
-                          title="Remove relation"
-                          onClick={() => remove.mutate(edge.id)}
-                          className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
-                        >
-                          <X size={13} />
-                        </button>
+                    <Link
+                      to="/e/$entryId"
+                      params={{ entryId: edge.to.id }}
+                      className="hover:underline"
+                    >
+                      {edge.to.title}
+                    </Link>
+                    {edge.annotation && (
+                      <span className="text-xs text-neutral-500">
+                        — {edge.annotation}
                       </span>
-                    </span>
-                  )}
-                </span>
-              ))}
+                    )}
+                  </span>
+                );
+                if (system) return <span key={edge.id}>{pill}</span>;
+                // Hover/focus controls anchor below the pill (Base UI
+                // PreviewCard: positioning, hover intent, dismissal).
+                return (
+                  <PreviewCard.Root key={edge.id}>
+                    <PreviewCard.Trigger render={pill} delay={150} />
+                    <PreviewCard.Portal>
+                      <PreviewCard.Positioner
+                        side="bottom"
+                        align="start"
+                        sideOffset={4}
+                        className="z-30"
+                      >
+                        <PreviewCard.Popup
+                          className={`flex items-center overflow-hidden text-xs ${surface}`}
+                        >
+                          <button
+                            type="button"
+                            title={
+                              edge.status === "draft"
+                                ? "Lock as canon"
+                                : "Unlock to draft"
+                            }
+                            onClick={() =>
+                              setStatus.mutate({
+                                id: edge.id,
+                                status:
+                                  edge.status === "draft" ? "canon" : "draft",
+                              })
+                            }
+                            className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                          >
+                            {edge.status === "draft" ? (
+                              <Lock size={13} />
+                            ) : (
+                              <LockOpen size={13} />
+                            )}
+                          </button>
+                          <span className="h-4 w-px bg-neutral-700" />
+                          <button
+                            type="button"
+                            title="Remove relation"
+                            onClick={() => remove.mutate(edge.id)}
+                            className="px-2 py-1 text-neutral-400 hover:bg-neutral-800 hover:text-red-400"
+                          >
+                            <X size={13} />
+                          </button>
+                        </PreviewCard.Popup>
+                      </PreviewCard.Positioner>
+                    </PreviewCard.Portal>
+                  </PreviewCard.Root>
+                );
+              })}
               {system ? null : adding === secKey ? (
                 <form
                   className="flex items-center gap-1"
@@ -175,19 +190,16 @@ export function RelationsPanel({
                       create.mutate({ field: sec.field, reverse: sec.reverse });
                   }}
                 >
-                  <select
+                  <Picker
                     value={target}
-                    onChange={(e) => setTarget(e.target.value)}
-                    className="rounded border border-neutral-700 bg-neutral-900 px-2 py-1 text-sm"
+                    onChange={setTarget}
+                    placeholder="choose…"
                     autoFocus
-                  >
-                    <option value="">choose…</option>
-                    {candidates.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.title} ({c.type_name})
-                      </option>
-                    ))}
-                  </select>
+                    items={candidates.map((c) => ({
+                      value: c.id,
+                      label: `${c.title} (${c.type_name})`,
+                    }))}
+                  />
                   {sec.config?.annotations && (
                     <input
                       value={note}

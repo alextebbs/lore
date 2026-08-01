@@ -134,7 +134,8 @@ test("relations add and remove from the reverse side", async ({ page }) => {
   // from the Character instead, then remove from the Place side.
   await page.goto(`/e/${hero.id}`);
   await page.getByTitle("Add hometown").click();
-  await page.locator("select").selectOption({ label: "Cinderford (Place)" });
+  await page.getByRole("combobox").click();
+  await page.getByRole("option", { name: "Cinderford (Place)" }).click();
   await page.getByRole("button", { name: "add", exact: true }).click();
   const pill = page.locator("span.group.relative", { hasText: "Cinderford" });
   await expect(pill).toBeVisible();
@@ -148,7 +149,9 @@ test("relations add and remove from the reverse side", async ({ page }) => {
     hasText: "Vex the Unready",
   });
   await expect(revPill).toBeVisible();
+  // The action popup renders in a portal (Base UI PreviewCard) — hover
+  // the pill, then find the control at page level.
   await revPill.hover();
-  await revPill.getByTitle("Remove relation").click();
+  await page.getByTitle("Remove relation").click();
   await expect(revPill).toBeHidden();
 });

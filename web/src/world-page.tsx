@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Download } from "lucide-react";
+import { ChevronRight, Download } from "lucide-react";
+import { Collapsible } from "@base-ui/react/collapsible";
 import { api, type EntrySummary } from "./api";
-import { StatusBadge } from "./ui";
+import { Picker, StatusBadge } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { ChatPanel } from "./chat";
 import { usePageCommands } from "./palette";
@@ -32,11 +33,15 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ["world", worldId] }),
   });
   return (
-    <details className="rounded-lg border border-neutral-800 p-3 text-sm">
-      <summary className="cursor-pointer text-neutral-400">
+    <Collapsible.Root className="rounded-lg border border-neutral-800 p-3 text-sm">
+      <Collapsible.Trigger className="group flex cursor-pointer items-center gap-1 text-neutral-400 hover:text-neutral-200">
+        <ChevronRight
+          size={13}
+          className="transition-transform group-data-[panel-open]:rotate-90"
+        />
         World settings
-      </summary>
-      <div className="mt-3 space-y-3">
+      </Collapsible.Trigger>
+      <Collapsible.Panel className="mt-3 space-y-3">
         <label className="block">
           <span className="text-xs text-neutral-500">
             Vibe — global context for the AI ("It's Elden Ring", …)
@@ -104,8 +109,8 @@ function WorldSettingsPanel({ worldId }: { worldId: string }) {
             delete world
           </button>
         </div>
-      </div>
-    </details>
+      </Collapsible.Panel>
+    </Collapsible.Root>
   );
 }
 
@@ -220,18 +225,15 @@ export function WorldPage({ worldId }: { worldId: string }) {
           if (title.trim() && typeId) create.mutate();
         }}
       >
-        <select
+        <Picker
           value={typeId}
-          onChange={(e) => setTypeId(e.target.value)}
-          className="rounded-lg border border-neutral-700 bg-neutral-900 px-3 py-2"
-        >
-          <option value="">Type…</option>
-          {world.data?.types.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.name}
-            </option>
-          ))}
-        </select>
+          onChange={setTypeId}
+          placeholder="Type…"
+          items={(world.data?.types ?? []).map((t) => ({
+            value: t.id,
+            label: t.name,
+          }))}
+        />
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
