@@ -1,13 +1,31 @@
 @import "tailwindcss";
 
+@theme {
+  /* IBM Plex Mono everywhere — both Tailwind families point at it, so
+     font-sans and font-mono utilities resolve identically. */
+  --font-sans: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
 :root {
   /* Dark-only app: tells the browser not to apply auto-dark/light
      heuristics, and themes scrollbars/form controls to match. */
   color-scheme: dark;
 }
 
-body {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+/* No exceptions: form controls and code blocks included. */
+html,
+body,
+button,
+input,
+optgroup,
+select,
+textarea,
+code,
+kbd,
+pre,
+samp {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
 /* TipTap placeholder (invisible-editor empty state) */
