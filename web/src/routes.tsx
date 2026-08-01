@@ -129,8 +129,16 @@ function WorldSidebar({
     queryKey: ["entries", worldId],
     queryFn: () => api.listEntries(worldId),
   });
+  // Filter-as-you-type narrows the list in place; without a query,
+  // groups cap at GROUP_CAP with a per-group "show all" toggle
+  // (Slack-style) so the unfiltered sidebar stays scannable.
+  const GROUP_CAP = 8;
+  const [query, setQuery] = useState("");
+  const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+  const q = query.trim().toLowerCase();
   const grouped = new Map<string, EntrySummary[]>();
   for (const e of entries.data ?? []) {
+    if (q && !e.title.toLowerCase().includes(q)) continue;
     grouped.set(e.type_name, [...(grouped.get(e.type_name) ?? []), e]);
   }
   const typeNames = [...grouped.keys()].sort((a, b) =>
@@ -157,34 +165,64 @@ function WorldSidebar({
       >
         ⌂ Overview
       </Link>
-      {typeNames.map((typeName) => (
-        <div key={typeName} className="mb-3">
-          <div className="mb-1 text-xs uppercase tracking-wide text-neutral-600">
-            {typeName}
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Escape") setQuery("");
+        }}
+        placeholder="search…"
+        className="mb-3 w-full rounded bg-neutral-900 px-2 py-1 text-sm outline-none placeholder:text-neutral-600 focus:bg-neutral-800"
+      />
+      {q && typeNames.length === 0 && (
+        <div className="text-neutral-600">no matches</div>
+      )}
+      {typeNames.map((typeName) => {
+        const all = grouped.get(typeName)!;
+        const open = q !== "" || expanded[typeName];
+        const shown = open ? all : all.slice(0, GROUP_CAP);
+        return (
+          <div key={typeName} className="mb-3">
+            <div className="mb-1 text-xs uppercase tracking-wide text-neutral-600">
+              {typeName}
+            </div>
+            <ul>
+              {shown.map((e) => (
+                <li key={e.id}>
+                  <Link
+                    to="/e/$entryId"
+                    params={{ entryId: e.id }}
+                    className={`block truncate rounded px-2 py-0.5 ${
+                      e.id === currentEntryId
+                        ? "bg-neutral-800 text-white"
+                        : "text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                    }`}
+                    title={e.title}
+                  >
+                    {e.title}
+                    {e.status !== "canon" && (
+                      <span className="ml-1 text-neutral-600">•</span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            {!q && all.length > GROUP_CAP && (
+              <button
+                type="button"
+                onClick={() =>
+                  setExpanded({ ...expanded, [typeName]: !expanded[typeName] })
+                }
+                className="mt-0.5 px-2 text-xs text-neutral-600 hover:text-neutral-300"
+              >
+                {expanded[typeName]
+                  ? "show less"
+                  : `show all ${all.length} ▸`}
+              </button>
+            )}
           </div>
-          <ul>
-            {grouped.get(typeName)!.map((e) => (
-              <li key={e.id}>
-                <Link
-                  to="/e/$entryId"
-                  params={{ entryId: e.id }}
-                  className={`block truncate rounded px-2 py-0.5 ${
-                    e.id === currentEntryId
-                      ? "bg-neutral-800 text-white"
-                      : "text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
-                  }`}
-                  title={e.title}
-                >
-                  {e.title}
-                  {e.status !== "canon" && (
-                    <span className="ml-1 text-neutral-600">•</span>
-                  )}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }
