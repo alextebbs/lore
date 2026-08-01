@@ -437,7 +437,7 @@ export function InlineField({
     editorProps: {
       attributes: {
         class:
-          "w-full rounded px-1 py-0.5 outline-none hover:bg-neutral-900 focus:bg-neutral-900",
+          "w-full rounded px-1 py-[2.8px] outline-none hover:bg-neutral-900 focus:bg-neutral-900",
       },
       handleClickOn: mentionNavigate,
     },

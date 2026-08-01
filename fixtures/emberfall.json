@@ -1023,7 +1023,20 @@
                         "type": "paragraph",
                         "content": [
                             {
-                                "text": "Briar carves combs, dice, and flutes from the fallen chips of the great skeleton \u2014 never cutting, only gathering what the beast sheds the way a forest sheds branches. Their flutes have a low double note that other bone cannot make. A Brinemarket dealer offered them a year's wages for exclusive supply, and Briar, who had been to Brinemarket exactly once, said no in a way that ended the conversation.",
+                                "text": "Briar carves combs, dice,",
+                                "type": "text",
+                                "marks": [
+                                    {
+                                        "type": "draft"
+                                    }
+                                ]
+                            },
+                            {
+                                "text": " and flutes from the fallen chips of the great skeleton \u2014 never cutting, only gathering what the beast sheds the way a forest sheds branches. Their flutes have a low double note that other bone cannot make. A Brinemarket dealer offered them a year's wages for exclusive supply, and Briar, who had been to Brinemarket exactly once, said no in a way that",
+                                "type": "text"
+                            },
+                            {
+                                "text": " ended the conversation.",
                                 "type": "text",
                                 "marks": [
                                     {
@@ -1149,7 +1162,7 @@
                         "type": "paragraph",
                         "content": [
                             {
-                                "text": "No one remembers Brother Tallow young, including, he says cheerfully, himself. He repairs bridges, marries travelers, buries the road's unclaimed dead, and walks \u2014 always \u2014 with a gait that eats miles without hurry, as if distance had agreed to meet him halfway. In his coin-purse he carries a single coin that every shrine of Mother Meridian politely refuses. ",
+                                "text": "No one remembers Brother Tallow young, including, he says cheerfully, himself. He repairs bridges, marries travelers, buries the road's unclaimed dead, and walks \u2014 always \u2014 with a gait that eats miles without hurry, as if distance had agreed to meet him halfway. In his coin-purse he carries a single coin that every shrine of ",
                                 "type": "text",
                                 "marks": [
                                     {
@@ -1158,7 +1171,19 @@
                                 ]
                             },
                             {
-                                "text": "It is the First Toll itself, and it is looking for its way home, and Tallow's endless circuit is the shape of its searching.",
+                                "type": "mention",
+                                "attrs": {
+                                    "id": "019fbbe1-0861-7e34-a5ea-f361aeb0f0e7",
+                                    "label": "Mother Meridian"
+                                },
+                                "marks": [
+                                    {
+                                        "type": "draft"
+                                    }
+                                ]
+                            },
+                            {
+                                "text": " politely refuses. It is the First Toll itself, and it is looking for its way home, and Tallow's endless circuit is the shape of its searching.",
                                 "type": "text",
                                 "marks": [
                                     {
@@ -1582,11 +1607,11 @@
             "fields": {
                 "gender": {
                     "value": "female",
-                    "status": "draft"
+                    "status": "canon"
                 },
                 "occupation": {
                     "value": "mercenary",
-                    "status": "draft"
+                    "status": "canon"
                 }
             },
             "body": {
@@ -1608,7 +1633,7 @@
                     }
                 ]
             },
-            "status": "draft"
+            "status": "mixed"
         },
         {
             "id": "019fbbe1-0896-7dd3-a4eb-a9aee2accb2a",
@@ -1737,11 +1762,11 @@
             "fields": {
                 "gender": {
                     "value": "female",
-                    "status": "draft"
+                    "status": "canon"
                 },
                 "occupation": {
                     "value": "rope-walker",
-                    "status": "draft"
+                    "status": "canon"
                 }
             },
             "body": {
@@ -1763,7 +1788,7 @@
                     }
                 ]
             },
-            "status": "draft"
+            "status": "mixed"
         },
         {
             "id": "019fbbe1-0896-7347-932e-07eb18577a02",
@@ -4168,21 +4193,13 @@
                         "type": "paragraph",
                         "content": [
                             {
-                                "text": "Something walked out of the Ember Gate on the ember-tide of Year 89 wearing the old king's face, a century after ",
-                                "type": "text"
-                            },
-                            {
-                                "text": "the old king died, and it has been charming the after-world ever since. It remembers everyone's name \u2014 that",
+                                "text": "Something walked out of the Ember Gate on the ember-tide of Year 89 wearing the old king's face, a century after the old king died, and it has been charming the after-world ever since. It remembers everyone's name \u2014 that is the frightening part \u2014 funds orphanages, settles debts, weeps convincingly at funerals, and wants, with a patience that outlasts argument, every ember of Vhezar gathered in one place. The Ashen Hand calls it majesty. The Emberfaith calls it a question. The Pale Auditor's ledgers call it an unpaid debt, and the fog has begun drifting down-mountain, out of jurisdiction, as if to collect.",
                                 "type": "text",
                                 "marks": [
                                     {
                                         "type": "draft"
                                     }
                                 ]
-                            },
-                            {
-                                "text": " is the frightening part \u2014 funds orphanages, settles debts, weeps convincingly at funerals, and wants, with a patience that outlasts argument, every ember of Vhezar gathered in one place. The Ashen Hand calls it majesty. The Emberfaith calls it a question. The Pale Auditor's ledgers call it an unpaid debt, and the fog has begun drifting down-mountain, out of jurisdiction, as if to collect.",
-                                "type": "text"
                             }
                         ]
                     }
@@ -4701,7 +4718,7 @@
                     "status": "canon"
                 },
                 "population": {
-                    "value": 4000,
+                    "value": "4000",
                     "status": "canon"
                 }
             },
@@ -4761,7 +4778,7 @@
                     "status": "canon"
                 },
                 "population": {
-                    "value": 11000,
+                    "value": "11000",
                     "status": "canon"
                 }
             },
@@ -4791,8 +4808,8 @@
                     "status": "canon"
                 },
                 "population": {
-                    "value": 43500,
-                    "status": "draft"
+                    "value": "43500",
+                    "status": "canon"
                 }
             },
             "body": {
@@ -4809,7 +4826,7 @@
                     }
                 ]
             },
-            "status": "mixed"
+            "status": "canon"
         },
         {
             "id": "019fbbe1-0861-7e34-a5ea-f361aeb0f0e7",
@@ -5050,16 +5067,7 @@
                         "type": "paragraph",
                         "content": [
                             {
-                                "text": "The Auditor came down from the fogs on foot, in office hours, and walked Duskwell's rings for a day counting something \u2014 doors, by the pattern of its pauses. The Grey Company's escort contract, drafted overnight by lamplight, is the only document known to bear the Auditor's mark: a thumbprint in frost that has not melted. It counted, thanked the town with a bow, and left. ",
-                                "type": "text",
-                                "marks": [
-                                    {
-                                        "type": "draft"
-                                    }
-                                ]
-                            },
-                            {
-                                "text": "The count was short by one door, and the Auditor knows which, and the well has been three degrees warmer ever since, like a held breath.",
+                                "text": "The Auditor came down from the fogs on foot, in office hours, and walked Duskwell's rings for a day counting something \u2014 doors, by the pattern of its pauses. The Grey Company's escort contract, drafted overnight by lamplight, is the only document known to bear the Auditor's mark: a thumbprint in frost that has not melted. It counted, thanked the town with a bow, and left. The count was short by one door, and the Auditor knows which, and the well has been three degrees warmer ever since, like a held breath.",
                                 "type": "text",
                                 "marks": [
                                     {
@@ -6732,7 +6740,7 @@
                     "status": "canon"
                 },
                 "population": {
-                    "value": 250,
+                    "value": "250",
                     "status": "canon"
                 }
             },
@@ -6792,7 +6800,7 @@
                     "status": "canon"
                 },
                 "population": {
-                    "value": 600,
+                    "value": "600",
                     "status": "canon"
                 }
             },
@@ -7325,7 +7333,7 @@
             "from_entry": "019fbbe1-0871-72b7-be12-2f87da86c29e",
             "field": "base",
             "field_id": "019fbbe1-0856-7b95-96ce-79e1fbd66fc2",
-            "to_entry": "019fbbe1-08bf-7c67-aed9-ff730f7f356f",
+            "to_entry": "019fbbe1-085c-75b4-a95b-67e725d2057e",
             "status": "canon"
         },
         {
@@ -7925,9 +7933,33 @@
         },
         {
             "from_entry": "019fbbe1-0886-75f3-9252-34fe103efc10",
+            "field": "family",
+            "field_id": "019fbbe1-0855-7679-ae31-2eac6e20cdcb",
+            "to_entry": "019fbbe1-0875-774f-9820-d27ce016abc4",
+            "annotation": "son",
+            "status": "canon"
+        },
+        {
+            "from_entry": "019fbbe1-0886-75f3-9252-34fe103efc10",
+            "field": "family",
+            "field_id": "019fbbe1-0855-7679-ae31-2eac6e20cdcb",
+            "to_entry": "019fbbe1-0898-752c-be51-1dcea02c893a",
+            "annotation": "rival",
+            "status": "canon"
+        },
+        {
+            "from_entry": "019fbbe1-0886-75f3-9252-34fe103efc10",
             "field": "hometown",
             "field_id": "019fbbe1-0855-7678-8c21-d7e98b716891",
             "to_entry": "019fbbe1-086a-7386-8a64-5ba84239fcb4",
+            "status": "canon"
+        },
+        {
+            "from_entry": "019fbbe1-0886-75f3-9252-34fe103efc10",
+            "field": "mentions",
+            "field_id": "sys:mentions",
+            "to_entry": "019fbbe1-0861-7e34-a5ea-f361aeb0f0e7",
+            "annotation": "mentioned in body of Brother Tallow",
             "status": "canon"
         },
         {
@@ -8754,14 +8786,14 @@
             "field_id": "019fbbe1-0855-7679-ae31-2eac6e20cdcb",
             "to_entry": "019fbbe1-089b-7e63-81bb-265959a326d1",
             "annotation": "Briar is Hesper's child; her smokehouse and their carving-shed share a wall and a feud about smoke",
-            "status": "draft"
+            "status": "canon"
         },
         {
             "from_entry": "019fbbe1-08a9-7877-864b-4d7d40547505",
             "field": "hometown",
             "field_id": "019fbbe1-0855-7678-8c21-d7e98b716891",
-            "to_entry": "019fbbe1-089e-7115-89bd-db7f0a6f1dc4",
-            "status": "draft"
+            "to_entry": "019fbbe1-0863-716b-ac93-a6927122227f",
+            "status": "canon"
         },
         {
             "from_entry": "019fbbe1-08aa-72ab-b752-ca3805c3853e",

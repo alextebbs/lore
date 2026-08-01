@@ -141,21 +141,18 @@ test("relations add and remove from the reverse side", async ({ page }) => {
   await page.getByRole("combobox").click();
   await page.getByRole("option", { name: "Cinderford (Place)" }).click();
   await page.getByRole("button", { name: "add", exact: true }).click();
-  const pill = page.locator("span.group.relative", { hasText: "Cinderford" });
-  await expect(pill).toBeVisible();
+  await expect(
+    page.locator("div.flex.h-7", { hasText: "Cinderford" }).first(),
+  ).toBeVisible();
 
   await page.goto(`/e/${town.id}`);
   // Scope to the reverse section — Vex also appears under Mentioned in.
   const section = page
     .locator("div.flex.gap-3", { hasText: /People From Here/i })
     .first();
-  const revPill = section.locator("span.group.relative", {
-    hasText: "Vex the Unready",
-  });
-  await expect(revPill).toBeVisible();
-  // The action popup renders in a portal (Base UI PreviewCard) — hover
-  // the pill, then find the control at page level.
-  await revPill.hover();
-  await page.getByRole("button", { name: "Remove relation" }).click();
-  await expect(revPill).toBeHidden();
+  const row = section.locator("div.flex.h-7", { hasText: "Vex the Unready" });
+  await expect(row).toBeVisible();
+  // Controls live inline in the row's right rail — no hover dance.
+  await row.getByRole("button", { name: "Remove relation" }).click();
+  await expect(row).toBeHidden();
 });

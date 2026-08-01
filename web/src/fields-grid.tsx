@@ -39,7 +39,7 @@ export function FieldsGrid({
           // status distinction the content itself makes).
           const tone = fv?.status === "draft" ? "text-neutral-500" : "";
           const label = (
-            <div className="flex w-44 shrink-0 items-start justify-end gap-2 pt-1 text-right text-neutral-500">
+            <div className="flex h-7 w-44 shrink-0 items-center justify-end gap-2 text-right leading-7 text-neutral-500">
               <span className="truncate" title={name}>
                 {titleCase(name)}
               </span>
@@ -133,7 +133,7 @@ export function FieldsGrid({
                   bump();
                 }}
                 placeholder="—"
-                className={`min-w-0 flex-1 rounded bg-transparent px-1 py-0.5 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
+                className={`h-7 min-w-0 flex-1 rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
               />
             </label>
           );

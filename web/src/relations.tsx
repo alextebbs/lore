@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Lock, LockOpen, TriangleAlert, X } from "lucide-react";
-import { PreviewCard } from "@base-ui/react/preview-card";
+import { ArrowLeftRight, Lock, LockOpen, TriangleAlert, X } from "lucide-react";
 import { api, type Entry } from "./api";
-import { Button, EntityChip, Picker, surface, titleCase } from "./ui";
+import { Button, EntityChip, Picker, titleCase } from "./ui";
 
 export function RelationsPanel({
   entry,
@@ -96,18 +95,23 @@ export function RelationsPanel({
               : satisfiesTargets(c.type_name, sec.config?.targets ?? undefined),
         );
         const secKey = sec.label + "|" + sec.field;
+        const single = sec.config ? !sec.config.many : false;
+        const occupied = (sec.edges ?? []).length > 0;
         return (
           <div key={secKey} className="flex gap-3">
             <div
-              className="w-44 shrink-0 truncate pt-2 text-right text-neutral-500"
+              className="h-7 w-44 shrink-0 truncate text-right leading-7 text-neutral-500"
               title={sec.label || sec.field}
             >
               {titleCase(sec.label || sec.field)}
             </div>
-            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
-              {(sec.edges ?? []).map((edge) => {
-                const pill = (
-                  <span className="group relative inline-flex h-7 min-w-0 max-w-full flex-nowrap items-center gap-1.5 overflow-hidden whitespace-nowrap">
+            <div className="min-w-0 flex-1 space-y-0.5">
+              {(sec.edges ?? []).map((edge) => (
+                <div
+                  key={edge.id}
+                  className="flex h-7 items-center gap-1.5"
+                >
+                  <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap">
                     <EntityChip
                       id={edge.to.id}
                       title={edge.to.title}
@@ -122,111 +126,110 @@ export function RelationsPanel({
                       </span>
                     )}
                   </span>
-                );
-                if (system) return <span key={edge.id}>{pill}</span>;
-                // Hover/focus controls anchor below the pill (Base UI
-                // PreviewCard: positioning, hover intent, dismissal).
-                return (
-                  <PreviewCard.Root key={edge.id}>
-                    <PreviewCard.Trigger render={pill} delay={150} />
-                    <PreviewCard.Portal>
-                      <PreviewCard.Positioner
-                        side="bottom"
-                        align="start"
-                        sideOffset={4}
-                        className="z-30"
+                  {/* Right rail: the row's controls, space always
+                      reserved — nothing shifts, nothing pops over. */}
+                  {!system && (
+                    <span className="flex shrink-0 items-center">
+                      <Button
+                        icon
+                        tip={
+                          edge.status === "draft"
+                            ? "Lock as canon"
+                            : "Unlock to draft"
+                        }
+                        className="border-transparent"
+                        onClick={() =>
+                          setStatus.mutate({
+                            id: edge.id,
+                            status: edge.status === "draft" ? "canon" : "draft",
+                          })
+                        }
                       >
-                        <PreviewCard.Popup
-                          className={`flex items-center overflow-hidden ${surface}`}
-                        >
-                          <Button
-                            icon
-                            tip={
-                              edge.status === "draft"
-                                ? "Lock as canon"
-                                : "Unlock to draft"
-                            }
-                            className="border-transparent"
-                            onClick={() =>
-                              setStatus.mutate({
-                                id: edge.id,
-                                status:
-                                  edge.status === "draft" ? "canon" : "draft",
-                              })
-                            }
-                          >
-                            {edge.status === "draft" ? (
-                              <Lock size={13} />
-                            ) : (
-                              <LockOpen size={13} />
-                            )}
-                          </Button>
-                          <span className="h-4 w-px bg-neutral-700" />
-                          <Button
-                            icon
-                            intent="danger"
-                            tip="Remove relation"
-                            className="border-transparent"
-                            onClick={() => remove.mutate(edge.id)}
-                          >
-                            <X size={13} />
-                          </Button>
-                        </PreviewCard.Popup>
-                      </PreviewCard.Positioner>
-                    </PreviewCard.Portal>
-                  </PreviewCard.Root>
-                );
-              })}
-              {system ? null : adding === secKey ? (
-                <form
-                  className="flex items-center gap-1"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (target)
-                      create.mutate({ field: sec.field, reverse: sec.reverse });
-                  }}
-                >
-                  <Picker
-                    value={target}
-                    onChange={setTarget}
-                    placeholder="choose…"
-                    autoFocus
-                    items={candidates.map((c) => ({
-                      value: c.id,
-                      label: `${c.title} (${c.type_name})`,
-                    }))}
-                  />
-                  {sec.config?.annotations && (
-                    <input
-                      value={note}
-                      onChange={(e) => setNote(e.target.value)}
-                      placeholder="annotation"
-                      className="input w-40"
-                    />
+                        {edge.status === "draft" ? (
+                          <Lock size={13} />
+                        ) : (
+                          <LockOpen size={13} />
+                        )}
+                      </Button>
+                      <Button
+                        icon
+                        intent="danger"
+                        tip="Remove relation"
+                        className="border-transparent"
+                        onClick={() => remove.mutate(edge.id)}
+                      >
+                        <X size={13} />
+                      </Button>
+                    </span>
                   )}
-                  <Button intent="solid" type="submit">add</Button>
-                  <Button icon tip="Cancel" onClick={() => setAdding(null)}>
-                    <X size={13} />
+                </div>
+              ))}
+              {/* Add (or replace, for occupied single-slot relations)
+                  lives on its own line beneath the rows. */}
+              {!system &&
+                (adding === secKey ? (
+                  <form
+                    className="flex items-center gap-1"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (target)
+                        create.mutate({ field: sec.field, reverse: sec.reverse });
+                    }}
+                  >
+                    <Picker
+                      value={target}
+                      onChange={setTarget}
+                      placeholder="choose…"
+                      autoFocus
+                      items={candidates.map((c) => ({
+                        value: c.id,
+                        label: `${c.title} (${c.type_name})`,
+                      }))}
+                    />
+                    {sec.config?.annotations && (
+                      <input
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                        placeholder="annotation"
+                        className="input w-40"
+                      />
+                    )}
+                    <Button intent="solid" type="submit">
+                      {single && occupied ? "replace" : "add"}
+                    </Button>
+                    <Button icon tip="Cancel" onClick={() => setAdding(null)}>
+                      <X size={13} />
+                    </Button>
+                  </form>
+                ) : single && occupied ? (
+                  <Button
+                    className="btn-add"
+                    tip={`Replace the current ${sec.field}`}
+                    onClick={() => {
+                      setAdding(secKey);
+                      setTarget("");
+                      setNote("");
+                    }}
+                  >
+                    <ArrowLeftRight size={12} /> replace
                   </Button>
-                </form>
-              ) : (
-                <Button
-                  icon
-                  className="btn-add"
-                  tip={
-                    sec.reverse
-                      ? `Relate an entry to this one via ${sec.field}`
-                      : `Add ${sec.field}`
-                  }
-                  onClick={() => {
-                    setAdding(secKey);
-                    setTarget("");
-                    setNote("");
-                  }}
-                >
-                  +
-                </Button>
-              )}
+                ) : (
+                  <Button
+                    className="btn-add"
+                    tip={
+                      sec.reverse
+                        ? `Relate an entry to this one via ${sec.field}`
+                        : `Add ${sec.field}`
+                    }
+                    onClick={() => {
+                      setAdding(secKey);
+                      setTarget("");
+                      setNote("");
+                    }}
+                  >
+                    + add
+                  </Button>
+                ))}
             </div>
           </div>
         );

@@ -149,12 +149,13 @@ func StripDraftMarks(doc Node) Node {
 	return walk(doc)
 }
 
-// MarkAllDraft returns the doc with every text node carrying the draft
-// mark — how AI-authored bodies enter the world (tenet 4).
+// MarkAllDraft returns the doc with every text and mention node
+// carrying the draft mark — how AI-authored bodies enter the world
+// (tenet 4). Mentions carry it too so draft styling reaches the chip.
 func MarkAllDraft(doc Node) Node {
 	var walk func(Node) Node
 	walk = func(n Node) Node {
-		if n.Type == "text" && !n.hasMark(MarkDraft) {
+		if (n.Type == "text" || n.Type == "mention") && !n.hasMark(MarkDraft) {
 			n.Marks = append(n.Marks, Mark{Type: MarkDraft})
 		}
 		for i, c := range n.Content {
