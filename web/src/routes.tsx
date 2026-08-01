@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   Link,
   Outlet,
@@ -23,12 +23,7 @@ import { emptyDoc, type DocNode } from "./doc";
 const rootRoute = createRootRoute({
   component: () => (
     <div className="min-h-screen bg-neutral-950 text-neutral-100">
-      <header className="border-b border-neutral-800 px-6 py-4">
-        <Link to="/" className="text-lg font-semibold tracking-wide">
-          Lore
-        </Link>
-      </header>
-      <main className="mx-auto max-w-6xl p-6">
+      <main>
         <Outlet />
       </main>
     </div>
@@ -66,7 +61,7 @@ function WorldsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6 p-6">
       <h2 className="text-xl font-semibold">Your worlds</h2>
       <ul className="space-y-2">
         {worlds.data?.map((w) => (
@@ -74,7 +69,7 @@ function WorldsPage() {
             <Link
               to="/w/$worldId"
               params={{ worldId: w.id }}
-              className="block rounded-lg border border-neutral-800 px-4 py-3 hover:border-neutral-600"
+              className="block rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-3 hover:border-neutral-600"
             >
               {w.name}
             </Link>
@@ -116,6 +111,9 @@ const indexRoute = createRoute({
 
 // ---------- World sidebar (Notion-style) ----------
 
+// Sidebar scroll survives route remounts (module-scoped, per world).
+const sidebarScroll: Record<string, number> = {};
+
 function WorldSidebar({
   worldId,
   currentEntryId,
@@ -123,6 +121,10 @@ function WorldSidebar({
   worldId: string;
   currentEntryId?: string;
 }) {
+  const navRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    if (navRef.current) navRef.current.scrollTop = sidebarScroll[worldId] ?? 0;
+  }, [worldId]);
   const entries = useQuery({
     queryKey: ["entries", worldId],
     queryFn: () => api.listEntries(worldId),
@@ -135,7 +137,19 @@ function WorldSidebar({
     a === "World" ? -1 : b === "World" ? 1 : a.localeCompare(b),
   );
   return (
-    <nav className="sticky top-6 h-[calc(100vh-6rem)] w-56 shrink-0 overflow-y-auto pr-3 text-sm">
+    <nav
+      ref={navRef}
+      onScroll={(e) => {
+        sidebarScroll[worldId] = e.currentTarget.scrollTop;
+      }}
+      className="fixed inset-y-0 left-0 w-60 overflow-y-auto border-r border-neutral-800 bg-neutral-950 px-3 py-4 text-sm"
+    >
+      <Link
+        to="/"
+        className="mb-4 block text-lg font-semibold tracking-wide text-neutral-100 hover:text-white"
+      >
+        Lore
+      </Link>
       <Link
         to="/w/$worldId"
         params={{ worldId }}
@@ -306,9 +320,9 @@ function WorldPage() {
   }
 
   return (
-    <div className="flex gap-6">
+    <div>
       <WorldSidebar worldId={worldId} />
-      <div className="min-w-0 flex-1 space-y-6">
+      <div className="ml-60 max-w-4xl space-y-6 p-6">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">{world.data?.world.name}</h2>
         <a
@@ -331,7 +345,7 @@ function WorldPage() {
                 <Link
                   to="/e/$entryId"
                   params={{ entryId: e.id }}
-                  className="flex items-center justify-between rounded-lg border border-neutral-800 px-4 py-2 hover:border-neutral-600"
+                  className="flex items-center justify-between rounded-lg border border-neutral-800 bg-neutral-900 px-4 py-2 hover:border-neutral-600"
                 >
                   <span>{e.title}</span>
                   <StatusBadge status={e.status} />
@@ -845,9 +859,9 @@ function EntryPage() {
   ];
 
   return (
-    <div className="flex gap-6">
+    <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
-      <div className="min-w-0 flex-1 space-y-5">
+      <div className="ml-60 max-w-4xl space-y-5 p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3">
           <Link
