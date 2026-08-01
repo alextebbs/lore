@@ -22,7 +22,7 @@ const Draft = Mark.create({
   renderHTML() {
     return [
       "span",
-      { "data-draft": "", class: "rounded bg-amber-950 text-amber-200" },
+      { "data-draft": "", class: "text-neutral-500" },
       0,
     ];
   },
@@ -369,8 +369,8 @@ export function BodyEditor({
         {bubbleBtn(editor.isActive("heading", { level: 1 }), () => editor.chain().focus().toggleHeading({ level: 1 }).run(), "H1", "Heading 1")}
         {bubbleBtn(editor.isActive("heading", { level: 2 }), () => editor.chain().focus().toggleHeading({ level: 2 }).run(), "H2", "Heading 2")}
         <span className="h-4 w-px bg-neutral-700" />
-        {bubbleBtn(editor.isActive("draft"), () => editor.chain().focus().toggleMark("draft").run(), <span className="text-amber-300">draft</span>, "Mark selection as draft")}
-        {bubbleBtn(false, () => editor.chain().focus().unsetMark("draft").run(), <span className="text-emerald-300">✓ canon</span>, "Promote selection to canon")}
+        {bubbleBtn(editor.isActive("draft"), () => editor.chain().focus().toggleMark("draft").run(), "draft", "Mark selection as draft")}
+        {bubbleBtn(false, () => editor.chain().focus().unsetMark("draft").run(), "✓ canon", "Promote selection to canon")}
       </BubbleMenu>
 
       <EditorContent editor={editor} />

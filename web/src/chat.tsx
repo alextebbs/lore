@@ -264,7 +264,7 @@ export function ChatPanel({
         {items.length === 0 && (
           <p className="text-neutral-600">
             Ask for new content, expansions, or connections. Everything the
-            assistant writes lands as <span className="text-amber-300">draft</span>{" "}
+            assistant writes lands as <span className="text-neutral-400">draft</span>{" "}
             until you promote it.
           </p>
         )}

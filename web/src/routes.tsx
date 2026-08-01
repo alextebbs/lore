@@ -32,9 +32,9 @@ const rootRoute = createRootRoute({
 
 function StatusBadge({ status }: { status: string }) {
   const styles: Record<string, string> = {
-    canon: "bg-emerald-950 text-emerald-300 border-emerald-800",
-    draft: "bg-amber-950 text-amber-300 border-amber-800",
-    mixed: "bg-violet-950 text-violet-300 border-violet-800",
+    canon: "border-neutral-500 text-neutral-100",
+    draft: "border-neutral-800 text-neutral-500",
+    mixed: "border-neutral-700 text-neutral-400",
   };
   return (
     <span
@@ -177,7 +177,7 @@ function WorldSidebar({
                 >
                   {e.title}
                   {e.status !== "canon" && (
-                    <span className="ml-1 text-amber-500">•</span>
+                    <span className="ml-1 text-neutral-600">•</span>
                   )}
                 </Link>
               </li>
@@ -503,7 +503,7 @@ function RelationsPanel({
                   key={edge.id}
                   className={`group flex items-center gap-1.5 rounded-full border px-3 py-1 text-sm ${
                     edge.status === "draft"
-                      ? "border-amber-800 bg-amber-950/40"
+                      ? "border-neutral-800 text-neutral-500"
                       : "border-neutral-700"
                   }`}
                 >
@@ -636,7 +636,7 @@ function RevisionRow({
         <span className="flex items-center gap-2">
           <span
             className={
-              rev.author === "ai" ? "text-violet-300" : "text-neutral-300"
+              rev.author === "ai" ? "text-neutral-500" : "text-neutral-300"
             }
           >
             {rev.author}
@@ -832,7 +832,7 @@ function EntryPage() {
           {e.status !== "canon" && (
             <button
               onClick={() => canonize.mutate({})}
-              className="rounded-lg border border-emerald-800 px-3 py-1 text-sm text-emerald-300 hover:bg-emerald-950"
+              className="rounded-lg border border-neutral-500 px-3 py-1 text-sm text-neutral-100 hover:bg-neutral-800"
             >
               Mark all canon
             </button>
@@ -854,6 +854,9 @@ function EntryPage() {
         {fieldNames.map((name) => {
           const fv = e.fields[name] as FieldValue | undefined;
           const kind = schemaFields.find((f) => f.name === name)?.kind ?? "string";
+          // Draft content reads grey; canon reads white (the only
+          // status distinction the content itself makes).
+          const tone = fv?.status === "draft" ? "text-neutral-500" : "";
           const label = (
             <span className="mb-1 flex items-center gap-2 text-xs uppercase tracking-wide text-neutral-500">
               {name}
@@ -862,7 +865,7 @@ function EntryPage() {
                   type="button"
                   title="Promote this field to canon"
                   onClick={() => canonize.mutate({ fields: [name] })}
-                  className="rounded-full border border-amber-800 bg-amber-950 px-2 py-0.5 text-xs text-amber-300 hover:border-emerald-700 hover:text-emerald-300"
+                  className="rounded-full border border-neutral-800 px-2 py-0.5 text-xs text-neutral-500 hover:border-neutral-400 hover:text-white"
                 >
                   draft — click to canonize
                 </button>
@@ -882,7 +885,7 @@ function EntryPage() {
                 {label}
                 {items.map((item, idx) => (
                   <div key={idx} className="mb-1 flex gap-1">
-                    <div className="w-full">
+                    <div className={`w-full ${tone}`}>
                       <InlineField
                         value={item}
                         entries={fieldLinkTargets}
@@ -921,7 +924,7 @@ function EntryPage() {
           }
           if (kind === "richtext") {
             return (
-              <div key={name} className="col-span-2">
+              <div key={name} className={`col-span-2 ${tone}`}>
                 {label}
                 <InlineField
                   value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
@@ -945,7 +948,7 @@ function EntryPage() {
                   setDirty((d) => d + 1);
                 }}
                 placeholder="—"
-                className="w-full rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
+                className={`w-full rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
               />
             </label>
           );
