@@ -152,6 +152,106 @@ function suggestionRender(
   });
 }
 
+// The "[[" entry autocomplete, shared by the body editor and the inline
+// field editors. Inserts a mention node carrying the entry's ID.
+function makeEntityLink(
+  render: ReturnType<typeof suggestionRender>,
+  entriesRef: { current: EntrySummary[] },
+) {
+  return Extension.create({
+    name: "entityLink",
+    addProseMirrorPlugins() {
+      return [
+        Suggestion({
+          editor: this.editor,
+          char: "[[",
+          pluginKey: new PluginKey("entitySuggestion"),
+          items: ({ query }) =>
+            entriesRef.current
+              .filter((e) =>
+                e.title.toLowerCase().includes(query.toLowerCase()),
+              )
+              .slice(0, 8)
+              .map((e) => ({
+                key: e.id,
+                label: e.title,
+                hint: e.type_name,
+              })),
+          command: ({ editor, range, props }) => {
+            const item = props as MenuItem;
+            editor
+              .chain()
+              .focus()
+              .deleteRange(range)
+              .insertContent([
+                {
+                  type: "mention",
+                  attrs: { id: item.key, label: item.label },
+                },
+                { type: "text", text: " " },
+              ])
+              .run();
+          },
+          render: render("entity"),
+        }),
+      ];
+    },
+  });
+}
+
+function SuggestionPopup({
+  menu,
+  selectedRef,
+  setMenu,
+}: {
+  menu: MenuState | null;
+  selectedRef: { current: number };
+  setMenu: (m: MenuState) => void;
+}) {
+  if (!menu || menu.items.length === 0) return null;
+  return (
+    <div
+      className="fixed z-50 min-w-52 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 py-1 shadow-2xl"
+      style={{ left: menu.rect.left, top: menu.rect.bottom + 6 }}
+    >
+      {menu.items.map((item, i) => (
+        <button
+          key={item.key}
+          type="button"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => menu.command(item)}
+          onMouseEnter={() => {
+            selectedRef.current = i;
+            setMenu({ ...menu });
+          }}
+          className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left text-sm ${
+            i === selectedRef.current
+              ? "bg-neutral-800 text-white"
+              : "text-neutral-300"
+          }`}
+        >
+          <span>{item.label}</span>
+          {item.hint && (
+            <span className="text-xs text-neutral-600">{item.hint}</span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+const mentionNavigate = (
+  _view: unknown,
+  _pos: number,
+  node: { type: { name: string }; attrs: Record<string, unknown> },
+) => {
+  if (node.type.name === "mention" && node.attrs.id) {
+    window.location.assign(`/e/${node.attrs.id}`);
+    return true;
+  }
+  return false;
+};
+
 export function BodyEditor({
   doc,
   entries,
@@ -193,45 +293,6 @@ export function BodyEditor({
         ];
       },
     });
-    const EntityLink = Extension.create({
-      name: "entityLink",
-      addProseMirrorPlugins() {
-        return [
-          Suggestion({
-            editor: this.editor,
-            char: "[[",
-            pluginKey: new PluginKey("entitySuggestion"),
-            items: ({ query }) =>
-              entriesRef.current
-                .filter((e) =>
-                  e.title.toLowerCase().includes(query.toLowerCase()),
-                )
-                .slice(0, 8)
-                .map((e) => ({
-                  key: e.id,
-                  label: e.title,
-                  hint: e.type_name,
-                })),
-            command: ({ editor, range, props }) => {
-              const item = props as MenuItem;
-              editor
-                .chain()
-                .focus()
-                .deleteRange(range)
-                .insertContent([
-                  {
-                    type: "mention",
-                    attrs: { id: item.key, label: item.label },
-                  },
-                  { type: "text", text: " " },
-                ])
-                .run();
-            },
-            render: render("entity"),
-          }),
-        ];
-      },
-    });
     return [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
@@ -245,7 +306,7 @@ export function BodyEditor({
         placeholder: "Write… ('/' for blocks, '[[' to link an entry)",
       }),
       SlashCommands,
-      EntityLink,
+      makeEntityLink(render, entriesRef),
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -257,13 +318,7 @@ export function BodyEditor({
       attributes: {
         class: "min-h-48 py-2 text-sm leading-relaxed outline-none",
       },
-      handleClickOn: (_view, _pos, node) => {
-        if (node.type.name === "mention" && node.attrs.id) {
-          window.location.assign(`/e/${node.attrs.id}`);
-          return true;
-        }
-        return false;
-      },
+      handleClickOn: mentionNavigate,
     },
     onUpdate: ({ editor }) => {
       onChange(fromTipTap(editor.getJSON() as DocNode));
@@ -320,35 +375,132 @@ export function BodyEditor({
 
       <EditorContent editor={editor} />
 
-      {menu && menu.items.length > 0 && (
-        <div
-          className="fixed z-50 min-w-52 overflow-hidden rounded-lg border border-neutral-700 bg-neutral-900 py-1 shadow-2xl"
-          style={{ left: menu.rect.left, top: menu.rect.bottom + 6 }}
-        >
-          {menu.items.map((item, i) => (
-            <button
-              key={item.key}
-              type="button"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => menu.command(item)}
-              onMouseEnter={() => {
-                selectedRef.current = i;
-                setMenu({ ...menu });
-              }}
-              className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left text-sm ${
-                i === selectedRef.current
-                  ? "bg-neutral-800 text-white"
-                  : "text-neutral-300"
-              }`}
-            >
-              <span>{item.label}</span>
-              {item.hint && (
-                <span className="text-xs text-neutral-600">{item.hint}</span>
-              )}
-            </button>
-          ))}
-        </div>
-      )}
+      <SuggestionPopup menu={menu} selectedRef={selectedRef} setMenu={setMenu} />
+    </div>
+  );
+}
+
+// --- Inline field editor -------------------------------------------------
+// Richtext fields (origin, goals items, …) store plain Markdown strings
+// server-side; this editor renders their [[Title]] links as the same
+// mention chips the body uses. Only mentions are structured — all other
+// text passes through verbatim, so the string round-trips exactly.
+
+const inlineMentionRe = /\[\[([^[\]]+)\]\]/g;
+
+function parseInlineMd(value: string, entries: EntrySummary[]): DocNode {
+  const byTitle = new Map(entries.map((e) => [e.title.toLowerCase(), e.id]));
+  const paras = value.split("\n").map((line): DocNode => {
+    const content: DocNode[] = [];
+    let last = 0;
+    for (const m of line.matchAll(inlineMentionRe)) {
+      if (m.index! > last)
+        content.push({ type: "text", text: line.slice(last, m.index) });
+      const label = m[1].trim();
+      content.push({
+        type: "mention",
+        attrs: { id: byTitle.get(label.toLowerCase()) ?? "", label },
+      });
+      last = m.index! + m[0].length;
+    }
+    if (last < line.length)
+      content.push({ type: "text", text: line.slice(last) });
+    return { type: "paragraph", content: content.length ? content : undefined };
+  });
+  return { type: "doc", content: paras };
+}
+
+function serializeInlineMd(doc: DocNode): string {
+  const para = (p: DocNode) =>
+    (p.content ?? [])
+      .map((n) =>
+        n.type === "mention"
+          ? `[[${(n.attrs?.label as string) ?? ""}]]`
+          : (n.text ?? ""),
+      )
+      .join("");
+  return (doc.content ?? []).map(para).join("\n");
+}
+
+export function InlineField({
+  value,
+  entries,
+  onChange,
+  placeholder,
+}: {
+  value: string;
+  entries: EntrySummary[];
+  onChange: (value: string) => void;
+  placeholder?: string;
+}) {
+  const [menu, setMenu] = useState<MenuState | null>(null);
+  const menuRef = useRef<MenuState | null>(null);
+  const selectedRef = useRef(0);
+  const entriesRef = useRef(entries);
+  entriesRef.current = entries;
+  useEffect(() => {
+    menuRef.current = menu;
+  }, [menu]);
+  const valueRef = useRef(value);
+
+  const extensions = useMemo(() => {
+    const render = suggestionRender(setMenu, selectedRef, menuRef);
+    return [
+      StarterKit.configure({
+        heading: false,
+        bulletList: false,
+        orderedList: false,
+        listItem: false,
+        blockquote: false,
+        codeBlock: false,
+        horizontalRule: false,
+        bold: false,
+        italic: false,
+        code: false,
+        strike: false,
+        hardBreak: false,
+        underline: false,
+        link: false,
+      }),
+      Mention,
+      Placeholder.configure({ placeholder: placeholder ?? "—" }),
+      makeEntityLink(render, entriesRef),
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const editor = useEditor({
+    extensions,
+    content: toTipTap(parseInlineMd(value, entries)),
+    editorProps: {
+      attributes: {
+        class:
+          "w-full rounded px-1 py-0.5 text-sm outline-none hover:bg-neutral-900 focus:bg-neutral-900",
+      },
+      handleClickOn: mentionNavigate,
+    },
+    onUpdate: ({ editor }) => {
+      const next = serializeInlineMd(fromTipTap(editor.getJSON() as DocNode));
+      valueRef.current = next;
+      onChange(next);
+    },
+  });
+
+  // Sync in external changes without looping on our own updates.
+  useEffect(() => {
+    if (!editor || value === valueRef.current) return;
+    valueRef.current = value;
+    editor.commands.setContent(
+      toTipTap(parseInlineMd(value, entriesRef.current)),
+    );
+  }, [value, editor]);
+
+  if (!editor) return null;
+
+  return (
+    <div className="relative">
+      <EditorContent editor={editor} />
+      <SuggestionPopup menu={menu} selectedRef={selectedRef} setMenu={setMenu} />
     </div>
   );
 }

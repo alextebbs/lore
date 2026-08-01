@@ -14,7 +14,7 @@ import {
   type FieldValue,
   type Revision as RevisionType,
 } from "./api";
-import { BodyEditor } from "./editor";
+import { BodyEditor, InlineField } from "./editor";
 import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
@@ -884,6 +884,9 @@ function EntryPage() {
       (n) => !schemaFields.some((f) => f.name === n),
     ),
   ];
+  const fieldLinkTargets = (worldEntries.data ?? []).filter(
+    (c) => c.id !== e.id,
+  );
 
   return (
     <div>
@@ -977,18 +980,19 @@ function EntryPage() {
                 {label}
                 {items.map((item, idx) => (
                   <div key={idx} className="mb-1 flex gap-1">
-                    <textarea
-                      value={item}
-                      rows={1}
-                      placeholder="— ([[Entry Title]] links entries)"
-                      onChange={(ev) => {
-                        const next = [...items];
-                        next[idx] = ev.target.value;
-                        setFields({ ...fields, [name]: next });
-                        setDirty((d) => d + 1);
-                      }}
-                      className="w-full resize-none rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
-                    />
+                    <div className="w-full">
+                      <InlineField
+                        value={item}
+                        entries={fieldLinkTargets}
+                        placeholder="— ('[[' links an entry)"
+                        onChange={(v) => {
+                          const next = [...items];
+                          next[idx] = v;
+                          setFields({ ...fields, [name]: next });
+                          setDirty((d) => d + 1);
+                        }}
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() =>
@@ -1015,19 +1019,18 @@ function EntryPage() {
           }
           if (kind === "richtext") {
             return (
-              <label key={name} className="col-span-2 block">
+              <div key={name} className="col-span-2">
                 {label}
-                <textarea
+                <InlineField
                   value={typeof fields[name] === "string" ? (fields[name] as string) : ""}
-                  rows={2}
-                  placeholder="— ([[Entry Title]] links entries)"
-                  onChange={(ev) => {
-                    setFields({ ...fields, [name]: ev.target.value });
+                  entries={fieldLinkTargets}
+                  placeholder="— ('[[' links an entry)"
+                  onChange={(v) => {
+                    setFields({ ...fields, [name]: v });
                     setDirty((d) => d + 1);
                   }}
-                  className="w-full resize-none rounded bg-transparent px-1 py-0.5 text-sm outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
                 />
-              </label>
+              </div>
             );
           }
           return (
