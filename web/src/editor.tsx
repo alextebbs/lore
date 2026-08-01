@@ -8,6 +8,7 @@ import { Placeholder } from "@tiptap/extensions";
 import Suggestion, { type SuggestionProps } from "@tiptap/suggestion";
 import { PluginKey } from "@tiptap/pm/state";
 import type { EntrySummary } from "./api";
+import { nav } from "./nav";
 import { fromTipTap, toTipTap, type DocNode } from "./doc";
 
 // Invisible, Notion-like editing: no chrome until you ask for it.
@@ -247,7 +248,7 @@ const mentionNavigate = (
   node: { type: { name: string }; attrs: Record<string, unknown> },
 ) => {
   if (node.type.name === "mention" && node.attrs.id) {
-    window.location.assign(`/e/${node.attrs.id}`);
+    nav.toEntry(String(node.attrs.id));
     return true;
   }
   return false;
