@@ -21,7 +21,7 @@ import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { diffWords } from "./diff";
 import { emptyDoc, type DocNode } from "./doc";
-import { StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
+import { EntrySkeleton, StatusBadge, asFieldDoc, strToDoc, titleCase } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { RelationsPanel } from "./relations";
 
@@ -107,6 +107,10 @@ function RevisionRow({
     </li>
   );
 }
+
+// Last world seen — lets the sidebar stay mounted while the next
+// entry loads (module-scoped; survives keyed remounts).
+let lastWorldId = "";
 
 export function EntryPage({ entryId }: { entryId: string }) {
   const qc = useQueryClient();
@@ -269,7 +273,35 @@ export function EntryPage({ entryId }: { entryId: string }) {
   );
 
   const e = entry.data;
-  if (!e) return <p className="text-neutral-500">Loading…</p>;
+  if (entry.isError) {
+    return (
+      <div>
+        {lastWorldId && <WorldSidebar worldId={lastWorldId} />}
+        <div
+          style={{ marginLeft: lastWorldId ? "var(--sidebar-w)" : 0 }}
+          className="p-6 text-neutral-500"
+        >
+          Entry not found — it may have been deleted.{" "}
+          <Link to="/" className="underline hover:text-neutral-300">
+            Back to worlds
+          </Link>
+        </div>
+      </div>
+    );
+  }
+  if (!e) {
+    // Keep the frame: sidebar stays (last known world), content shows a
+    // skeleton — no full-page flash on cold navigations.
+    return (
+      <div>
+        {lastWorldId && <WorldSidebar worldId={lastWorldId} currentEntryId={entryId} />}
+        <div style={{ marginLeft: lastWorldId ? "var(--sidebar-w)" : 0 }}>
+          <EntrySkeleton />
+        </div>
+      </div>
+    );
+  }
+  lastWorldId = e.world_id;
 
   const schemaFields =
     world.data?.types.find((t) => t.id === e.type_id)?.fields ?? [];

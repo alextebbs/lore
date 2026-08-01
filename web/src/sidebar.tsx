@@ -1,6 +1,6 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Home } from "lucide-react";
 import { api, type EntrySummary } from "./api";
 
@@ -45,10 +45,19 @@ export function WorldSidebar({
   useLayoutEffect(() => {
     if (navRef.current) navRef.current.scrollTop = sidebarScroll[worldId] ?? 0;
   }, [worldId]);
+  const qc = useQueryClient();
   const entries = useQuery({
     queryKey: ["entries", worldId],
     queryFn: () => api.listEntries(worldId),
   });
+  // Hover-prefetch: by the time a link is clicked its entry is usually
+  // cached, so navigation renders instantly instead of skeletoning.
+  const prefetch = (id: string) =>
+    qc.prefetchQuery({
+      queryKey: ["entry", id],
+      queryFn: () => api.getEntry(id),
+      staleTime: 15_000,
+    });
   // Filter-as-you-type narrows the list in place; without a query,
   // groups cap at GROUP_CAP with a per-group "show all" toggle
   // (Slack-style) so the unfiltered sidebar stays scannable.
@@ -135,6 +144,7 @@ export function WorldSidebar({
                   <Link
                     to="/e/$entryId"
                     params={{ entryId: e.id }}
+                    onMouseEnter={() => prefetch(e.id)}
                     className={`block truncate rounded px-2 py-0.5 ${
                       e.id === currentEntryId
                         ? "bg-neutral-800 text-white"

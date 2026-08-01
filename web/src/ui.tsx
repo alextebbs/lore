@@ -32,3 +32,30 @@ export function StatusBadge({ status }: { status: string }) {
     </span>
   );
 }
+
+// Content-area skeleton: same layout bones as the entry page, so a
+// cold-load navigation swaps content without moving anything else.
+export function EntrySkeleton() {
+  const bar = (w: string) => (
+    <div className={`h-4 animate-pulse rounded bg-neutral-900 ${w}`} />
+  );
+  return (
+    <div className="max-w-4xl space-y-5 p-6" aria-busy="true">
+      <div className="h-7 w-64 animate-pulse rounded bg-neutral-900" />
+      <div className="space-y-3 pt-2">
+        {["w-3/4", "w-1/2", "w-2/3", "w-1/3"].map((w) => (
+          <div key={w} className="flex gap-3">
+            <div className="w-44 shrink-0" />
+            {bar(w)}
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2 pt-4">
+        {bar("w-full")}
+        {bar("w-full")}
+        {bar("w-5/6")}
+        {bar("w-2/3")}
+      </div>
+    </div>
+  );
+}
