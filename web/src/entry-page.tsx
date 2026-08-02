@@ -243,7 +243,8 @@ export function EntryPage({ entryId }: { entryId: string }) {
   return (
     <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
-      <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-5 p-6">
+      <div style={{ marginLeft: "var(--sidebar-w)" }}>
+        <div className="mx-auto max-w-4xl space-y-5 p-6">
       <div className="flex items-center justify-end gap-2">
           {saveState === "saving" ? (
             <span className="text-stone-600">saving…</span>
@@ -419,6 +420,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
       />
 
       <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
+        </div>
       </div>
     </div>
   );
