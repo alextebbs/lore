@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeftRight, Lock, LockOpen, TriangleAlert, X } from "lucide-react";
 import { api, type Entry } from "./api";
-import { PreviewCard } from "@base-ui/react/preview-card";
-import { Button, EntityChip, Picker, surface, titleCase } from "./ui";
+import { Button, EntityChip, Picker, titleCase } from "./ui";
 
 export function RelationsPanel({
   entry,
@@ -106,116 +105,79 @@ export function RelationsPanel({
             >
               {titleCase(sec.label || sec.field)}
             </div>
-            <div
-              className={
-                single
-                  ? "min-w-0 flex-1 space-y-0.5"
-                  : "flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5"
-              }
-            >
-              {(sec.edges ?? []).map((edge) => {
-                const row = (
-                  <div
-                    className={`flex h-7 items-center gap-1.5 ${
-                      single ? "" : "max-w-full"
-                    }`}
-                  >
-                    <span
-                      className={`flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap ${
-                        single ? "flex-1" : ""
-                      }`}
-                    >
-                      <EntityChip
-                        id={edge.to.id}
-                        title={edge.to.title}
-                        draft={edge.status === "draft"}
-                      />
-                      {edge.annotation && (
-                        <span
-                          className={`min-w-0 truncate text-stone-500 ${
-                            single ? "" : "max-w-64"
-                          }`}
-                          title={edge.annotation}
-                        >
-                          — {edge.annotation}
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                );
-                if (system) return <span key={edge.id}>{row}</span>;
-                // Controls live in a hover card anchored to the row —
-                // nothing in the flow, nothing shifts.
-                return (
-                  <PreviewCard.Root key={edge.id}>
-                    <PreviewCard.Trigger render={row} delay={150} />
-                    <PreviewCard.Portal>
-                      <PreviewCard.Positioner
-                        side="bottom"
-                        align="start"
-                        sideOffset={2}
-                        className="z-30"
+            <div className="min-w-0 flex-1 space-y-0.5">
+              {(sec.edges ?? []).map((edge) => (
+                <div
+                  key={edge.id}
+                  className="group -mx-1 flex h-7 items-center gap-1.5 rounded px-1 hover:bg-stone-900/60"
+                >
+                  <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap">
+                    <EntityChip
+                      id={edge.to.id}
+                      title={edge.to.title}
+                      draft={edge.status === "draft"}
+                    />
+                    {edge.annotation && (
+                      <span
+                        className="min-w-0 truncate text-stone-500"
+                        title={edge.annotation}
                       >
-                        <PreviewCard.Popup
-                          className={`anim-fade flex items-center overflow-hidden ${surface}`}
+                        — {edge.annotation}
+                      </span>
+                    )}
+                  </span>
+                  {!system && (
+                    <span className="flex shrink-0 items-center opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
+                      <Button
+                        icon
+                        tip={
+                          edge.status === "draft"
+                            ? "Lock as canon"
+                            : "Unlock to draft"
+                        }
+                        className="border-transparent"
+                        onClick={() =>
+                          setStatus.mutate({
+                            id: edge.id,
+                            status: edge.status === "draft" ? "canon" : "draft",
+                          })
+                        }
+                      >
+                        {/* Icon shows the CURRENT state; the tooltip
+                            names the action. */}
+                        {edge.status === "draft" ? (
+                          <LockOpen size={13} />
+                        ) : (
+                          <Lock size={13} />
+                        )}
+                      </Button>
+                      {single && (
+                        <Button
+                          icon
+                          tip={`Replace the current ${sec.field}`}
+                          className="border-transparent"
+                          onClick={() => {
+                            setAdding(secKey);
+                            setTarget("");
+                            setNote("");
+                          }}
                         >
-                          <Button
-                            icon
-                            tip={
-                              edge.status === "draft"
-                                ? "Lock as canon"
-                                : "Unlock to draft"
-                            }
-                            className="border-transparent"
-                            onClick={() =>
-                              setStatus.mutate({
-                                id: edge.id,
-                                status:
-                                  edge.status === "draft" ? "canon" : "draft",
-                              })
-                            }
-                          >
-                            {/* Icon shows the CURRENT state; the
-                                tooltip names the action. */}
-                            {edge.status === "draft" ? (
-                              <LockOpen size={13} />
-                            ) : (
-                              <Lock size={13} />
-                            )}
-                          </Button>
-                          {single && (
-                            <>
-                              <span className="h-4 w-px bg-stone-700" />
-                              <Button
-                                icon
-                                tip={`Replace the current ${sec.field}`}
-                                className="border-transparent"
-                                onClick={() => {
-                                  setAdding(secKey);
-                                  setTarget("");
-                                  setNote("");
-                                }}
-                              >
-                                <ArrowLeftRight size={13} />
-                              </Button>
-                            </>
-                          )}
-                          <span className="h-4 w-px bg-stone-700" />
-                          <Button
-                            icon
-                            intent="danger"
-                            tip="Remove relation"
-                            className="border-transparent"
-                            onClick={() => remove.mutate(edge.id)}
-                          >
-                            <X size={13} />
-                          </Button>
-                        </PreviewCard.Popup>
-                      </PreviewCard.Positioner>
-                    </PreviewCard.Portal>
-                  </PreviewCard.Root>
-                );
-              })}
+                          <ArrowLeftRight size={13} />
+                        </Button>
+                      )}
+                      <Button
+                        icon
+                        intent="danger"
+                        tip="Remove relation"
+                        className="border-transparent"
+                        onClick={() => remove.mutate(edge.id)}
+                      >
+                        <X size={13} />
+                      </Button>
+                    </span>
+                  )}
+                </div>
+              ))}
               {/* Add (or replace, for occupied single-slot relations)
                   lives on its own line beneath the rows. */}
               {!system &&
