@@ -120,9 +120,9 @@ export function Confirm({
           <AlertDialog.Trigger render={trigger} />
         ))}
       <AlertDialog.Portal>
-        <AlertDialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+        <AlertDialog.Backdrop className="anim-backdrop fixed inset-0 z-50 bg-black/50" />
         <AlertDialog.Popup
-          className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4"
+          className="anim-fade panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4"
         >
           <AlertDialog.Title className="">
             {title}
@@ -153,7 +153,7 @@ function Tip({ tip, children }: { tip: string; children: ReactElement }) {
       <Tooltip.Trigger render={children} aria-label={tip} />
       <Tooltip.Portal>
         <Tooltip.Positioner side="bottom" sideOffset={6} className="z-50">
-          <Tooltip.Popup className={`px-2 py-1 text-neutral-300 ${surface}`}>
+          <Tooltip.Popup className={`anim-fade px-2 py-1 text-neutral-300 ${surface}`}>
             {tip}
           </Tooltip.Popup>
         </Tooltip.Positioner>
@@ -282,7 +282,7 @@ export function Picker<T extends string>({
       </Select.Trigger>
       <Select.Portal>
         <Select.Positioner sideOffset={4} className="z-50">
-          <Select.Popup className={`max-h-72 overflow-y-auto py-1 ${surface}`}>
+          <Select.Popup className={`anim-fade max-h-72 overflow-y-auto py-1 ${surface}`}>
             {items.map((i) => (
               <Select.Item
                 key={i.value}

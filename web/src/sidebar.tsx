@@ -54,8 +54,8 @@ function NewEntryDialog({ worldId }: { worldId: string }) {
       </Button>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
-          <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
-          <Dialog.Popup className="panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 outline-none">
+          <Dialog.Backdrop className="anim-backdrop fixed inset-0 z-50 bg-black/50" />
+          <Dialog.Popup className="anim-fade panel fixed left-1/2 top-1/3 z-50 w-full max-w-sm -translate-x-1/2 p-4 outline-none">
             <Dialog.Title className="">New entry</Dialog.Title>
             <form
               className="mt-3 space-y-2"
@@ -160,10 +160,7 @@ export function WorldSidebar({
 
       {/* Sticky header: brand, world row, search, new entry. */}
       <div className="shrink-0 space-y-3 border-b border-neutral-800 px-3 py-4">
-        <Link
-          to="/"
-          className="block tracking-wide text-white hover:text-white"
-        >
+        <Link to="/" className="display block text-white hover:text-white">
           Lore
         </Link>
         <div className="flex items-center gap-1">
@@ -232,17 +229,16 @@ export function WorldSidebar({
                       to="/e/$entryId"
                       params={{ entryId: e.id }}
                       onMouseEnter={() => prefetch(e.id)}
-                      className={`block truncate rounded px-2 py-0.5 ${
+                      className={`block truncate rounded px-2 py-0.5 hover:bg-neutral-900 ${
                         e.id === currentEntryId
                           ? "bg-neutral-800 text-white"
-                          : "text-neutral-400 hover:bg-neutral-900 hover:text-white"
+                          : e.status === "canon"
+                            ? "text-neutral-400 hover:text-white"
+                            : "text-neutral-600 hover:text-neutral-400"
                       }`}
                       title={e.title}
                     >
                       {e.title}
-                      {e.status !== "canon" && (
-                        <span className="ml-1 text-neutral-600">•</span>
-                      )}
                     </Link>
                   </li>
                 ))}

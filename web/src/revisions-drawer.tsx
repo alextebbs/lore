@@ -108,8 +108,8 @@ export function RevisionsDrawer({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-40 bg-black/50" />
-        <Dialog.Popup className="fixed bottom-0 right-0 top-0 z-40 flex w-[52rem] max-w-[95vw] flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl outline-none">
+        <Dialog.Backdrop className="anim-backdrop fixed inset-0 z-40 bg-black/50" />
+        <Dialog.Popup className="anim-slide-right fixed bottom-0 right-0 top-0 z-40 flex w-[52rem] max-w-[95vw] flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl outline-none">
           <div className="flex items-center justify-between border-b border-neutral-800 px-4 py-2">
             <Dialog.Title className="">
               Revisions — {entry.title}

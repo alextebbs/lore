@@ -282,7 +282,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
               />
               <Popover.Portal>
                 <Popover.Positioner side="bottom" align="end" sideOffset={6} className="z-40">
-                  <Popover.Popup className="panel max-w-md space-y-1 p-3 text-amber-300">
+                  <Popover.Popup className="anim-fade panel max-w-md space-y-1 p-3 text-amber-300">
                     {warnings.map((w) => (
                       <div key={w} className="flex items-center gap-1.5">
                         <TriangleAlert size={12} /> {w}
@@ -304,7 +304,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
             />
             <Menu.Portal>
               <Menu.Positioner side="bottom" align="end" sideOffset={4} className="z-40">
-                <Menu.Popup className="panel min-w-52 overflow-hidden py-1 outline-none">
+                <Menu.Popup className="anim-fade panel min-w-52 overflow-hidden py-1 outline-none">
                   <Menu.Item
                     render={
                       <a
@@ -360,7 +360,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
             setDirty((d) => d + 1);
           }}
           placeholder="Untitled"
-          className="w-full rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
+          className="display display-lg w-full rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
         />
       </div>
 

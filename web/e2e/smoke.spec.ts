@@ -45,7 +45,7 @@ test("edit body, autosave, reload persists", async ({ page }) => {
   const ed = bodyEditor(page);
   await ed.click();
   await page.keyboard.type("Vex never draws first.");
-  await expect(page.getByText("saved", { exact: true })).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText(/^saved /)).toBeVisible({ timeout: 8000 });
   await page.reload();
   await expect(bodyEditor(page)).toContainText("Vex never draws first.");
 });
@@ -59,7 +59,7 @@ test("[[ inserts an ID-carrying mention chip; rename follows", async ({ page, re
   await page.getByRole("button", { name: /Cinderford/ }).first().click();
   const chip = ed.locator("span[data-mention-id]");
   await expect(chip).toHaveText("Cinderford");
-  await expect(page.getByText("saved", { exact: true })).toBeVisible({ timeout: 8000 });
+  await expect(page.getByText(/^saved /)).toBeVisible({ timeout: 8000 });
 
   // Rename the target via API — the chip label must follow (ID link).
   await api(request, "PATCH", `/api/entries/${town.id}`, { title: "Cinderford-upon-Ash" });

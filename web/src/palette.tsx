@@ -112,9 +112,9 @@ export function CommandPalette() {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Portal>
-        <Dialog.Backdrop className="fixed inset-0 z-50 bg-black/50" />
+        <Dialog.Backdrop className="anim-backdrop fixed inset-0 z-50 bg-black/50" />
         <Dialog.Popup
-          className="panel fixed left-1/2 top-[15vh] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden outline-none"
+          className="anim-fade panel fixed left-1/2 top-[15vh] z-50 w-full max-w-lg -translate-x-1/2 overflow-hidden outline-none"
           aria-label="Command palette"
         >
         <input

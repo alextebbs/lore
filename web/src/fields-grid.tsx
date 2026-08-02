@@ -63,7 +63,7 @@ export function FieldsGrid({
                 {label}
                 <div className="min-w-0 flex-1">
                   {items.map((item, idx) => (
-                    <div key={idx} className="mb-1 flex gap-1">
+                    <div key={idx} className="group mb-1 flex gap-1">
                       <div className={`w-full ${tone}`}>
                         <InlineField
                           doc={asFieldDoc(item)}
@@ -81,7 +81,7 @@ export function FieldsGrid({
                         icon
                         intent="danger"
                         tip="Remove item"
-                        className="border-transparent"
+                        className="border-transparent opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100"
                         onClick={() =>
                           setFields({
                             ...fields,

@@ -105,13 +105,25 @@ export function RelationsPanel({
             >
               {titleCase(sec.label || sec.field)}
             </div>
-            <div className="min-w-0 flex-1 space-y-0.5">
+            <div
+              className={
+                single
+                  ? "min-w-0 flex-1 space-y-0.5"
+                  : "flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-0.5"
+              }
+            >
               {(sec.edges ?? []).map((edge) => (
                 <div
                   key={edge.id}
-                  className="flex h-7 items-center gap-1.5"
+                  className={`group flex h-7 items-center gap-1.5 ${
+                    single ? "" : "max-w-full"
+                  }`}
                 >
-                  <span className="flex min-w-0 flex-1 items-center gap-1.5 overflow-hidden whitespace-nowrap">
+                  <span
+                    className={`flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap ${
+                      single ? "flex-1" : ""
+                    }`}
+                  >
                     <EntityChip
                       id={edge.to.id}
                       title={edge.to.title}
@@ -119,7 +131,9 @@ export function RelationsPanel({
                     />
                     {edge.annotation && (
                       <span
-                        className="min-w-0 truncate text-neutral-500"
+                        className={`min-w-0 truncate text-neutral-500 ${
+                          single ? "" : "max-w-64"
+                        }`}
                         title={edge.annotation}
                       >
                         — {edge.annotation}
@@ -129,7 +143,7 @@ export function RelationsPanel({
                   {/* Right rail: the row's controls, space always
                       reserved — nothing shifts, nothing pops over. */}
                   {!system && (
-                    <span className="flex shrink-0 items-center">
+                    <span className="flex shrink-0 items-center opacity-0 transition-opacity group-focus-within:opacity-100 group-hover:opacity-100">
                       <Button
                         icon
                         tip={
@@ -145,10 +159,12 @@ export function RelationsPanel({
                           })
                         }
                       >
+                        {/* Icon shows the CURRENT state; the tooltip
+                            names the action. */}
                         {edge.status === "draft" ? (
-                          <Lock size={13} />
-                        ) : (
                           <LockOpen size={13} />
+                        ) : (
+                          <Lock size={13} />
                         )}
                       </Button>
                       <Button
