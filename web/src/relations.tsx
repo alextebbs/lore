@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ArrowLeftRight, Lock, LockOpen, TriangleAlert, X } from "lucide-react";
+import { ArrowLeftRight, Lock, LockOpen, Plus, TriangleAlert, X } from "lucide-react";
 import { api, type Entry } from "./api";
 import { Button, EntityChip, Picker, titleCase } from "./ui";
 
-export function RelationsPanel({
+function RelationsPanel({
   entry,
   onChanged,
+  mentions = false,
 }: {
   entry: Entry;
   onChanged: () => void;
+  // Mentions render separately, after the body (they derive from it).
+  mentions?: boolean;
 }) {
   const allEntries = useQuery({
     queryKey: ["entries", entry.world_id],
@@ -66,7 +69,9 @@ export function RelationsPanel({
     return false;
   };
 
-  const sections = entry.relations ?? [];
+  const sections = (entry.relations ?? []).filter((sec) =>
+    mentions ? sec.field === "mentions" : sec.field !== "mentions",
+  );
   if (sections.length === 0) return null;
 
   // Candidates for a reverse add: entries whose type declares the field.
@@ -98,7 +103,7 @@ export function RelationsPanel({
         const single = sec.config ? !sec.config.many : false;
         const occupied = (sec.edges ?? []).length > 0;
         return (
-          <div key={secKey} className="flex gap-3">
+          <div key={secKey} className="group/sec flex gap-3">
             <div
               className="h-7 w-44 shrink-0 truncate text-right leading-7 text-stone-500"
               title={sec.label || sec.field}
@@ -151,7 +156,7 @@ export function RelationsPanel({
                           <Lock size={13} />
                         )}
                       </Button>
-                      {single && (
+                      {single ? (
                         <Button
                           icon
                           tip={`Replace the current ${sec.field}`}
@@ -163,6 +168,23 @@ export function RelationsPanel({
                           }}
                         >
                           <ArrowLeftRight size={13} />
+                        </Button>
+                      ) : (
+                        <Button
+                          icon
+                          tip={
+                            sec.reverse
+                              ? `Relate an entry to this one via ${sec.field}`
+                              : `Add ${sec.field}`
+                          }
+                          className="border-transparent"
+                          onClick={() => {
+                            setAdding(secKey);
+                            setTarget("");
+                            setNote("");
+                          }}
+                        >
+                          <Plus size={13} />
                         </Button>
                       )}
                       <Button
@@ -178,8 +200,9 @@ export function RelationsPanel({
                   )}
                 </div>
               ))}
-              {/* Add (or replace, for occupied single-slot relations)
-                  lives on its own line beneath the rows. */}
+              {/* Adding: inline form. Empty: "empty" opens it. Rows
+                  present: a right-aligned + in the rail column, shown
+                  on section hover. */}
               {!system &&
                 (adding === secKey ? (
                   <form
@@ -215,23 +238,18 @@ export function RelationsPanel({
                       <X size={13} />
                     </Button>
                   </form>
-                ) : single && occupied ? null : (
+                ) : !occupied ? (
                   <Button
-                    className="btn-add"
-                    tip={
-                      sec.reverse
-                        ? `Relate an entry to this one via ${sec.field}`
-                        : `Add ${sec.field}`
-                    }
+                    className="-mx-1 h-7 border-transparent px-1 text-stone-600"
                     onClick={() => {
                       setAdding(secKey);
                       setTarget("");
                       setNote("");
                     }}
                   >
-                    + add
+                    empty
                   </Button>
-                ))}
+                ) : null)}
             </div>
           </div>
         );
@@ -250,3 +268,4 @@ export function RelationsPanel({
     </div>
   );
 }
+export { RelationsPanel };

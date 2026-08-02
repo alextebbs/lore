@@ -397,6 +397,16 @@ export function EntryPage({ entryId }: { entryId: string }) {
         </div>
       </div>
 
+      {/* Mentions derive from the body — they read below it. */}
+      <RelationsPanel
+        entry={e}
+        mentions
+        onChanged={() => {
+          qc.invalidateQueries({ queryKey: ["entry", entryId] });
+          qc.invalidateQueries({ queryKey: ["graph", entryId] });
+        }}
+      />
+
       <EgoGraph entryId={entryId} />
 
       <RevisionsDrawer

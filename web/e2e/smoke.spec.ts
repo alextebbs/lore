@@ -142,7 +142,11 @@ test("relations add and remove from the reverse side", async ({ page }) => {
   // reverse section doesn't exist until an edge does, so author forward
   // from the Character instead, then remove from the Place side.
   await page.goto(`/e/${hero.id}`);
-  await page.getByRole("button", { name: "Add hometown" }).click();
+  // Empty sections show "empty" — clicking it opens the add UI.
+  const hometownSec = page
+    .locator("div.group\\/sec", { hasText: "Hometown" })
+    .first();
+  await hometownSec.getByRole("button", { name: "empty" }).click();
   await page.getByRole("combobox").click();
   await page.getByRole("option", { name: "Cinderford (Place)" }).click();
   await page.getByRole("button", { name: "add", exact: true }).click();
