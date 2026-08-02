@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  ChevronDown,
-  ChevronRight,
   Download,
+  Ellipsis,
+  History,
   Pin,
   Trash2,
   TriangleAlert,
@@ -15,8 +15,9 @@ import { usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
 import { EgoGraph } from "./graph";
 import { emptyDoc, type DocNode } from "./doc";
+import { Menu } from "@base-ui/react/menu";
 import { Popover } from "@base-ui/react/popover";
-import { Button, Confirm, EntrySkeleton, LinkButton, StatusBadge, strToDoc } from "./ui";
+import { Button, Confirm, EntrySkeleton, StatusBadge, age, strToDoc } from "./ui";
 import { WorldSidebar } from "./sidebar";
 import { appState } from "./app-state";
 import { RelationsPanel } from "./relations";
@@ -245,13 +246,19 @@ export function EntryPage({ entryId }: { entryId: string }) {
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
       <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-5 p-6">
       <div className="flex items-center justify-end gap-2">
-          <span className="text-neutral-600">
-            {saveState === "saving"
-              ? "saving…"
-              : saveState === "saved"
-                ? "saved"
-                : ""}
-          </span>
+          {saveState === "saving" ? (
+            <span className="text-neutral-600">saving…</span>
+          ) : (
+            revisions.data?.[0] && (
+              <Button
+                className="border-transparent text-neutral-600"
+                tip="Revision history"
+                onClick={() => setShowHistory(true)}
+              >
+                saved {age(revisions.data[0].created_at)}
+              </Button>
+            )
+          )}
           {saveState === "error" && (
             <Button
               intent="danger"
@@ -286,17 +293,45 @@ export function EntryPage({ entryId }: { entryId: string }) {
               </Popover.Portal>
             </Popover.Root>
           )}
-          <Button tip="Revision history" onClick={() => setShowHistory(!showHistory)}>
-            {revisions.data?.length ?? 0} revisions{" "}
-            {showHistory ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-          </Button>
-          <LinkButton
-            icon
-            tip="Export as Markdown"
-            href={`/api/entries/${e.id}/export`}
-          >
-            <Download size={14} />
-          </LinkButton>
+          <PinButton worldId={e.world_id} entryId={e.id} />
+          <Menu.Root>
+            <Menu.Trigger
+              render={
+                <Button icon tip="More">
+                  <Ellipsis size={14} />
+                </Button>
+              }
+            />
+            <Menu.Portal>
+              <Menu.Positioner side="bottom" align="end" sideOffset={4} className="z-40">
+                <Menu.Popup className="panel min-w-52 overflow-hidden py-1 outline-none">
+                  <Menu.Item
+                    render={
+                      <a
+                        href={`/api/entries/${e.id}/export`}
+                        className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-neutral-300 data-[highlighted]:bg-neutral-800 data-[highlighted]:text-white"
+                      >
+                        <Download size={13} /> Export as Markdown
+                      </a>
+                    }
+                  />
+                  <Menu.Item
+                    onClick={() => setShowHistory(true)}
+                    className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-neutral-300 data-[highlighted]:bg-neutral-800 data-[highlighted]:text-white"
+                  >
+                    <History size={13} /> Revision history (
+                    {revisions.data?.length ?? 0})
+                  </Menu.Item>
+                  <Menu.Item
+                    onClick={() => setDeleteOpen(true)}
+                    className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-red-400 data-[highlighted]:bg-red-950/40"
+                  >
+                    <Trash2 size={13} /> Delete entry
+                  </Menu.Item>
+                </Menu.Popup>
+              </Menu.Positioner>
+            </Menu.Portal>
+          </Menu.Root>
           <Confirm
             title={`Delete "${e.title}"?`}
             body="The entry, its revisions, and its relations go with it."
@@ -307,14 +342,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
               await api.deleteEntry(e.id);
               navigate({ to: "/w/$worldId", params: { worldId: e.world_id } });
             }}
-            tip="Delete entry"
-            trigger={
-              <Button icon intent="danger">
-                <Trash2 size={14} />
-              </Button>
-            }
           />
-          <PinButton worldId={e.world_id} entryId={e.id} />
           <StatusBadge status={e.status} />
           {e.status !== "canon" && (
             <Button intent="solid" onClick={() => canonize.mutate({})}>
