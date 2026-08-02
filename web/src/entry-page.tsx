@@ -244,8 +244,9 @@ export function EntryPage({ entryId }: { entryId: string }) {
     <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
       <div style={{ marginLeft: "var(--sidebar-w)" }}>
-        <div className="mx-auto max-w-4xl -translate-x-[94px] space-y-5 p-6">
-      <div className="flex items-center justify-end gap-2">
+        {/* Page controls break out of the typographic column: pinned
+            to the browser's top-right edge. */}
+        <div className="fixed right-3 top-3 z-20 flex items-center gap-2 bg-stone-950/80 backdrop-blur-sm">
           {saveState === "saving" ? (
             <span className="text-stone-600">saving…</span>
           ) : (
@@ -349,8 +350,9 @@ export function EntryPage({ entryId }: { entryId: string }) {
               Mark all canon
             </Button>
           )}
-      </div>
+        </div>
 
+        <div className="mx-auto max-w-4xl -translate-x-[94px] space-y-5 p-6">
       {/* Title block sits in the value column like everything else. */}
       <div className="flex gap-3">
         <div className="w-44 shrink-0" />
