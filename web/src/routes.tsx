@@ -9,10 +9,18 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "./api";
 import { CommandPalette } from "./palette";
+import { ChatPanel } from "./chat";
+import { useChatContext } from "./app-state";
 import { Button, Tooltip } from "./ui";
 import { SchemaPage, SettingsPage, WorldPage } from "./world-page";
 import { TypeListPage } from "./type-list";
 import { EntryPage } from "./entry-page";
+
+function ChatDock() {
+  const ctx = useChatContext();
+  if (!ctx.worldId) return null;
+  return <ChatPanel worldId={ctx.worldId} currentEntryId={ctx.entryId} />;
+}
 
 const rootRoute = createRootRoute({
   component: () => (
@@ -22,6 +30,7 @@ const rootRoute = createRootRoute({
           <Outlet />
         </main>
         <CommandPalette />
+        <ChatDock />
       </div>
     </Tooltip.Provider>
   ),

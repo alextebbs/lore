@@ -38,3 +38,27 @@ export function setSidebarWidth(px: number) {
 export function sidebarWidth(): number {
   return Number(localStorage.getItem(SIDEBAR_WIDTH_KEY)) || 240;
 }
+
+// Chat context: which world/entry the assistant should attach to.
+// Reactive (unlike the rest of appState) because the root-mounted
+// ChatDock must re-render on navigation.
+import { useSyncExternalStore } from "react";
+
+let chatCtx: { worldId: string; entryId?: string } = { worldId: "" };
+const chatSubs = new Set<() => void>();
+
+export function setChatContext(worldId: string, entryId?: string) {
+  if (chatCtx.worldId === worldId && chatCtx.entryId === entryId) return;
+  chatCtx = { worldId, entryId };
+  chatSubs.forEach((fn) => fn());
+}
+
+export function useChatContext() {
+  return useSyncExternalStore(
+    (cb) => {
+      chatSubs.add(cb);
+      return () => chatSubs.delete(cb);
+    },
+    () => chatCtx,
+  );
+}

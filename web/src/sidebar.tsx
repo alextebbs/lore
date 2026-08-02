@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog } from "@base-ui/react/dialog";
 import { BookOpen, ChevronRight, Plus, Search, Settings2, Shapes } from "lucide-react";
 import { api, type EntrySummary } from "./api";
-import { appState, setSidebarWidth, sidebarWidth } from "./app-state";
+import { appState, setChatContext, setSidebarWidth, sidebarWidth } from "./app-state";
 import { Button, LinkButton, Picker } from "./ui";
 
 function startSidebarResize(e: React.MouseEvent) {
@@ -105,6 +105,9 @@ export function WorldSidebar({
   currentEntryId?: string;
 }) {
   const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    setChatContext(worldId, currentEntryId);
+  }, [worldId, currentEntryId]);
   useLayoutEffect(() => {
     if (listRef.current)
       listRef.current.scrollTop = appState.sidebarScroll[worldId] ?? 0;

@@ -12,7 +12,6 @@ import {
 import { api, type Entry } from "./api";
 import { BodyEditor } from "./editor";
 import { usePageCommands } from "./palette";
-import { ChatPanel } from "./chat";
 import { emptyDoc, type DocNode } from "./doc";
 import { Menu } from "@base-ui/react/menu";
 import { Popover } from "@base-ui/react/popover";
@@ -421,7 +420,6 @@ export function EntryPage({ entryId }: { entryId: string }) {
         onRestored={refresh}
       />
 
-      <ChatPanel worldId={e.world_id} currentEntryId={e.id} />
         </div>
       </div>
     </div>
