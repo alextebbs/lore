@@ -183,6 +183,23 @@ export function RelationsPanel({
                               <Lock size={13} />
                             )}
                           </Button>
+                          {single && (
+                            <>
+                              <span className="h-4 w-px bg-stone-700" />
+                              <Button
+                                icon
+                                tip={`Replace the current ${sec.field}`}
+                                className="border-transparent"
+                                onClick={() => {
+                                  setAdding(secKey);
+                                  setTarget("");
+                                  setNote("");
+                                }}
+                              >
+                                <ArrowLeftRight size={13} />
+                              </Button>
+                            </>
+                          )}
                           <span className="h-4 w-px bg-stone-700" />
                           <Button
                             icon
@@ -236,19 +253,7 @@ export function RelationsPanel({
                       <X size={13} />
                     </Button>
                   </form>
-                ) : single && occupied ? (
-                  <Button
-                    className="btn-add"
-                    tip={`Replace the current ${sec.field}`}
-                    onClick={() => {
-                      setAdding(secKey);
-                      setTarget("");
-                      setNote("");
-                    }}
-                  >
-                    <ArrowLeftRight size={12} /> replace
-                  </Button>
-                ) : (
+                ) : single && occupied ? null : (
                   <Button
                     className="btn-add"
                     tip={
