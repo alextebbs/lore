@@ -223,7 +223,11 @@ export function ChatPanel({
 
   if (!open) {
     return (
-      <Button intent="solid" className="panel" onClick={() => setOpen(true)}>
+      <Button
+        intent="solid"
+        className="panel fixed bottom-4 right-4 z-20"
+        onClick={() => setOpen(true)}
+      >
         <Sparkles size={14} /> Assistant
       </Button>
     );

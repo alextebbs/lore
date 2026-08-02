@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ScrollArea } from "@base-ui/react/scroll-area";
 import { ArrowDown, ArrowUp, Search } from "lucide-react";
 import { api, type EntryRow, type FieldValue } from "./api";
-import { StatusBadge, titleCase } from "./ui";
+import { RowButton, StatusBadge, titleCase } from "./ui";
 import { WorldSidebar } from "./sidebar";
 
 // Per-type listing: a real table (Base UI ships behavior, not tables —
@@ -71,8 +71,7 @@ export function TypeListPage({
 
   const header = (key: string, label: string) => (
     <th key={key} className="p-0 text-left">
-      <button
-        type="button"
+      <RowButton
         onClick={() => {
           if (sortBy === key) setAsc(!asc);
           else {
@@ -80,12 +79,12 @@ export function TypeListPage({
             setAsc(true);
           }
         }}
-        className="flex w-full cursor-pointer items-center gap-1 px-3 py-1.5 text-stone-500 hover:text-white"
+        className="!justify-start gap-1 text-stone-500 hover:text-white"
       >
         {label}
         {sortBy === key &&
           (asc ? <ArrowUp size={12} /> : <ArrowDown size={12} />)}
-      </button>
+      </RowButton>
     </th>
   );
 
