@@ -6,6 +6,7 @@ import type { DocNode } from "./doc";
 // this file only aliases legacy names and adds client-side unions.
 export type {
   CanonScope,
+  EntryRow,
   VaultFile,
   VaultImportResult,
   Edge as EdgeType,
@@ -29,6 +30,7 @@ export type {
 } from "./api-types.gen";
 import type {
   CanonScope,
+  EntryRow,
   VaultImportResult,
   Edge as EdgeType,
   Entry,
@@ -61,6 +63,10 @@ export const api = {
   createWorld: (name: string) => req<World>("/api/worlds", json({ name })),
   getWorld: (id: string) =>
     req<{ world: World; types: EntryTypeDef[] }>(`/api/worlds/${id}`),
+  listEntriesFull: (worldId: string, typeId = "") =>
+    req<EntryRow[]>(
+      `/api/worlds/${worldId}/entries?fields=true&type_id=${typeId}`,
+    ),
   listEntries: (worldId: string) =>
     req<EntrySummary[]>(`/api/worlds/${worldId}/entries`),
   createEntry: (worldId: string, typeId: string, title: string) =>

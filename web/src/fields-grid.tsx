@@ -39,7 +39,7 @@ export function FieldsGrid({
           // status distinction the content itself makes).
           const tone = fv?.status === "draft" ? "text-stone-500" : "";
           const label = (
-            <div className="flex h-7 w-44 shrink-0 items-center justify-end gap-2 text-right leading-7 text-stone-500">
+            <div className="flex h-7 w-44 shrink-0 items-center justify-end gap-2 text-right leading-7 text-stone-600">
               <span className="truncate" title={name}>
                 {titleCase(name)}
               </span>

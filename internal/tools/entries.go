@@ -3,6 +3,8 @@ package tools
 import (
 	"context"
 	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 	"encoding/json"
 	"fmt"
 	"slices"
@@ -437,6 +439,79 @@ func (t *Tools) GetEntry(ctx context.Context, id string) (Entry, error) {
 		return Entry{}, err
 	}
 	return t.entryFull(ctx, row, et.Name)
+}
+
+// EntryRow is the table view: a summary plus presented field values.
+type EntryRow struct {
+	EntrySummary
+	Fields    map[string]FieldValue `json:"fields,omitempty"`
+	UpdatedAt time.Time             `json:"updated_at"`
+}
+
+// ListEntriesFull returns entries with presented field values,
+// optionally filtered to a type and its subtypes — the listing-table
+// view of a world.
+func (t *Tools) ListEntriesFull(ctx context.Context, worldID, typeID string) ([]EntryRow, error) {
+	wid, err := parseID(worldID)
+	if err != nil {
+		return nil, err
+	}
+	// Type filter includes subtypes (single-inheritance semantics).
+	include := map[pgtype.UUID]bool{}
+	if typeID != "" {
+		tid, err := parseID(typeID)
+		if err != nil {
+			return nil, err
+		}
+		include[tid] = true
+		all, err := t.store.Queries.ListEntryTypes(ctx, wid)
+		if err != nil {
+			return nil, err
+		}
+		for changed := true; changed; {
+			changed = false
+			for _, ty := range all {
+				if ty.ParentID.Valid && include[ty.ParentID] && !include[ty.ID] {
+					include[ty.ID] = true
+					changed = true
+				}
+			}
+		}
+	}
+	rows, err := t.store.Queries.ListEntryRows(ctx, wid)
+	if err != nil {
+		return nil, err
+	}
+	names, err := t.store.Queries.ListEntryTypes(ctx, wid)
+	if err != nil {
+		return nil, err
+	}
+	nameOf := map[pgtype.UUID]string{}
+	for _, ty := range names {
+		nameOf[ty.ID] = ty.Name
+	}
+	var out []EntryRow
+	for _, r := range rows {
+		if typeID != "" && !include[r.TypeID] {
+			continue
+		}
+		fields := map[string]FieldValue{}
+		_ = json.Unmarshal(r.Fields, &fields)
+		for name, fv := range fields {
+			fv.Value, fv.ValueDoc = presentFieldValue(fv.Value)
+			fv.ValueDoc = nil // tables don't need docs
+			fields[name] = fv
+		}
+		out = append(out, EntryRow{
+			EntrySummary: EntrySummary{
+				ID: idStr(r.ID), Title: r.Title, TypeID: idStr(r.TypeID),
+				TypeName: nameOf[r.TypeID], Status: r.Status,
+			},
+			Fields:    fields,
+			UpdatedAt: r.UpdatedAt.Time,
+		})
+	}
+	return out, nil
 }
 
 func (t *Tools) ListEntries(ctx context.Context, worldID string) ([]EntrySummary, error) {

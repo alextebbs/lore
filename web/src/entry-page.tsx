@@ -13,7 +13,6 @@ import { api, type Entry } from "./api";
 import { BodyEditor } from "./editor";
 import { usePageCommands } from "./palette";
 import { ChatPanel } from "./chat";
-import { EgoGraph } from "./graph";
 import { emptyDoc, type DocNode } from "./doc";
 import { Menu } from "@base-ui/react/menu";
 import { Popover } from "@base-ui/react/popover";
@@ -351,17 +350,21 @@ export function EntryPage({ entryId }: { entryId: string }) {
           )}
       </div>
 
-      <div>
-        <div className="px-1 text-stone-600">{e.type_name}</div>
-        <input
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-            setDirty((d) => d + 1);
-          }}
-          placeholder="Untitled"
-          className="display display-lg w-full rounded bg-transparent px-1 outline-none placeholder:text-stone-700 hover:bg-stone-900 focus:bg-stone-900"
-        />
+      {/* Title block sits in the value column like everything else. */}
+      <div className="flex gap-3">
+        <div className="w-44 shrink-0" />
+        <div className="min-w-0 flex-1">
+          <div className="px-1 text-stone-600">{e.type_name}</div>
+          <input
+            value={title}
+            onChange={(e) => {
+              setTitle(e.target.value);
+              setDirty((d) => d + 1);
+            }}
+            placeholder="Untitled"
+            className="display display-lg w-full rounded bg-transparent px-1 outline-none placeholder:text-stone-700 hover:bg-stone-900 focus:bg-stone-900"
+          />
+        </div>
       </div>
 
       <FieldsGrid
@@ -406,8 +409,6 @@ export function EntryPage({ entryId }: { entryId: string }) {
           qc.invalidateQueries({ queryKey: ["graph", entryId] });
         }}
       />
-
-      <EgoGraph entryId={entryId} />
 
       <RevisionsDrawer
         entry={e}

@@ -55,7 +55,7 @@ function DiffText({ from, to }: { from: string; to: string }) {
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex gap-3">
-      <div className="w-32 shrink-0 text-right leading-7 text-stone-500">
+      <div className="w-32 shrink-0 text-right leading-7 text-stone-600">
         {label}
       </div>
       <div className="min-w-0 flex-1 py-[2.8px]">{children}</div>

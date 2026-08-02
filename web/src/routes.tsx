@@ -11,6 +11,7 @@ import { api } from "./api";
 import { CommandPalette } from "./palette";
 import { Button, Tooltip } from "./ui";
 import { SchemaPage, SettingsPage, WorldPage } from "./world-page";
+import { TypeListPage } from "./type-list";
 import { EntryPage } from "./entry-page";
 
 const rootRoute = createRootRoute({
@@ -125,9 +126,19 @@ const schemaRoute = createRoute({
   },
 });
 
+const typeListRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: "/w/$worldId/t/$typeId",
+  component: function TypeListRoute() {
+    const { worldId, typeId } = typeListRoute.useParams();
+    return <TypeListPage key={typeId} worldId={worldId} typeId={typeId} />;
+  },
+});
+
 export const routeTree = rootRoute.addChildren([
   settingsRoute,
   schemaRoute,
+  typeListRoute,
   indexRoute,
   worldRoute,
   entryRoute,

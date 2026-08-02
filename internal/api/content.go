@@ -237,6 +237,12 @@ func (s *Server) getWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) listEntries(w http.ResponseWriter, r *http.Request) {
+	q := r.URL.Query()
+	if q.Get("fields") == "true" || q.Get("type_id") != "" {
+		rows, err := s.Tools.ListEntriesFull(r.Context(), r.PathValue("id"), q.Get("type_id"))
+		respond(w, rows, err)
+		return
+	}
 	entries, err := s.Tools.ListEntries(r.Context(), r.PathValue("id"))
 	respond(w, entries, err)
 }

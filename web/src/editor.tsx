@@ -262,6 +262,30 @@ export function BodyEditor({
   entries: EntrySummary[];
   onChange: (doc: DocNode) => void;
 }) {
+  return (
+    <RichText
+      doc={doc}
+      entries={entries}
+      onChange={onChange}
+      placeholder="Write… ('/' for blocks, '[[' to link an entry)"
+      editorClass="min-h-48 py-2 leading-relaxed outline-none"
+    />
+  );
+}
+
+function RichText({
+  doc,
+  entries,
+  onChange,
+  placeholder,
+  editorClass,
+}: {
+  doc: DocNode;
+  entries: EntrySummary[];
+  onChange: (doc: DocNode) => void;
+  placeholder: string;
+  editorClass: string;
+}) {
   const [menu, setMenu] = useState<MenuState | null>(null);
   const menuRef = useRef<MenuState | null>(null);
   const selectedRef = useRef(0);
@@ -303,9 +327,7 @@ export function BodyEditor({
       }),
       Draft,
       Mention,
-      Placeholder.configure({
-        placeholder: "Write… ('/' for blocks, '[[' to link an entry)",
-      }),
+      Placeholder.configure({ placeholder }),
       SlashCommands,
       makeEntityLink(render, entriesRef),
     ];
@@ -316,9 +338,7 @@ export function BodyEditor({
     extensions,
     content: toTipTap(doc),
     editorProps: {
-      attributes: {
-        class: "min-h-48 py-2 leading-relaxed outline-none",
-      },
+      attributes: { class: editorClass },
       handleClickOn: mentionNavigate,
     },
     onUpdate: ({ editor }) => {
@@ -395,74 +415,15 @@ export function InlineField({
   onChange: (doc: DocNode) => void;
   placeholder?: string;
 }) {
-  const [menu, setMenu] = useState<MenuState | null>(null);
-  const menuRef = useRef<MenuState | null>(null);
-  const selectedRef = useRef(0);
-  const entriesRef = useRef(entries);
-  entriesRef.current = entries;
-  useEffect(() => {
-    menuRef.current = menu;
-  }, [menu]);
-  const docRef = useRef(JSON.stringify(doc));
-
-  const extensions = useMemo(() => {
-    const render = suggestionRender(setMenu, selectedRef, menuRef);
-    return [
-      StarterKit.configure({
-        heading: false,
-        bulletList: false,
-        orderedList: false,
-        listItem: false,
-        blockquote: false,
-        codeBlock: false,
-        horizontalRule: false,
-        bold: false,
-        italic: false,
-        code: false,
-        strike: false,
-        hardBreak: false,
-        underline: false,
-        link: false,
-      }),
-      Mention,
-      Placeholder.configure({ placeholder: placeholder ?? "—" }),
-      makeEntityLink(render, entriesRef),
-    ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const editor = useEditor({
-    extensions,
-    content: toTipTap(doc),
-    editorProps: {
-      attributes: {
-        class:
-          "w-full rounded px-1 py-[2.8px] outline-none hover:bg-stone-900 focus:bg-stone-900",
-      },
-      handleClickOn: mentionNavigate,
-    },
-    onUpdate: ({ editor }) => {
-      const next = fromTipTap(editor.getJSON() as DocNode);
-      docRef.current = JSON.stringify(next);
-      onChange(next);
-    },
-  });
-
-  // Sync in external changes without looping on our own updates.
-  useEffect(() => {
-    if (!editor) return;
-    const incoming = JSON.stringify(doc);
-    if (incoming === docRef.current) return;
-    docRef.current = incoming;
-    editor.commands.setContent(toTipTap(doc));
-  }, [doc, editor]);
-
-  if (!editor) return null;
-
+  // Full parity with the body editor: same marks, blocks, slash
+  // commands, [[ mentions, and bubble menu — only the chrome differs.
   return (
-    <div className="relative">
-      <EditorContent editor={editor} />
-      <SuggestionPopup menu={menu} selectedRef={selectedRef} setMenu={setMenu} />
-    </div>
+    <RichText
+      doc={doc}
+      entries={entries}
+      onChange={onChange}
+      placeholder={placeholder ?? "—"}
+      editorClass="w-full rounded px-1 py-[2.8px] outline-none hover:bg-stone-900 focus:bg-stone-900"
+    />
   );
 }

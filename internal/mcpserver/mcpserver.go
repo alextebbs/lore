@@ -114,10 +114,19 @@ func New(t *tools.Tools) *mcp.Server {
 		return nil, worldOut{World: w, Types: types}, err
 	})
 
+	type listEntriesIn struct {
+		WorldID       string `json:"world_id" jsonschema:"the world's id"`
+		TypeID        string `json:"type_id,omitempty" jsonschema:"filter to a type and its subtypes (optional)"`
+		IncludeFields bool   `json:"include_fields,omitempty" jsonschema:"include presented field values per entry"`
+	}
 	addTool(s, &registered, &mcp.Tool{
 		Name:        "list_entries",
-		Description: "List all entries in a world (id, title, type, draft/canon status).",
-	}, func(ctx context.Context, req *mcp.CallToolRequest, in worldID) (*mcp.CallToolResult, []tools.EntrySummary, error) {
+		Description: "List entries in a world (id, title, type, draft/canon status). Optional type filter (includes subtypes) and per-entry field values.",
+	}, func(ctx context.Context, req *mcp.CallToolRequest, in listEntriesIn) (*mcp.CallToolResult, any, error) {
+		if in.IncludeFields || in.TypeID != "" {
+			out, err := t.ListEntriesFull(ctx, in.WorldID, in.TypeID)
+			return nil, out, err
+		}
 		out, err := t.ListEntries(ctx, in.WorldID)
 		return nil, out, err
 	})

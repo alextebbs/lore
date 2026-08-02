@@ -105,7 +105,7 @@ function RelationsPanel({
         return (
           <div key={secKey} className="group/sec flex gap-3">
             <div
-              className="h-7 w-44 shrink-0 truncate text-right leading-7 text-stone-500"
+              className="h-7 w-44 shrink-0 truncate text-right leading-7 text-stone-600"
               title={sec.label || sec.field}
             >
               {titleCase(sec.label || sec.field)}

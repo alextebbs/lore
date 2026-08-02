@@ -58,6 +58,16 @@ export interface EntryRef {
   status: string;
 }
 
+export interface EntryRow {
+  id: string;
+  title: string;
+  type_id: string;
+  type_name: string;
+  status: string;
+  fields?: Record<string, FieldValue>;
+  updated_at: string;
+}
+
 export interface EntrySummary {
   id: string;
   title: string;

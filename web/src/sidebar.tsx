@@ -225,7 +225,13 @@ export function WorldSidebar({
           const shown = open ? all : all.slice(0, GROUP_CAP);
           return (
             <div key={typeName} className="mb-3">
-              <div className="mb-1 text-stone-600">{typeName}</div>
+              <Link
+                to="/w/$worldId/t/$typeId"
+                params={{ worldId, typeId: all[0].type_id }}
+                className="mb-1 block text-stone-600 hover:text-white"
+              >
+                {typeName}
+              </Link>
               <ul>
                 {shown.map((e) => (
                   <li key={e.id}>
