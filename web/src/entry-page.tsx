@@ -211,10 +211,10 @@ export function EntryPage({ entryId }: { entryId: string }) {
         {appState.lastWorldId && <WorldSidebar worldId={appState.lastWorldId} />}
         <div
           style={{ marginLeft: appState.lastWorldId ? "var(--sidebar-w)" : 0 }}
-          className="p-6 text-neutral-500"
+          className="p-6 text-stone-500"
         >
           Entry not found — it may have been deleted.{" "}
-          <Link to="/" className="underline hover:text-neutral-300">
+          <Link to="/" className="underline hover:text-stone-300">
             Back to worlds
           </Link>
         </div>
@@ -247,11 +247,11 @@ export function EntryPage({ entryId }: { entryId: string }) {
       <div style={{ marginLeft: "var(--sidebar-w)" }} className="max-w-4xl space-y-5 p-6">
       <div className="flex items-center justify-end gap-2">
           {saveState === "saving" ? (
-            <span className="text-neutral-600">saving…</span>
+            <span className="text-stone-600">saving…</span>
           ) : (
             revisions.data?.[0] && (
               <Button
-                className="border-transparent text-neutral-600"
+                className="border-transparent text-stone-600"
                 tip="Revision history"
                 onClick={() => setShowHistory(true)}
               >
@@ -309,7 +309,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
                     render={
                       <a
                         href={`/api/entries/${e.id}/export`}
-                        className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-neutral-300 data-[highlighted]:bg-neutral-800 data-[highlighted]:text-white"
+                        className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-stone-300 data-[highlighted]:bg-stone-800 data-[highlighted]:text-white"
                       >
                         <Download size={13} /> Export as Markdown
                       </a>
@@ -317,7 +317,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
                   />
                   <Menu.Item
                     onClick={() => setShowHistory(true)}
-                    className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-neutral-300 data-[highlighted]:bg-neutral-800 data-[highlighted]:text-white"
+                    className="flex w-full cursor-default items-center gap-1.5 px-3 py-1.5 text-stone-300 data-[highlighted]:bg-stone-800 data-[highlighted]:text-white"
                   >
                     <History size={13} /> Revision history (
                     {revisions.data?.length ?? 0})
@@ -352,7 +352,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
       </div>
 
       <div>
-        <div className="px-1 text-neutral-600">{e.type_name}</div>
+        <div className="px-1 text-stone-600">{e.type_name}</div>
         <input
           value={title}
           onChange={(e) => {
@@ -360,7 +360,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
             setDirty((d) => d + 1);
           }}
           placeholder="Untitled"
-          className="display display-lg w-full rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900"
+          className="display display-lg w-full rounded bg-transparent px-1 outline-none placeholder:text-stone-700 hover:bg-stone-900 focus:bg-stone-900"
         />
       </div>
 

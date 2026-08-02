@@ -37,9 +37,9 @@ export function FieldsGrid({
           const kind = schemaFields.find((f) => f.name === name)?.kind ?? "string";
           // Draft content reads grey; canon reads white (the only
           // status distinction the content itself makes).
-          const tone = fv?.status === "draft" ? "text-neutral-500" : "";
+          const tone = fv?.status === "draft" ? "text-stone-500" : "";
           const label = (
-            <div className="flex h-7 w-44 shrink-0 items-center justify-end gap-2 text-right leading-7 text-neutral-500">
+            <div className="flex h-7 w-44 shrink-0 items-center justify-end gap-2 text-right leading-7 text-stone-500">
               <span className="truncate" title={name}>
                 {titleCase(name)}
               </span>
@@ -133,7 +133,7 @@ export function FieldsGrid({
                   bump();
                 }}
                 placeholder="—"
-                className={`h-7 min-w-0 flex-1 rounded bg-transparent px-1 outline-none placeholder:text-neutral-700 hover:bg-neutral-900 focus:bg-neutral-900 ${tone}`}
+                className={`h-7 min-w-0 flex-1 rounded bg-transparent px-1 outline-none placeholder:text-stone-700 hover:bg-stone-900 focus:bg-stone-900 ${tone}`}
               />
             </label>
           );

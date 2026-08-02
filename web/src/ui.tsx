@@ -55,11 +55,11 @@ export function StatusBadge({ status }: { status: string }) {
 // cold-load navigation swaps content without moving anything else.
 export function EntrySkeleton() {
   const bar = (w: string) => (
-    <div className={`h-4 animate-pulse rounded bg-neutral-900 ${w}`} />
+    <div className={`h-4 animate-pulse rounded bg-stone-900 ${w}`} />
   );
   return (
     <div className="max-w-4xl space-y-5 p-6" aria-busy="true">
-      <div className="h-7 w-64 animate-pulse rounded bg-neutral-900" />
+      <div className="h-7 w-64 animate-pulse rounded bg-stone-900" />
       <div className="space-y-3 pt-2">
         {["w-3/4", "w-1/2", "w-2/3", "w-1/3"].map((w) => (
           <div key={w} className="flex gap-3">
@@ -128,7 +128,7 @@ export function Confirm({
             {title}
           </AlertDialog.Title>
           {body && (
-            <AlertDialog.Description className="mt-1 text-neutral-400">
+            <AlertDialog.Description className="mt-1 text-stone-400">
               {body}
             </AlertDialog.Description>
           )}
@@ -153,7 +153,7 @@ function Tip({ tip, children }: { tip: string; children: ReactElement }) {
       <Tooltip.Trigger render={children} aria-label={tip} />
       <Tooltip.Portal>
         <Tooltip.Positioner side="bottom" sideOffset={6} className="z-50">
-          <Tooltip.Popup className={`anim-fade px-2 py-1 text-neutral-300 ${surface}`}>
+          <Tooltip.Popup className={`anim-fade px-2 py-1 text-stone-300 ${surface}`}>
             {tip}
           </Tooltip.Popup>
         </Tooltip.Positioner>
@@ -237,7 +237,7 @@ export function RowButton({
     <button
       type="button"
       className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left ${
-        active ? "bg-neutral-800 text-white" : "text-neutral-300"
+        active ? "bg-stone-800 text-white" : "text-stone-300"
       } ${className}`}
       {...props}
     />
@@ -267,18 +267,18 @@ export function Picker<T extends string>({
     >
       <Select.Trigger
         autoFocus={autoFocus}
-        className="btn min-w-40 justify-between data-[popup-open]:border-neutral-500"
+        className="btn min-w-40 justify-between data-[popup-open]:border-stone-500"
       >
         <Select.Value className="truncate">
           {(v: T | null) =>
             v == null ? (
-              <span className="text-neutral-600">{placeholder}</span>
+              <span className="text-stone-600">{placeholder}</span>
             ) : (
               (items.find((i) => i.value === v)?.label ?? v)
             )
           }
         </Select.Value>
-        <Select.Icon className="text-neutral-600">▾</Select.Icon>
+        <Select.Icon className="text-stone-600">▾</Select.Icon>
       </Select.Trigger>
       <Select.Portal>
         <Select.Positioner sideOffset={4} className="z-50">
@@ -287,7 +287,7 @@ export function Picker<T extends string>({
               <Select.Item
                 key={i.value}
                 value={i.value}
-                className="cursor-default px-3 py-1 data-[highlighted]:bg-neutral-800 data-[selected]:text-white"
+                className="cursor-default px-3 py-1 data-[highlighted]:bg-stone-800 data-[selected]:text-white"
               >
                 <Select.ItemText>{i.label}</Select.ItemText>
               </Select.Item>

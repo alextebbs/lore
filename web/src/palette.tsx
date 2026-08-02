@@ -140,11 +140,11 @@ export function CommandPalette() {
             if (e.key === "Enter" && rows[selIdx]) pick(rows[selIdx]);
           }}
           placeholder="Search entries and actions…"
-          className="w-full border-b border-neutral-800 bg-transparent px-4 py-3 outline-none placeholder:text-neutral-600"
+          className="w-full border-b border-stone-800 bg-transparent px-4 py-3 outline-none placeholder:text-stone-600"
         />
         <div className="max-h-80 overflow-y-auto py-1">
           {rows.length === 0 && (
-            <div className="px-4 py-3 text-neutral-600">
+            <div className="px-4 py-3 text-stone-600">
               no matches
             </div>
           )}
@@ -157,7 +157,7 @@ export function CommandPalette() {
               onMouseEnter={() => setSel(i)}
             >
               <span className="truncate">{row.label}</span>
-              <span className="shrink-0 text-neutral-600">{row.hint}</span>
+              <span className="shrink-0 text-stone-600">{row.hint}</span>
             </RowButton>
           ))}
           </div>

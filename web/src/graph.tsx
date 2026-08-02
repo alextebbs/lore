@@ -102,7 +102,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   const edges = graph.data.edges ?? [];
   if (nodes.length <= 1) {
     return (
-      <p className="text-neutral-600">
+      <p className="text-stone-600">
         No connections yet — add relations to see the graph.
       </p>
     );
@@ -111,7 +111,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
-        <span className="text-neutral-500">
+        <span className="text-stone-500">
           Connections
         </span>
         <div className="flex gap-1">
@@ -124,7 +124,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
       </div>
       <svg
         viewBox={`0 0 ${W} ${H}`}
-        className="w-full rounded border border-neutral-800 bg-neutral-900"
+        className="w-full rounded border border-stone-800 bg-stone-900"
       >
         {edges.map((e) => {
           const a = positions.get(e.from);
@@ -144,7 +144,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
                 x={(a.x + b.x) / 2}
                 y={(a.y + b.y) / 2 - 4}
                 textAnchor="middle"
-                className="fill-neutral-600 text-[9px]"
+                className="fill-stone-600 text-[9px]"
               >
                 {e.field}
               </text>
@@ -170,7 +170,7 @@ export function EgoGraph({ entryId }: { entryId: string }) {
                   x={p.x}
                   y={p.y + (n.depth === 0 ? 24 : 20)}
                   textAnchor="middle"
-                  className="fill-neutral-300 text-[10px]"
+                  className="fill-stone-300 text-[10px]"
                 >
                   {n.title}
                 </text>

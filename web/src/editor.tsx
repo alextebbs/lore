@@ -25,7 +25,7 @@ const Draft = Mark.create({
   renderHTML() {
     return [
       "span",
-      { "data-draft": "", class: "text-neutral-500" },
+      { "data-draft": "", class: "text-stone-500" },
       0,
     ];
   },
@@ -227,13 +227,13 @@ function SuggestionPopup({
           }}
           className={`flex w-full items-center justify-between gap-4 px-3 py-1.5 text-left ${
             i === selectedRef.current
-              ? "bg-neutral-800 text-white"
-              : "text-neutral-300"
+              ? "bg-stone-800 text-white"
+              : "text-stone-300"
           }`}
         >
           <span>{item.label}</span>
           {item.hint && (
-            <span className="text-neutral-600">{item.hint}</span>
+            <span className="text-stone-600">{item.hint}</span>
           )}
         </RowButton>
       ))}
@@ -364,10 +364,10 @@ export function BodyEditor({
         {bubbleBtn(editor.isActive("bold"), () => editor.chain().focus().toggleBold().run(), <b>B</b>, "Bold")}
         {bubbleBtn(editor.isActive("italic"), () => editor.chain().focus().toggleItalic().run(), <i>I</i>, "Italic")}
         {bubbleBtn(editor.isActive("code"), () => editor.chain().focus().toggleCode().run(), <Code size={13} />, "Code")}
-        <span className="h-4 w-px bg-neutral-700" />
+        <span className="h-4 w-px bg-stone-700" />
         {bubbleBtn(editor.isActive("heading", { level: 1 }), () => editor.chain().focus().toggleHeading({ level: 1 }).run(), "H1", "Heading 1")}
         {bubbleBtn(editor.isActive("heading", { level: 2 }), () => editor.chain().focus().toggleHeading({ level: 2 }).run(), "H2", "Heading 2")}
-        <span className="h-4 w-px bg-neutral-700" />
+        <span className="h-4 w-px bg-stone-700" />
         {bubbleBtn(editor.isActive("draft"), () => editor.chain().focus().toggleMark("draft").run(), <LockOpen size={13} />, "Mark selection as draft")}
         {bubbleBtn(false, () => editor.chain().focus().unsetMark("draft").run(), <Lock size={13} />, "Promote selection to canon")}
       </BubbleMenu>
@@ -437,7 +437,7 @@ export function InlineField({
     editorProps: {
       attributes: {
         class:
-          "w-full rounded px-1 py-[2.8px] outline-none hover:bg-neutral-900 focus:bg-neutral-900",
+          "w-full rounded px-1 py-[2.8px] outline-none hover:bg-stone-900 focus:bg-stone-900",
       },
       handleClickOn: mentionNavigate,
     },

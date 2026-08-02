@@ -38,7 +38,7 @@ function WorldSettingsForm({ worldId }: { worldId: string }) {
   return (
     <div className="space-y-3">
       <label className="block">
-        <span className="text-neutral-500">
+        <span className="text-stone-500">
           Vibe — global context for the AI ("It's Elden Ring", …)
         </span>
         <textarea
@@ -49,7 +49,7 @@ function WorldSettingsForm({ worldId }: { worldId: string }) {
         />
       </label>
       <label className="block">
-        <span className="text-neutral-500">
+        <span className="text-stone-500">
           Style prompt — how AI prose should read
         </span>
         <textarea
@@ -61,7 +61,7 @@ function WorldSettingsForm({ worldId }: { worldId: string }) {
       </label>
       <div className="flex items-center gap-6">
         <label className="flex items-center gap-2">
-          <span className="text-neutral-500">Humans author as</span>
+          <span className="text-stone-500">Humans author as</span>
           <Picker
             value={(authorAs ?? s.humans_author_as ?? "canon") as string}
             onChange={setAuthorAs}
@@ -72,7 +72,7 @@ function WorldSettingsForm({ worldId }: { worldId: string }) {
             ]}
           />
         </label>
-        <label className="flex items-center gap-2 text-neutral-500">
+        <label className="flex items-center gap-2 text-stone-500">
           <input
             type="checkbox"
             defaultChecked={s.ai_can_edit_canon ?? false}
@@ -116,18 +116,18 @@ function VaultImport({ worldId }: { worldId: string }) {
         />
       </label>
       {result && (
-        <div className="space-y-1 rounded border border-neutral-800 p-2 text-neutral-400">
+        <div className="space-y-1 rounded border border-stone-800 p-2 text-stone-400">
           <div>
             {result.created} entries imported
             {result.created > 0 && " (as drafts unless marked canon)"}
           </div>
           {(result.skipped ?? []).map((s: string) => (
-            <div key={s} className="text-neutral-600">
+            <div key={s} className="text-stone-600">
               skipped: {s}
             </div>
           ))}
           {(result.warnings ?? []).map((w: string) => (
-            <div key={w} className="text-neutral-600">
+            <div key={w} className="text-stone-600">
               {w}
             </div>
           ))}
@@ -147,8 +147,8 @@ export function SettingsPage({ worldId }: { worldId: string }) {
       >
         <h2 className="">World settings</h2>
         <WorldSettingsForm worldId={worldId} />
-        <div className="space-y-2 border-t border-neutral-800 pt-4">
-          <h3 className="text-neutral-500">Export</h3>
+        <div className="space-y-2 border-t border-stone-800 pt-4">
+          <h3 className="text-stone-500">Export</h3>
           <div className="flex items-center gap-2">
             <LinkButton href={`/api/worlds/${worldId}/export`}>
               <Download size={12} /> vault (Obsidian zip)
@@ -162,8 +162,8 @@ export function SettingsPage({ worldId }: { worldId: string }) {
             </LinkButton>
           </div>
         </div>
-        <div className="space-y-2 border-t border-neutral-800 pt-4">
-          <h3 className="text-neutral-500">Import</h3>
+        <div className="space-y-2 border-t border-stone-800 pt-4">
+          <h3 className="text-stone-500">Import</h3>
           <VaultImport worldId={worldId} />
         </div>
       </div>

@@ -47,23 +47,23 @@ function TrayPanel({
   const qc = useQueryClient();
   const pct = Math.min(100, Math.round((tray.total_tokens / tray.budget) * 100));
   const sourceStyle: Record<string, string> = {
-    pinned: "text-white border-neutral-500",
-    current: "text-white border-neutral-500",
-    neighbor: "text-neutral-400 border-neutral-800",
-    auto: "text-neutral-400 border-neutral-800",
+    pinned: "text-white border-stone-500",
+    current: "text-white border-stone-500",
+    neighbor: "text-stone-400 border-stone-800",
+    auto: "text-stone-400 border-stone-800",
   };
 
   return (
-    <div className="space-y-2 border-b border-neutral-800 p-3">
-      <div className="flex items-center justify-between text-neutral-500">
+    <div className="space-y-2 border-b border-stone-800 p-3">
+      <div className="flex items-center justify-between text-stone-500">
         <span className="tracking-wide">Context</span>
         <span>
           ~{tray.total_tokens} / {tray.budget} tokens
         </span>
       </div>
-      <div className="h-1 rounded bg-neutral-800">
+      <div className="h-1 rounded bg-stone-800">
         <div
-          className={`h-1 rounded ${pct > 90 ? "bg-red-900" : "bg-neutral-500"}`}
+          className={`h-1 rounded ${pct > 90 ? "bg-red-900" : "bg-stone-500"}`}
           style={{ width: `${pct}%` }}
         />
       </div>
@@ -84,7 +84,7 @@ function TrayPanel({
               >
                 {item.source}
               </span>
-              <span className="text-neutral-600">
+              <span className="text-stone-600">
                 {item.level}·{item.tokens}t
               </span>
               {item.source === "auto" && (
@@ -134,7 +134,7 @@ function TrayPanel({
               )}
             </div>
             {expanded === item.entry_id && (
-              <pre className="mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-neutral-900 p-2 text-[10px] text-neutral-400">
+              <pre className="mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap rounded bg-stone-900 p-2 text-[10px] text-stone-400">
                 {item.text}
               </pre>
             )}
@@ -230,8 +230,8 @@ export function ChatPanel({
   }
 
   return (
-    <div className="fixed bottom-0 right-0 top-0 z-10 flex w-96 flex-col border-l border-neutral-800 bg-neutral-950 shadow-2xl">
-      <div className="flex items-center justify-between border-b border-neutral-800 px-3 py-2">
+    <div className="fixed bottom-0 right-0 top-0 z-10 flex w-96 flex-col border-l border-stone-800 bg-stone-950 shadow-2xl">
+      <div className="flex items-center justify-between border-b border-stone-800 px-3 py-2">
         <span className="flex items-center gap-1.5"><Sparkles size={14} /> Assistant</span>
         <div className="flex gap-2">
           <Button
@@ -267,15 +267,15 @@ export function ChatPanel({
 
       <div className="flex-1 space-y-2 overflow-y-auto p-3">
         {items.length === 0 && (
-          <p className="text-neutral-600">
+          <p className="text-stone-600">
             Ask for new content, expansions, or connections. Everything the
-            assistant writes lands as <span className="text-neutral-400">draft</span>{" "}
+            assistant writes lands as <span className="text-stone-400">draft</span>{" "}
             until you promote it.
           </p>
         )}
         {items.map((item, i) =>
           item.kind === "user" ? (
-            <div key={i} className="ml-6 rounded bg-neutral-800 px-3 py-2">
+            <div key={i} className="ml-6 rounded bg-stone-800 px-3 py-2">
               {item.text}
             </div>
           ) : item.kind === "text" ? (
@@ -283,15 +283,15 @@ export function ChatPanel({
               {item.text}
             </div>
           ) : item.kind === "tool" ? (
-            <details key={i} className="rounded border border-neutral-800 px-2 py-1">
+            <details key={i} className="rounded border border-stone-800 px-2 py-1">
               <summary
-                className={item.isError ? "text-red-400" : "text-neutral-500"}
+                className={item.isError ? "text-red-400" : "text-stone-500"}
               >
                 ⚙ {item.name}
                 {item.result === undefined && " …"}
               </summary>
               {item.result && (
-                <pre className="mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap text-[10px] text-neutral-500">
+                <pre className="mt-1 max-h-32 overflow-y-auto whitespace-pre-wrap text-[10px] text-stone-500">
                   {item.result}
                 </pre>
               )}
@@ -302,12 +302,12 @@ export function ChatPanel({
             </div>
           ),
         )}
-        {busy && <p className="animate-pulse text-neutral-600">thinking…</p>}
+        {busy && <p className="animate-pulse text-stone-600">thinking…</p>}
         <div ref={bottomRef} />
       </div>
 
       <form
-        className="border-t border-neutral-800 p-3"
+        className="border-t border-stone-800 p-3"
         onSubmit={(e) => {
           e.preventDefault();
           send();

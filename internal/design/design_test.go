@@ -17,8 +17,9 @@ import (
 var forbidden = []*regexp.Regexp{
 	regexp.MustCompile(`rounded-(full|lg|xl|2xl|3xl)`),
 	regexp.MustCompile(`text-(xs|sm|base|lg|xl|2xl|3xl|\[[0-9]+px\])\b`),
-	regexp.MustCompile(`text-neutral-(100|200)\b`),
+	regexp.MustCompile(`text-(neutral|stone)-(100|200)\b`),
 	regexp.MustCompile(`!important`),
+	regexp.MustCompile(`neutral-`), // the grey scale is stone (taupe)
 	// One weight: bold is not part of the chrome's vocabulary.
 	regexp.MustCompile(`font-(bold|semibold|medium)\b`),
 }

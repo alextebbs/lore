@@ -31,7 +31,7 @@ function FieldRow({
 }) {
   const rel = field.relation ?? {};
   return (
-    <div className="space-y-1 rounded border border-neutral-800 p-2">
+    <div className="space-y-1 rounded border border-stone-800 p-2">
       <div className="flex items-center gap-2">
         <input
           value={field.name}
@@ -57,7 +57,7 @@ function FieldRow({
         </Button>
       </div>
       {field.kind === "relation" && (
-        <div className="flex flex-wrap items-center gap-2 pl-1 text-neutral-400">
+        <div className="flex flex-wrap items-center gap-2 pl-1 text-stone-400">
           <input
             value={(rel.targets ?? []).join(", ")}
             onChange={(e) =>
@@ -167,7 +167,7 @@ function TypeEditor({
   });
 
   return (
-    <div className="space-y-2 rounded border border-neutral-700 p-3">
+    <div className="space-y-2 rounded border border-stone-700 p-3">
       <div className="flex items-center gap-2">
         <input
           value={name}
@@ -220,7 +220,7 @@ function TypeEditor({
               <TriangleAlert size={12} /> {w}
             </li>
           ))}
-          <li className="pt-1 text-neutral-400">
+          <li className="pt-1 text-stone-400">
             Saved with warnings (soft schema) —{" "}
             <Button className="h-5 px-1.5" onClick={onDone}>
               done
@@ -255,7 +255,7 @@ export function TypeManager({ worldId }: { worldId: string }) {
             ) : (
               <div key={t.id} className="flex h-7 items-center gap-2">
                 <span className="w-40 truncate">{titleCase(t.name)}</span>
-                <span className="min-w-0 flex-1 truncate text-neutral-600">
+                <span className="min-w-0 flex-1 truncate text-stone-600">
                   {(t.fields ?? []).map((f) => f.name).join(", ") || "no fields"}
                 </span>
                 <Button onClick={() => setEditing(t.id)}>edit</Button>

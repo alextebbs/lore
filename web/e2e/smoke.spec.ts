@@ -157,7 +157,8 @@ test("relations add and remove from the reverse side", async ({ page }) => {
     .first();
   const row = section.locator("div.flex.h-7", { hasText: "Vex the Unready" });
   await expect(row).toBeVisible();
-  // Controls live inline in the row's right rail — no hover dance.
-  await row.getByRole("button", { name: "Remove relation" }).click();
+  // Controls live in a hover card (portal) — hover, then click.
+  await row.hover();
+  await page.getByRole("button", { name: "Remove relation" }).click();
   await expect(row).toBeHidden();
 });

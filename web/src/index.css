@@ -76,16 +76,16 @@ body {
    per-site sizing — if it doesn't fit these, it's a design smell. */
 @layer components {
   .btn {
-    @apply inline-flex h-7 cursor-pointer items-center gap-1.5 rounded border border-neutral-800 bg-transparent px-2 text-neutral-400;
+    @apply inline-flex h-7 cursor-pointer items-center gap-1.5 rounded border border-stone-800 bg-transparent px-2 text-stone-400;
   }
   .btn:hover {
-    @apply border-neutral-600 text-white;
+    @apply border-stone-600 text-white;
   }
   .btn-solid {
-    @apply border-neutral-500 text-white;
+    @apply border-stone-500 text-white;
   }
   .btn-solid:hover {
-    @apply bg-neutral-800;
+    @apply bg-stone-800;
   }
   /* Intent accents: tinted text at rest, tinted border on hover —
      the same rule for every intent. */
@@ -108,25 +108,25 @@ body {
     @apply border-dashed;
   }
   .chip {
-    @apply inline-flex h-7 items-center gap-1.5 rounded border border-neutral-800 px-2 text-neutral-400;
+    @apply inline-flex h-7 items-center gap-1.5 rounded border border-stone-800 px-2 text-stone-400;
   }
   .chip-canon {
-    @apply border-neutral-500 text-white;
+    @apply border-stone-500 text-white;
   }
   .chip-draft {
-    @apply text-neutral-600;
+    @apply text-stone-600;
   }
   .input {
-    @apply h-7 rounded bg-neutral-900 px-2 outline-none;
+    @apply h-7 rounded bg-stone-900 px-2 outline-none;
   }
   .input::placeholder {
-    @apply text-neutral-600;
+    @apply text-stone-600;
   }
   .input:focus {
-    @apply bg-neutral-800;
+    @apply bg-stone-800;
   }
   .panel {
-    @apply rounded border border-neutral-700 bg-neutral-900 shadow-xl;
+    @apply rounded border border-stone-700 bg-stone-900 shadow-xl;
   }
   /* Entity link: how a reference to another entry looks, everywhere —
      rich-text mention chips and relation chips alike. */
@@ -163,11 +163,11 @@ body {
     opacity: 0;
   }
   .entity-draft {
-    @apply bg-neutral-900 text-neutral-500;
+    @apply bg-stone-900 text-stone-500;
   }
   /* A mention inside a draft span reads as draft, same as the text
      around it (the draft mark wraps the chip in [data-draft]). */
   [data-draft] .entity {
-    @apply bg-neutral-900 text-neutral-500;
+    @apply bg-stone-900 text-stone-500;
   }
 }

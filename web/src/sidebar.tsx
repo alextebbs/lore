@@ -2,7 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Dialog } from "@base-ui/react/dialog";
-import { BookOpen, ChevronRight, Plus, Settings2, Shapes } from "lucide-react";
+import { BookOpen, ChevronRight, Plus, Search, Settings2, Shapes } from "lucide-react";
 import { api, type EntrySummary } from "./api";
 import { appState, setSidebarWidth, sidebarWidth } from "./app-state";
 import { Button, LinkButton, Picker } from "./ui";
@@ -139,7 +139,7 @@ export function WorldSidebar({
   return (
     <nav
       style={{ width: "var(--sidebar-w)" }}
-      className="fixed inset-y-0 left-0 flex flex-col border-r border-neutral-800 bg-neutral-950"
+      className="fixed inset-y-0 left-0 flex flex-col border-r border-stone-800 bg-stone-950"
     >
       <div
         onMouseDown={startSidebarResize}
@@ -154,12 +154,12 @@ export function WorldSidebar({
         aria-orientation="vertical"
         aria-label="Resize sidebar (drag or arrow keys)"
         tabIndex={0}
-        className="fixed inset-y-0 z-30 w-1.5 cursor-col-resize hover:bg-neutral-700 focus:bg-neutral-600 focus:outline-none"
+        className="fixed inset-y-0 z-30 w-1.5 cursor-col-resize hover:bg-stone-700 focus:bg-stone-600 focus:outline-none"
         style={{ left: "calc(var(--sidebar-w) - 3px)" }}
       />
 
       {/* Sticky header: brand, world row, search, new entry. */}
-      <div className="shrink-0 space-y-3 border-b border-neutral-800 px-3 py-4">
+      <div className="shrink-0 space-y-3 border-b border-stone-800 px-3 py-4">
         <Link to="/" className="display block text-white hover:text-white">
           Lore
         </Link>
@@ -199,10 +199,14 @@ export function WorldSidebar({
           </LinkButton>
         </div>
         <Button
-          className="input w-full justify-start border-0 text-neutral-600"
+          className="input w-full border-0 text-stone-600 hover:bg-stone-800 hover:text-stone-400"
           onClick={() => appState.openPalette()}
         >
-          search…
+          <Search size={13} />
+          <span className="flex-1 text-left">Search…</span>
+          <kbd className="rounded border border-stone-800 px-1 text-stone-600">
+            ⌘K
+          </kbd>
         </Button>
         <NewEntryDialog worldId={worldId} />
       </div>
@@ -221,7 +225,7 @@ export function WorldSidebar({
           const shown = open ? all : all.slice(0, GROUP_CAP);
           return (
             <div key={typeName} className="mb-3">
-              <div className="mb-1 text-neutral-600">{typeName}</div>
+              <div className="mb-1 text-stone-600">{typeName}</div>
               <ul>
                 {shown.map((e) => (
                   <li key={e.id}>
@@ -229,12 +233,12 @@ export function WorldSidebar({
                       to="/e/$entryId"
                       params={{ entryId: e.id }}
                       onMouseEnter={() => prefetch(e.id)}
-                      className={`block truncate rounded px-2 py-0.5 hover:bg-neutral-900 ${
+                      className={`block truncate rounded px-2 py-0.5 hover:bg-stone-900 ${
                         e.id === currentEntryId
-                          ? "bg-neutral-800 text-white"
+                          ? "bg-stone-800 text-white"
                           : e.status === "canon"
-                            ? "text-neutral-400 hover:text-white"
-                            : "text-neutral-600 hover:text-neutral-400"
+                            ? "text-stone-400 hover:text-white"
+                            : "text-stone-600 hover:text-stone-400"
                       }`}
                       title={e.title}
                     >
@@ -245,7 +249,7 @@ export function WorldSidebar({
               </ul>
               {all.length > GROUP_CAP && (
                 <Button
-                  className="mt-0.5 border-transparent text-neutral-600"
+                  className="mt-0.5 border-transparent text-stone-600"
                   onClick={() => setExpanded({ ...expanded, [typeName]: !open })}
                 >
                   {open ? (
