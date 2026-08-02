@@ -244,7 +244,7 @@ export function EntryPage({ entryId }: { entryId: string }) {
     <div>
       <WorldSidebar worldId={e.world_id} currentEntryId={e.id} />
       <div style={{ marginLeft: "var(--sidebar-w)" }}>
-        <div className="mx-auto max-w-4xl space-y-5 p-6">
+        <div className="mx-auto max-w-4xl -translate-x-[94px] space-y-5 p-6">
       <div className="flex items-center justify-end gap-2">
           {saveState === "saving" ? (
             <span className="text-stone-600">saving…</span>
